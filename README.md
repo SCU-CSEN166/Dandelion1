@@ -21,50 +21,50 @@
 **Deliverable during Week 6 Lab:** A project plan (write in this README file) describing your problem formulation, proposed approach, each team member's responsibilities, proposed baseline models with Hugging Face links, proposed evaluation metrics, proposed data with links, and goals for each week.
 
 ### 1. Problem formulation and social impact
-- **Problem:** What specific task are you solving? 
+- **Problem:**  
 The task we are solving is taking WhatsApp messages and voice recordings to convert them into a structured report as well as anonymizing any personal information from the user sending information.
-- **Intended users:** Who would use the system, and for what decisions or activities?
+- **Intended users:**  
 Dandelion Africa is mostly using this system to make reports from this data or any organization who also needs this information. Most of this information is mostly going to be used for reports or having easy to read structured data of any activities that have been done.
-- **Inputs and outputs:** What will the system receive and produce? Give one concrete example.
+- **Inputs and outputs:**  
 The system will receive chat files or voice notes on WhatsApp and produce structured outputs later that are anonymized. A concrete example would be a worker fixing machinery and needing to report the action or outcome onto the WhatsApp and then the system should take that eithter chat or voice note into a structured report that any supervisor or member of the organization can easily view.
-- **Success criteria:** What would make the system useful and reliable?
+- **Success criteria:**  
 The system would be useful and reliable if the reports are consistent in its output, being able to accurately anonymize personal information, removing any unnecessary information, and correctly identifying important outcomes.
-- **Constraints and risks:** [e.g., privacy, missing data, hallucinations, language coverage, human verification]
+- **Constraints and risks:**  
 Constraints we have is having good testable data, context window, dealing with AI hallucinations, human accents, typos, and informal language.
 
 ### 2. Proposed technical approach
-- **Pipeline:** [List the main steps from input to output.]
+- **Pipeline:**  
 The main steps from input to output depends on if the message is in text or voice note. If it's a voice note, we need to transcribe it first. Then we can classify the the information into personal information, important information, and irrelevant information. Then we can split it off into 3 differnet tasks: anonymizing personal information, structuring important information into reports, and removing irrelevant information.
-- **Baseline(s):** [Describe the simplest end-to-end method you can implement.]
+- **Baseline(s):**  
 The simplest end-to-end method is fully blacking out any personal information, taking anything valuable information into an output, and removing irrelevant information. 
-- **Proposed models/tools:** [Name, purpose, and link to each Hugging Face model or other resource.]
+- **Proposed models/tools:**  
 For text generation: llama 3.1 8B instruct https://huggingface.co/meta-llama/Llama-3.1-8B I selected this because it has a large enough parameter for all the text it will receive and it's an efficient model that can run on the WAVE HPC without taking up too many resources.
 For audio to text: Whisper https://github.com/openai/whisper Whisper is one of the best audio to text transcribers and is accurate.
 For classification: Bart large mnli https://huggingface.co/facebook/bart-large-mnli It's one of the most downloaded and trustworthy classification models. It's also backed by Meta which is a trustworthy name with 1.4 billion parameter which is more than enough for classifying.
-  - [Model name](https://huggingface.co/models) — [What it will do; why selected]
-- **Alternative approach:** [What will you try if the baseline underperforms?]
+- **Alternative approach:**  
 If the baseline underperforms, then we will try and increase model sizes to see if the model's are the ones causing this performance as they're doing most of the heavy work or we can change our training data.
 
 ### 3. Proposed data
 | Dataset/source | Link or access instructions | Purpose | Size / languages | Privacy or usage considerations |
 |---|---|---|---|---|
-| [Name] | [URL](https://huggingface.co/datasets) or other instructions] | [Training/development/evaluation] | [Details] | [Notes] |
-We're going to make up our text data since there's no WhatsApp data with relevant information for us to train on.
-- **Data preparation:** [Cleaning, anonymization, annotation, splitting, deduplication, etc.]
-To prepare our data we will clean it with removing any irrelevant information. Then we will anonymize by finding any personal informatoin and blacking it out. We will label and annotate data by marking what data is important, irrelevant, and personal. Then split the data into those 3 sections and blacking out all personal informatoin, taking the important information and using it for the output, and removing all unimportant data.
+| Custom Made |  | Training / Evaluation | EN | Fictional WhatsApp exports; not intended to resemble any real people or events |
+We're going to make up our own text dataset, since we could not find a public WhatsApp dataset meant to resemble a professional organization's communications.
+- **Data preparation:**  
+To prepare our data, we will clean it by removing any content labeled irrelevant by a classifier. Then we will anonymize it by identifying any personal information and blacking it out. We will label and annotate data by marking what data is important, irrelevant, and personal. Then split the data into those 3 sections and blacking out all personal information, taking the important information and using it for the output, and removing all unimportant data.
 
-- **Data limitations:** [What is missing, noisy, or uncertain?]
+- **Data limitations:**  
 Dealing with fully irrelevant data, human errors, and informal language.
 
 ### 4. Proposed evaluation
 | Metric / test | What it measures | How it will be calculated | Target / success criterion |
 |---|---|---|---|
-| Recall | How many outcomes it correctly repots | Tp/TP+FP | 100 |
+| Recall | How many outcomes it correctly reports | TP/(TP+FN) | 100% (It's bad if any major outcomes are not reported) |
+| Recall | How much personal information was correctly identified and redacted | TP/(TP+FN) | 90% |
 
 - **Evaluation examples:** [How will you build or select a development set?]
-I'll build a development set by taking each input and having a list all the important information for the LLM model to find. 
+We'll build a development set by taking each input and building a list of all the important information we expect the system to find and report. 
 - **Human verification:** [If relevant, who will check outputs and how?]
-We will check outputs and the recall score. Depending on how good they are or if they include too much then we'll tweak the model.
+We will check output reports and the recall score. Depending on how good the reports are, or if they include too much text, then we'll tweak the model.
 - **Failure cases to watch:** [At least two anticipated risks]
 Including personal information or the report is missing any important details.
 
