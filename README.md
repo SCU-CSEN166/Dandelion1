@@ -22,13 +22,13 @@
 
 ### 1. Problem formulation and social impact
 - **Problem:**  
-The task we are solving is taking WhatsApp messages and voice recordings to convert them into a structured report as well as anonymizing any personal information from the user sending information.
+Our goal is to convert exported WhatsApp messages and voice recordings into a structured report of activities and outcomes, as well as anonymize any personal information from the exports.
 - **Intended users:**  
-Dandelion Africa is mostly using this system to make reports from this data or any organization who also needs this information. Most of this information is mostly going to be used for reports or having easy to read structured data of any activities that have been done.
+This system is built for Dandelion Africa with the purpose of making reports of field outcomes. Any other organization who also needs to create reports from internal communications could also use it. Most of this information is going to be used for reports or the creation of easy to read structured data of any activities that have been done.
 - **Inputs and outputs:**  
-The system will receive chat files or voice notes on WhatsApp and produce structured outputs later that are anonymized. A concrete example would be a worker fixing machinery and needing to report the action or outcome onto the WhatsApp and then the system should take that eithter chat or voice note into a structured report that any supervisor or member of the organization can easily view.
+The system will receive chat files or voice notes on WhatsApp and produce structured outputs later that are anonymized. A concrete example would be a worker fixing machinery and reporting the action or outcome on WhatsApp. The system should transform that chat or voice note into a structured report that any supervisor or member of the organization can easily view.
 - **Success criteria:**  
-The system would be useful and reliable if the reports are consistent in its output, being able to accurately anonymize personal information, removing any unnecessary information, and correctly identifying important outcomes.
+The system would be useful and reliable if it writes consistent and useful reports, is able to accurately anonymize personal information, removes any unnecessary information, and correctly identifies important outcomes.
 - **Constraints and risks:**  
 Constraints we have is having good testable data, context window, dealing with AI hallucinations, human accents, typos, and informal language.
 
@@ -71,9 +71,9 @@ Including personal information or the report is missing any important details.
 ### 5. Team responsibilities
 | Member | Primary responsibility | Specific Weekly contribution | Planned next task |
 |---|---|---|---|
-| Christopher Le | Evaluation | 0 | Work on evaluatoin |
-| Davis Kim | Models | 0 | Work on the models |
-| Ali Parpia | Data | 0 | Create data |
+| Christopher Le | Evaluation |  | Work on evaluatoin |
+| Davis Kim | Models |  | Work on the models |
+| Ali Parpia | Data |  | Create data |
 
 ---
 
