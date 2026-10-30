@@ -47,6 +47,7 @@ If the baseline underperforms, then we will try and increase model sizes to see 
 ### 3. Proposed data
 | Dataset/source | Link or access instructions | Purpose | Size / languages | Privacy or usage considerations |
 |---|---|---|---|---|
+| WhatsApp-style-Conversations-Ar-En-Zh-Ko-Logs-Pack | [Link](https://huggingface.co/datasets/ChristianCaballero/WhatsApp-style-Conversations-Ar-En-Zh-Ko-Logs-Pack) | EN, AR, CH, KO | Fictional WhatsApp-style chats; not intended to resemble any real people or events
 | Custom Made |  | Training / Evaluation | EN | Fictional WhatsApp exports; not intended to resemble any real people or events  
 
 We're going to make up our own text dataset, since we could not find a public WhatsApp dataset meant to resemble a professional organization's communications.
