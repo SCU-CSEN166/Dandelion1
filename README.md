@@ -47,7 +47,8 @@ If the baseline underperforms, then we will try and increase model sizes to see 
 ### 3. Proposed data
 | Dataset/source | Link or access instructions | Purpose | Size / languages | Privacy or usage considerations |
 |---|---|---|---|---|
-| Custom Made |  | Training / Evaluation | EN | Fictional WhatsApp exports; not intended to resemble any real people or events |
+| Custom Made |  | Training / Evaluation | EN | Fictional WhatsApp exports; not intended to resemble any real people or events  
+
 We're going to make up our own text dataset, since we could not find a public WhatsApp dataset meant to resemble a professional organization's communications.
 - **Data preparation:**  
 To prepare our data, we will clean it by removing any content labeled irrelevant by a classifier. Then we will anonymize it by identifying any personal information and blacking it out. We will label and annotate data by marking what data is important, irrelevant, and personal. Then split the data into those 3 sections and blacking out all personal information, taking the important information and using it for the output, and removing all unimportant data.
