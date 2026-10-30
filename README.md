@@ -40,7 +40,7 @@ The simplest end-to-end method is fully blacking out any personal information, t
 - **Proposed models/tools:**  
 For text generation: llama 3.1 8B instruct https://huggingface.co/meta-llama/Llama-3.1-8B I selected this because it has a large enough parameter for all the text it will receive and it's an efficient model that can run on the WAVE HPC without taking up too many resources.
 For audio to text: Whisper https://github.com/openai/whisper Whisper is one of the best audio to text transcribers and is accurate.
-For classification: Bart large mnli https://huggingface.co/facebook/bart-large-mnli It's one of the most downloaded and trustworthy classification models. It's also backed by Meta which is a trustworthy name with 1.4 billion parameter which is more than enough for classifying.
+For classification: Bart large mnli https://huggingface.co/facebook/bart-large-mnli It's one of the most downloaded and used classification models on Huggingface. It's also backed by Meta which is a successful name in the AI industry. It has .4 billion parameters, which is more than enough for classifying.
 - **Alternative approach:**  
 If the baseline underperforms, then we will try and increase model sizes to see if the model's are the ones causing this performance as they're doing most of the heavy work or we can change our training data.
 
