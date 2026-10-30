@@ -21,40 +21,59 @@
 **Deliverable during Week 6 Lab:** A project plan (write in this README file) describing your problem formulation, proposed approach, each team member's responsibilities, proposed baseline models with Hugging Face links, proposed evaluation metrics, proposed data with links, and goals for each week.
 
 ### 1. Problem formulation and social impact
-- **Problem:** What specific task are you solving? [Write a precise problem statement.]
+- **Problem:** What specific task are you solving? 
+The task we are solving is taking WhatsApp messages and voice recordings to convert them into a structured report as well as anonymizing any personal information from the user sending information.
 - **Intended users:** Who would use the system, and for what decisions or activities?
+Dandelion Africa is mostly using this system to make reports from this data or any organization who also needs this information. Most of this information is mostly going to be used for reports or having easy to read structured data of any activities that have been done.
 - **Inputs and outputs:** What will the system receive and produce? Give one concrete example.
+The system will receive chat files or voice notes on WhatsApp and produce structured outputs later that are anonymized. A concrete example would be a worker fixing machinery and needing to report the action or outcome onto the WhatsApp and then the system should take that eithter chat or voice note into a structured report that any supervisor or member of the organization can easily view.
 - **Success criteria:** What would make the system useful and reliable?
+The system would be useful and reliable if the reports are consistent in its output, being able to accurately anonymize personal information, removing any unnecessary information, and correctly identifying important outcomes.
 - **Constraints and risks:** [e.g., privacy, missing data, hallucinations, language coverage, human verification]
+Constraints we have is having good testable data, context window, dealing with AI hallucinations, human accents, typos, and informal language.
 
 ### 2. Proposed technical approach
 - **Pipeline:** [List the main steps from input to output.]
+The main steps from input to output depends on if the message is in text or voice note. If it's a voice note, we need to transcribe it first. Then we can classify the the information into personal information, important information, and irrelevant information. Then we can split it off into 3 differnet tasks: anonymizing personal information, structuring important information into reports, and removing irrelevant information.
 - **Baseline(s):** [Describe the simplest end-to-end method you can implement.]
+The simplest end-to-end method is fully blacking out any personal information, taking anything valuable information into an output, and removing irrelevant information. 
 - **Proposed models/tools:** [Name, purpose, and link to each Hugging Face model or other resource.]
+For text generation: llama 3.1 8B instruct https://huggingface.co/meta-llama/Llama-3.1-8B I selected this because it has a large enough parameter for all the text it will receive and it's an efficient model that can run on the WAVE HPC without taking up too many resources.
+For audio to text: Whisper https://github.com/openai/whisper Whisper is one of the best audio to text transcribers and is accurate.
+For classification: Bart large mnli https://huggingface.co/facebook/bart-large-mnli It's one of the most downloaded and trustworthy classification models. It's also backed by Meta which is a trustworthy name with 1.4 billion parameter which is more than enough for classifying.
   - [Model name](https://huggingface.co/models) — [What it will do; why selected]
 - **Alternative approach:** [What will you try if the baseline underperforms?]
+If the baseline underperforms, then we will try and increase model sizes to see if the model's are the ones causing this performance as they're doing most of the heavy work or we can change our training data.
 
 ### 3. Proposed data
 | Dataset/source | Link or access instructions | Purpose | Size / languages | Privacy or usage considerations |
 |---|---|---|---|---|
 | [Name] | [URL](https://huggingface.co/datasets) or other instructions] | [Training/development/evaluation] | [Details] | [Notes] |
-
+We're going to make up our text data since there's no WhatsApp data with relevant information for us to train on.
 - **Data preparation:** [Cleaning, anonymization, annotation, splitting, deduplication, etc.]
+To prepare our data we will clean it with removing any irrelevant information. Then we will anonymize by finding any personal informatoin and blacking it out. We will label and annotate data by marking what data is important, irrelevant, and personal. Then split the data into those 3 sections and blacking out all personal informatoin, taking the important information and using it for the output, and removing all unimportant data.
+
 - **Data limitations:** [What is missing, noisy, or uncertain?]
+Dealing with fully irrelevant data, human errors, and informal language.
 
 ### 4. Proposed evaluation
 | Metric / test | What it measures | How it will be calculated | Target / success criterion |
 |---|---|---|---|
-| [Metric - e.g Accuracy, F1, AoC] | [Quality dimension] | [Method/ Formula] | [Target] |
+| Recall | How many outcomes it correctly repots | Tp/TP+FP | 100 |
 
 - **Evaluation examples:** [How will you build or select a development set?]
+I'll build a development set by taking each input and having a list all the important information for the LLM model to find. 
 - **Human verification:** [If relevant, who will check outputs and how?]
+We will check outputs and the recall score. Depending on how good they are or if they include too much then we'll tweak the model.
 - **Failure cases to watch:** [At least two anticipated risks]
+Including personal information or the report is missing any important details.
 
 ### 5. Team responsibilities
 | Member | Primary responsibility | Specific Weekly contribution | Planned next task |
 |---|---|---|---|
-| [Name] | [Data / models / evaluation / integration / etc.] | [Actual work completed] | [Next action] |
+| Christopher Le | Evaluation | 0 | Work on evaluatoin |
+| Davis Kim | Models | 0 | Work on the models |
+| Ali Parpia | Data | 0 | Create data |
 
 ---
 
