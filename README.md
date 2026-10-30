@@ -72,9 +72,9 @@ Including personal information or the report is missing any important details.
 ### 5. Team responsibilities
 | Member | Primary responsibility | Specific Weekly contribution | Planned next task |
 |---|---|---|---|
-| Christopher Le | Evaluation |  | Work on evaluatoin |
-| Davis Kim | Models |  | Work on the models |
-| Ali Parpia | Data |  | Create data |
+| Christopher Le | Evaluation |  | Create evaluation systems |
+| Davis Kim | Models |  | Prepare models for each stage of processing |
+| Ali Parpia | Data |  | Create synthetic data |
 
 ---
 
