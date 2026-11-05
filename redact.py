@@ -6,7 +6,7 @@ db.compile(
     expressions=[
         r"\b\w+@\w+\.\w+\b",  # Email addresses
         r"(?:\+?\d{1,3})? \(?\d{3}\)? \d{3}[-\s]\d{4}",  # Phone numbers
-        r"\b[A-Z][a-z]\S+\b" # Names
+        #r"\b[A-Z][a-z]\S+\:\b" # Names (disabled for now, too many false positives)
     ],
     flags = [hyperscan.HS_FLAG_SOM_LEFTMOST] * 3,
 )
