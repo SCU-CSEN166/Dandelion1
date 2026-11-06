@@ -15,7 +15,7 @@ def replace_subs(source: bytes, sub: str, start: int, end: int):
     subenc: bytes = sub.encode()
     return source[:start] + subenc + source[end:], len(subenc) - (end - start)
 
-def scan_batch(batch):
+def scan_batch(batch, namemap):
     redacted_texts: list[str] = []
     for text in batch["text"]:
         line_matches = []
@@ -28,7 +28,11 @@ def scan_batch(batch):
             end += offset
             match id:
                 case 2:
-                    bytes_text, offset = replace_subs(bytes_text, '*' * (end-start-2) + ': ', start, end)
+                    name = bytes_text[start:end].decode()
+                    if name not in namemap['map']:
+                        namemap['map'][name] = f"Person{namemap['count']}"
+                        namemap['count'] += 1
+                    bytes_text, offset = replace_subs(bytes_text, namemap['map'][name] + ': ', start, end)
                 case _:
                     bytes_text, offset = replace_subs(bytes_text, '*' * (end-start), start, end)
         
@@ -37,5 +41,6 @@ def scan_batch(batch):
     return {"text": redacted_texts}
 
 def process_dataset_pii(dataset: DatasetDict, batch_size: int = 1000) -> DatasetDict:
-    processed_dataset = dataset.map(scan_batch, batched=True, batch_size=batch_size, load_from_cache_file=False)
+    namemap = {"map": dict(), "count": 0}
+    processed_dataset = dataset.map(lambda batch: scan_batch(batch, namemap), batched=True, batch_size=batch_size, load_from_cache_file=False)
     return processed_dataset

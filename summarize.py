@@ -45,7 +45,14 @@ def summarize_text(text: str, model_name: str, min_length: int, input_block_size
 
     inputs["input_ids"] = torch.cat([encoded_prefix["input_ids"], inputs["input_ids"]], dim=1)
 
-    output = model.generate(**inputs, length_penalty=2.0, num_beams=4, min_length=min_length, early_stopping=True).to(device)
+    output = model.generate(**inputs, min_length=min_length,
+        no_repeat_ngram_size=3,
+        repetition_penalty=1.1,
+        do_sample=True,
+        temperature=0.8,
+        top_p=0.92,
+        top_k=50
+    )
     summary = tokenizer.decode(output[0], skip_special_tokens=True)
 
     return summary
