@@ -84,21 +84,33 @@ Including personal information or the report is missing any important details.
 **Deliverable during Week 7 Lab:** A runnable baseline, setup/run instructions, and 1–2 example inputs and outputs. Update this section with what worked, what failed, and individual contributions.
 
 ### Implementation status
-- **What runs end-to-end now?** [Describe exactly.]
-- **How to run it:** [Commands, dependencies, configuration; refer to Setup below.]
-- **Model(s) and data actually used:** [Names, versions, links, and any changes from the plan.]
+- **What runs end-to-end now?** The program loads a given dataset and scans/redacts personal identifying information following known patterns. For the sake of performance, hyperscan is used instead of the built-in re module. It then passes the text through a sequence-to-sequence model to summarize it. If the input token count is greater than the maximum sequence length, it will split the tokens into blocks and summarize them. This process is repeated with the separate generated summaries until it fits within the maximum sequence length, meaning only a single output sequence is generated. This is the final summary.
+- **How to run it:** Use the following command line arguments. -d is required, and no result will be seen if neither -o nor --input_out are specified. -il should be set based on the model used.  
+-d or --dataset: Name of the dataset to process, either locally stored or from Huggingface  
+-s or --summarizer: Name of the summarization model to use, either locally or from Huggingface  
+-l or --length: Minimum length of the summary  
+-il or --input_length: Maximum input length in tokens that the summarization model can handle  
+-b or --use_blocks: Whether text longer than the max input length should be split and processed in blocks. If this flag is not used, the input will be truncated  
+-o or --output: File to write the output summary to  
+--input_out: File to write the used (redacted) input text to  
+- **Model(s) and data actually used:**  
+WhatsApp-style-Conversations-Ar-En-Zh-Ko-Logs-Pack [Link](https://huggingface.co/datasets/ChristianCaballero/WhatsApp-style-Conversations-Ar-En-Zh-Ko-Logs-Pack)  
+facebook/bart-large-cnn  
+google/flan-t5-large  
 - **Example 1:** Input: [non-sensitive example] → Output: [result]
 - **Example 2:** Input: [non-sensitive example] → Output: [result]
 
 ### Attempts and outcomes
 | Attempt / change | Worked? (Yes / Partly / No) | Evidence (output, metric, link) | What we learned / next step |
 |---|---|---|---|
-| [Attempt] | [Status] | [Evidence] | [Learning] |
+| Use regex matching for identify PII instead of an AI model | Partly | PII with clear formats such as emails and phone numbers are successfully identified. However, names are not so easily identified, as they are difficult to distinguish from regular words. Additionally, redacting names gives the summarizer less context to work with. | Assuming the format of the exported data is known, we can identify and store known usernames, and then search messages for similar words. |
+| Start with small sequence-to-sequence models for summarization rather than big decoder-only models. | Partly | Sequence-to-sequence models tend to copy sentences rather than summarizing them, even with generation parameters meant to prevent this. Additionally, small models with specific training data may hallucinate often. For example, bart-large-cnn often hallucinated that a CNN reporter was present due to being trained only on CNN journalism. | We could use larger sequence-to-sequence models, or switch to instruction-based decoder-only models. |
+| Compress input text by repeatedly processing it in blocks to get around the input size limit | Yes | This successfully generated a final summary containing information about several conversations included in the dataset (provided the summarization model didn't hallucinate or copy sentences verbatim, but that's a separate issue). See summary_example.txt | Currently, splitting can happen in the middle of conversations. It may be better to split based on message dates, so that entire conversations are not separated into different summaries. |
 
 ### Individual contributions during that week
 | Member | What I personally implemented/tested | Result (worked / partly / failed) | Evidence (commit, PR, experiment) | Blocker / next step |
 |---|---|---|---|---|
-| [Name] | [Specific contribution] | [Status] | [Link] | [Next step] |
+| Davis Kim | Redaction and summarization | Worked | Commits through the week of 11/2 | Improve text splitting logic, improve name redaction |
 
 ---
 
