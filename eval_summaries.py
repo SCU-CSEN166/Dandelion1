@@ -38,7 +38,8 @@ def main():
 
     if args.redact:
         from redact import scan_batch
-        dialogues = scan_batch({"text": dialogues})["text"]
+        namemap = {"map": dict(), "count": 0}
+        dialogues = scan_batch({"text": dialogues}, namemap)["text"]
 
     scorer = rouge_scorer.RougeScorer(["rouge1", "rouge2", "rougeL"], use_stemmer=True)
     totals = {"rouge1": 0.0, "rouge2": 0.0, "rougeL": 0.0}
