@@ -1,0 +1,363 @@
+{
+  "model": "facebook/bart-large-cnn",
+  "n": 50,
+  "redact": true,
+  "seed": 42,
+  "mean_scores": {
+    "rouge1": 0.2693,
+    "rouge2": 0.1271,
+    "rougeL": 0.219
+  },
+  "examples": [
+    {
+      "index": 654,
+      "input": "******: Pogba\n****: Pogboom\n******: what a s strike yoh!\n****: was off the seat the moment he chopped the ball back to his right foot\n******: me too dude\n****: hope his form lasts\n******: This season he's more mature\n****: Yeah, Jose has his trust in him\n******: everyone does\n****: yeah, he really deserved to score after his first 60 minutes\n******: reward\n****: yeah man\n******: cool then \n****: cool",
+      "reference": "Richie and Clay saw a very good football game, with one football player chopping the ball back to his foot, which was particularly exciting. Jose has trust in that player. ",
+      "prediction": "Pogba scored his first goal of the season in the 2-1 win. The midfielder has been in impressive form for Manchester United.",
+      "rougeL": 0.11320754716981132
+    },
+    {
+      "index": 114,
+      "input": "*******: Heeyyy ;* whats up\n******: I talked to Jenson, he’s not too happy ;p\n*******: the place sucks??\n******: No, the place is ok, I think, we can go there, it’s about Alene\n*******: typical, dont worry about it\n******: He thinks she may have a depression :[\n*******: nothin new, everyone has it, she needs a doctor then\n******: But she won’t go ;/\n*******: so she’s destroying her life fuck it its not your problem\n******: It is, they’re both my friends!\n*******: you better think what to do if they break up\n******: Ehh yes Ill have a problem ;//\n*******: both blaming each other and talking with you about it, perfect\n******: Alene is just troubled… She’d been through a lot…\n*******: everyone has their problems, the question is are ya doin sth about them\n******: She has problems facing it, don’t be surprised :[\n*******: then it is her problem\n******: You are so cruel at times… o.O\n*******: maybe, for me its just a common sense\n******: Why can’t everyone be just happy???\n*******: youll not understand, you had good childhood, nice parents, you have no idea\n******: Probably, true… Well I can be just grateful o.o\n*******: do that and stop worrying about others, youre way to bautful for that <3\n******: :*:*:*",
+      "reference": "Fatima is worried about Jenson and Alene. Alene has issues. Lincoln doesn't want Fatima to worry about others too much.",
+      "prediction": "Summarize: *******: Heeyyy ;* whats up? I talked to Jenson, he’s not too happy. The place is ok, I think, we can go there, it's about Alene.",
+      "rougeL": 0.125
+    },
+    {
+      "index": 25,
+      "input": "*****: Okay, Kelly! Ur up nxt!\n*****: Me? I don't wanna.\n******: C'mon!\n*******: Yeah! What's yours?\n*****: Fine. It's a sculpture garden in Finnland.\n*****: What's scary about sculptures? Wait! Do they resemble vampires and stuff?\n******: Nah, I'm sure they look rly nice.\n*****: It's not the sculptures, it's the amount of them and their faces!\n*******: Faces? What faces?\n*****: Well, they resemble ppl in different activities like hugging, training, doing sport and so on. But the faces are just morbid and there's like a hundred of them. All staring at you!\n*****: Another one?\n******: Certainly!\n*******: Well, Ollie, ur turn!\n*****: Nagoro village in Japan!\n******: Y?\n*****: Well, maybe it's not scary, but it similar to Kelly's place. It's just creepy as hell.\n*******: Bt y?\n*****: Imagine a village with ppl living in it. And in the same village u have these human-sized figures. And there's more of them than the ppl that actually live there!\n*****: Creepy AH!\n******: WTF?! Y would ppl even do that?\n*******: Idk. Idc. Never. Going. There.\n*****: See! Mine was the worst!\n*******: Bt not the scariest!\n*****: Point taken.\n******: Listen, guys, fun talking to u, bt gotta go. \n*****: Yeah, me too. Bye!\n*******: Bye!\n*****: Cu!",
+      "reference": "Kelly is scared of sculpture garden figures in Finnland, she finds figure's faces morbid. For Ollie it's Nagoro village in Japan, it's creepy. ",
+      "prediction": "\"It's a sculpture garden in Finnland. There's like a hundred of them. They resemble ppl in different activities like hugging, training, doing sport and so on. It's just creepy as hell\"",
+      "rougeL": 0.29999999999999993
+    },
+    {
+      "index": 759,
+      "input": "*******: What are you up to this weekend?\n*******: Not much. Just some work and errands on Saturday, show Saturday night. Day of nothingness on Sundy.\n*******: Sounds good. We are going to visit the German markets this weekend. Birmingham and Manchester both. Sausage overload!\n*******: Ooh, that sounds really good!\n*******: Allegedly there are Christmas things going on but I just go for the sausage and beer!\n*******: What a shocker.\n*******: I know!\n*******: I'll have to try to get there this year. I've not been for ages.\n*******: Oh, yeah, they are good. Try the mulled wine too. That's nice.\n*******: Never had it. Is it served hot?\n*******: Yes, exactly. And lots of spices. Usually a red but sometimes they offer a mulled white.\n*******: I'm good with red.\n*******: Inspired us to make our own at Christmas last year, but nobody else drank it.\n*******: Bummer!\n*******: More for me! But oh the hangover.\n*******: LOL!\n*******: Anyway, that's the plan. Hope you have fun.\n*******: You too! \n*******: Thanks!",
+      "reference": "Camilla has some errands to do on Saturday. Charles is visiting the German markets this weekend. They are talking about Christmas food and drinks.",
+      "prediction": "The pair are going to visit the German markets in Birmingham and Manchester this weekend. They will be having sausage and beer and mulled wine.",
+      "rougeL": 0.3673469387755102
+    },
+    {
+      "index": 281,
+      "input": "****: Have you talked to Miro?\n*****: No, not really, I've never had an opportunity\n*******: me neither, but he seems a nice guy\n******: you met him yesterday at the party?\n****: yes, he's so interesting\n****: told me the story of his father coming from Albania to the US in the early 1990s\n*****: really, I had no idea he is Albanian\n****: he is, he speaks only Albanian with his parents\n*****: fascinating, where does he come from in Albania?\n****: from the seacoast\n****: Duress I believe, he told me they are not from Tirana\n*****: what else did he tell you?\n****: That they left kind of illegally\n****: it was a big mess and extreme poverty everywhere\n****: then suddenly the border was open and they just left \n****: people were boarding available ships, whatever, just to get out of there\n****: he showed me some pictures, like <file_photo>\n*****: insane\n****: yes, and his father was among the people\n*****: scary but interesting\n****: very!",
+      "reference": "Miro speaks Albanian with his parents. His family left Albania illegally in 1990s.",
+      "prediction": "Miro is an Albanian who moved to the U.S. in the early 1990s. Miro's father came from Albania to the US to escape poverty. He spoke only Albanian with his parents.",
+      "rougeL": 0.21739130434782608
+    },
+    {
+      "index": 250,
+      "input": "********: WE ARE GONNA GET MARRIED ❤️❤️\n********: <file_others>\n********: This is our mobile inviation for our wedding.\n********: Invitation*\n*****: Hey. You haven’t sent me any messages for a few years.\n*****: And now you are sending me your wedding invitation \n*****: THROUGH MESSENGER?\n********: .....\n********: Well..\n********: I had no enough time to meet everybody and give this in person.\n********: Hope you understand.\n*****: If you don't have time to give the invitation card in person but expect people go to your wedding\n*****: Shaldona, if so, you are too greedy.",
+      "reference": "Shaldona sends mobile invitations to her wedding, as she has no time to give them in person.",
+      "prediction": "Summarize: WE ARE GONNA GET MARRIED ❤️.",
+      "rougeL": 0.0
+    },
+    {
+      "index": 228,
+      "input": "*****: fancy a drink after work today?\n****: sure!\n*****: Good idea! \n*****: Where? When?\n*****: Maybe in the Pub X at the central station at 5.30?\n****: I may be closer to 6, traffic on my way\n*****: Fine for me.\n*****: See you then, Ladies!\n*****: Bye! see ya :*\n****: :*",
+      "reference": "Emily, Kate and Marta are going to the Pub X at the central station today for a drink.",
+      "prediction": "Summarize: fancy a drink after work today? If so, go to the Pub X at the central station at 5.30. If not, it's closer to 6.",
+      "rougeL": 0.391304347826087
+    },
+    {
+      "index": 142,
+      "input": "*****: heyyyy are you there??\n*****: Yes dear what is it?\n*****: Can you call Ela and tell her i need to talk urgent please pick my call.\n*****: what happened now? an other fight :O\n*****: please tell her\n*****: MAN! you guys... am i some kind of a messenger service here?\n*****: PLEASEEEEEEEEE ?\n*****: ok doing.... but thats the last time.\n*****: Yes like always:P\n*****: Hate you seriously man.\n*****: Thank you\n*****: Done you can call her now.",
+      "reference": "Ela is not taking Harry's phone calls. Cindy calls Ela at Harry's request.",
+      "prediction": "Summarize:  heyyyy are you there?? encompass: Yes dear what is it? encompass: Can you call Ela and tell her i need to talk urgent please pick my call.",
+      "rougeL": 0.13953488372093023
+    },
+    {
+      "index": 754,
+      "input": "***: it's raining!\n*****: I know, just started...\n***: r we going? we will be wet\n*****: maybe wait a little? see if stops\n***: ok. let's wait half h and than see\n*****: god idea, I call u then\n***: great :)",
+      "reference": "It's raining, so Val and Candy will wait half an hour before they go.",
+      "prediction": "Summarize: It's raining!",
+      "rougeL": 0.31578947368421056
+    },
+    {
+      "index": 104,
+      "input": "********: Honey\n********: Are you still in the pharmacy?\n****: Yes\n********: Buy me some earplugs please\n****: How many pairs?\n********: 4 or 5 packs\n****: I'll get you 5\n********: Thanks darling",
+      "reference": "Maya will buy 5 packs of earplugs for Randolph at the pharmacy.",
+      "prediction": "Summarize: Are you still in the pharmacy? Do you need earplugs?",
+      "rougeL": 0.17391304347826086
+    },
+    {
+      "index": 692,
+      "input": "****: Hey, Facebook is constantly non stop suggesting Patrick\n****: Hahahahaha \n****: I think I have to catch a bit of your approach\n****: He's a god. What do you mean...?\n****: I have to learn how to transfer from hating men to fucking them haha\n****: (Y)\n****: as soon as possible\n****: Haha! Yeah. I did it, you're right. But i worked on it hard after a huge heartbreak\n****: <file_gif>\n****: (Y) currently i like men. you have to be chilled with them ;)\n****: <file_gif>\n****: :D maybe its a mistake... i dont know. Lets organize workshops on that :D\n****: I only like one type :D yes plz do it haha\n****: Done! but maybe you should chill a bit, look around for ather types ...and see what happens\n****: I only dont what my mood depend so much on other people\n****: I know! I know it well!\n****: this renting case is eating me\n****: you have to isolate one bit inside that will be always independent\n****: we have to meet, crazy girl!\n****: for sure. if youre homeless i will take under my roof\n****: between the guyshaha\n****: we ll find something\n****: <3",
+      "reference": "Tina has to learn Demi's approach how to transfer from hating men to dating them.",
+      "prediction": "\"I have to learn how to transfer from hating men to fucking them\" \"I only like one type\" \"If youre homeless i will take under my roof\"",
+      "rougeL": 0.4651162790697674
+    },
+    {
+      "index": 758,
+      "input": "*****: Has anybody received the grant yet?\n******: no, not yet\n******: I haven't checked even\n*****: I'm completely broke\n*****: checking my bank account every hour\n*****: but nothing's happening there\n******: lol\n******: be patient. If you need money I can lend you some, don't worry\n*****: Thanks, I hope they'll arrive any minute",
+      "reference": "Tomas, Sierra and Jeremy have still not received the grant. Tomas is broke and is checking his bank account every hour. Sierra offers to lend him some money.",
+      "prediction": "Summarize: Has anybody received the grant yet?",
+      "rougeL": 0.17142857142857143
+    },
+    {
+      "index": 558,
+      "input": "*****: Remember we are seeing the wedding planner after work\n*****: Sure, where are we meeting her?\n*****: At Nonna Rita's\n*****: Can I order their seafood tagliatelle or are we just having coffee with her? I've been dreaming about it since we went there last month\n*****: Haha sure why not\n*****: Well we both remmber the spaghetti pomodoro disaster from our last meeting with Diane\n*****: Omg hahaha it was all over her white blouse\n*****: :D\n*****: :P",
+      "reference": "Blair and Chuck are going to meet the wedding planner after work at Nonna Rita's. The tagliatelle served at Nonna Rita's are very good.",
+      "prediction": "Summarize: Remember we are seeing the wedding planner after work. Where are we meeting her?",
+      "rougeL": 0.3414634146341463
+    },
+    {
+      "index": 89,
+      "input": "***: Ben. We've decided. 2pm in the Oval Room.\n***: Ok, I'll be there\n***: Take all your papers, it's going to be a fight! And ********: take no prisoners, shoot to kill!\n***: hahaha, we have to win this battle.\n***: We will, the justice is on our side.",
+      "reference": "Tom will meet Ben in the Oval Room at 2pm and tells him to bring the papers. ",
+      "prediction": "Summarize: ***: Ben. We've decided. 2pm in the Oval Room.",
+      "rougeL": 0.37037037037037035
+    },
+    {
+      "index": 604,
+      "input": "******: How was the presentation?\n****: very good\n******: yes, we had a good feedback\n******: how many people came to listen to you?\n******: 3 but we new it will be very cosy, friendly thing\n******: sometimes a small but interested audience is better than random bored people\n****: exactly",
+      "reference": "Kate, Milena and Regina's presentation went well. Three people came to listen to them.",
+      "prediction": "Summarize: How was the presentation? How many people came to listen to you?",
+      "rougeL": 0.42857142857142855
+    },
+    {
+      "index": 432,
+      "input": "******: Hey do you know any tattoo parlors over here with English speaking employees?\n*****: Oh there's Warsaw ink\n******: the name sounds neat... have you had a tattoo done there?\n*****: nope but my gf has\n******: got a pic?\n*****: <file_photo>\n******: wow that looks amazing\n******: how much did she pay?\n*****: it was a 1000\n******: fuck\n******: let me just get a tatttoo back in colombia then, thx",
+      "reference": "Javier was initially eager to have a tatoo done at Warsaw Ink but the price turned out to be too high. Javier decided to have a tatoo done in Colombia.",
+      "prediction": "Summarize: Hey do you know any tattoo parlors over here with English speaking employees?",
+      "rougeL": 0.0
+    },
+    {
+      "index": 32,
+      "input": "****: Cocktails later?\n***: YES!!!\n***: You read my mind...\n****: Possibly a little tightly strung today?\n***: Sigh... without question.\n****: Thought so.\n***: A little drink will help!\n****: Maybe two!",
+      "reference": "Jack and May will drink cocktails later.",
+      "prediction": "Summarize: ****: Cocktails later?digitally.com.",
+      "rougeL": 0.3333333333333333
+    },
+    {
+      "index": 30,
+      "input": "****: hey, im kinda broke, lend me a few box\n******: okay, give me an hour, im at the train station\n****: cool, thanks",
+      "reference": "Mary ran out of money. Carter is going to lend her some in an hour.",
+      "prediction": "Summarize: ****: hey, im kinda broke, lend me a few boxettes.******: okay, give me an hour, im at the train station.****: cool, thanks.",
+      "rougeL": 0.16216216216216214
+    },
+    {
+      "index": 95,
+      "input": "***: OMG, I can't get into the salon until the 6th!\n****: What? Why?\n***: They're just too busy. I'm going to be gray! LOL!\n****: Get you a touch-up kit at Tesco!\n***: Gonna have to!",
+      "reference": "Flo cannot get an appointment at the salon until the 6th. Flo worries she's going to be gray. Flo will have to get a touch-up kit at Tesco.",
+      "prediction": "Summarize: OMG, I can't get into the salon until the 6th!",
+      "rougeL": 0.28571428571428575
+    },
+    {
+      "index": 223,
+      "input": "*******: I went to the second hand shop downtown \n*****: Cool\n*******: What did you get?\n*******: Lots of stuff\n*******: A table, six chairs, a vase, a pile of clothes\n*****: That's really a lot of stuff :-)\n*******: send us pictures\n*******: <photo_file>\n*******: <photo_file>\n*******: Beautiful table\n*******: Is it wood?\n*******: yes, oak \n*******: Awesome\n*******: <photo_file>\n*****: These are the clothes?\n*****: I love the black dress\n*******: It's absolutely beautiful\n*******: As soon as I saw it I knew it would be mine\n*******: I'm so happy with what I bought\n*******: And the best is I paid only 70 euros for all of that!! ",
+      "reference": "Jessica bought a table, six chairs, a vase and a pile of clothes and the second hand shop downtown. She paid 70 euros for everything. ",
+      "prediction": "\"I went to the second hand shop downtown\" \"I paid only 70 euros for all of that!!\" \"I love the black dress\"",
+      "rougeL": 0.3829787234042554
+    },
+    {
+      "index": 238,
+      "input": "*****: Are you going to be at school?\n*********: Not tomorrow. I am not well.\n*****: Oh noes! What happened?\n*********: Got the flu, I think.\n*****: what's your temperature?\n*********: Not high, I'm not running a fever or anything\n*****: Are you eating ok?\n*********: Yeah. Just blocked nose, sore throat. Tired.\n*****: Sounds like you've got a cold. You need anything?\n*********: I could do with some Theraflu.\n*****: OK, I think we've still got some sachets, should be in date. I'll drop them through your letterbox later on.\n*********: Yeah. Don't call in because I'll feel bad if you catch this cold off me.\n*****: I think I probably had it already, but you might be sleeping.\n*********: If the light in my room is on, call if you want.",
+      "reference": "Christine is sick and won't come to school tomorrow. Annie will leave Theraflu sachets in a mailbox. Christine doesn't want to get her sick.",
+      "prediction": "Summarize: Are you going to be at school? I am not well. What happened? I've got the flu.",
+      "rougeL": 0.08888888888888889
+    },
+    {
+      "index": 517,
+      "input": "*****: I’ve landed in every airport in Europe today - completely whacked out dude.\n*****: Where are you now?\n*****: Waiting in Luxembourg now.\n*****: Have fun dude.\n***: Only because you love flying so much 😉\n*****: weather was good for flying everywhere 🙂 Otherwise it would have been trains everywhere 🙂\n***: Mario  be safe bro\n*****: You too bro 🙂",
+      "reference": "Mario is waiting on the airport in Luxemburg now.",
+      "prediction": "Summarize: I’ve landed in every airport in Europe today - completely whacked out dude.",
+      "rougeL": 0.17391304347826086
+    },
+    {
+      "index": 616,
+      "input": "****: dude, I just pulled a TOTW\n****: my first this year!\n***: grats!\n***: gonna sell it?\n****: yeah\n****: I'll try him in one or two matches\n****: he's not a good fit for my squads\n***: you'll have plenty of coins to buy someone that fits\n****: that's the plan\n****: I got lucky with this one\n***: my pull luck sucks this year\n***: not a single great player \n****: you're good at the game\n****: you don't need help :P\n***: I like shiny things :P",
+      "reference": "Jake has got his first TOTW this year. Tom doesn't have a great team. ",
+      "prediction": "Summarize: dude, I just pulled a TOTW: my first this year!",
+      "rougeL": 0.23076923076923075
+    },
+    {
+      "index": 27,
+      "input": "****: Hey Bella, What happened today in boss's room?? Was he angry??\n*****: NO NO!!! He wasn't angry at all.. He actually appreciated on our brave deccision to dismiss the request of client..\n****: REALLY!! He appreciated this decision..\n*****: Yeah he really did.. I too was astounded by his reaction...\n****: What could possibly lead to this?? I mean , they were potential clients...\n*****: What he told me was that he was looking forward to bring in new clients which were our current client's competitor..\n****: Oh that could possibly be the reason.Well anyways you got appreciation xD congo\t\n*****: hahaha Blessing in disguise xD",
+      "reference": "Bella and Eric dismissed a request of a client. Their boss appreciated the decision. He brings in new clients.",
+      "prediction": "Summarize: What happened today in boss's room?? Was he angry?? He wasn't angry at all.. He actually appreciated on our brave deccision to dismiss a client.",
+      "rougeL": 0.1276595744680851
+    },
+    {
+      "index": 574,
+      "input": "******: guys did u watch Chelsea game\n*****: no\n*****: nah, i was busy all afternoon\n******: Higuain scored twice! so happy for him\n******: I know it was just Huddersfield, but finally something positive happened\n*****: having a striker makes a difference\n******: yup\n*****: but cmon huddersfield is abysmal\n******: don't be like that, im happy for the team, maybe this will be a turning point\n*****: no, I don't think so\n*****: ha good luck with that",
+      "reference": "Chelsea won a game with Huddersfield this afternoon. Higuain scored twice. Damian's happy about it and he hopes it will be a turning point for Chelsea. ",
+      "prediction": "Higuain scored twice as Chelsea beat Huddersfield 2-0. Twitter reacted to the game with a mixture of praise and criticism.",
+      "rougeL": 0.16666666666666666
+    },
+    {
+      "index": 203,
+      "input": "****: I spent an amazing night with this guy\n****: What's his name?\n****: Thomas\n****: Is he English?\n****: He is Romanian, but from an extremely rich family, it seems\n****: What does he do in London?\n****: LSE\n****: of course, so predictable \n****: Hahah, but I expected him to be more banal and boring\n****: but?\n****: to be more mediocre...\n****: in size, in passion or in wallet?\n****: In everything. I've had so much pleasure that I have a headache\n****: I'm glad to read that. You deserved some fun after the last weeks.\n****: haha, I agree!",
+      "reference": "Lily spent an amazing night with Thomas. Thomas is Romanian and comes from a very rich family.",
+      "prediction": "\"I've had so much pleasure that I have a headache,\" says the author.",
+      "rougeL": 0.06451612903225808
+    },
+    {
+      "index": 733,
+      "input": "******: How's your weekend?\n*****: Fine I guess...\n******: Doesn't sound like you're enjoying it\n*****: Ehh. My parents are having a fight over where should we eat\n*****: And honestly I don't event want to eat with them anymore\n******: I'm sorry\n*****: Yup. Me too.\n******: Call me when you get back.\n******: I've got something to tell you, and I'm sure you're gonna piss rainbows\n*****: Hahaha. I can see the giraffe from Skittles comercial :D\n******: Sth like that",
+      "reference": "Julia will call Ronald when she gets back. He has something to tell her.",
+      "prediction": "\"I don't event want to eat with them anymore,\" says the boy.",
+      "rougeL": 0.07407407407407408
+    },
+    {
+      "index": 665,
+      "input": "******: Are you watching the game?\n*****: No I am head to work : ( \n******: Oh okay",
+      "reference": "James is heading to work so he's not watching the game.",
+      "prediction": "Summarize: Are you watching the game? No I am head to work.",
+      "rougeL": 0.25
+    },
+    {
+      "index": 718,
+      "input": "****: After much thought I’ve decided that my spirit animal is a tortoise. Apparently everyone has one now, I only found out about this recently. Tbh I felt lost, like who even am I? After many days of thinking about I finally decided that I am in fact a tortoise.\n*******: That would explain a lot.\n****: You would be a wasp.\n*******: Are you sure you're a turtle? Maybe you're just haunted.",
+      "reference": "Sean believes his spirit animal is a tortoise and Tiffany's could be a wasp. ",
+      "prediction": "The author has decided that his spirit animal is a tortoise. He found out about this recently.",
+      "rougeL": 0.37500000000000006
+    },
+    {
+      "index": 429,
+      "input": "******: Have you heard a guy got beaten and mugged on campus?\n******: Oh, man is he ok?\n****: Do they have any idea who did it?\n******: They're gonna give an official statement about. There's also gonna be an article in the paper. As far as I know the assailant had a mask on.\n******: And what about the beaten guy?\n******: He's in the hospital, but it seems like he'll be fine.\n****: You think it was a student?\n******: Who knows what those jocks are capable of.\n****: They could do it just for fun.\n******: On the other hand its easy to get on campus without being detected\n****: There are cameras.\n******: If your masked it don't matter. You know how those security guards are\n******: They don't give a fuck\n****: True that\n******: Hope they catch the guy soon",
+      "reference": "A person was beaten and mugged on campus and had to be hospitalised. The attacker wore a mask. An official statement will be released, along with a newspaper article. Truman and Rodney think the campus security is subpar, even though there are cameras around.",
+      "prediction": "A student was beaten and mugged on campus. The assailant was wearing a mask.",
+      "rougeL": 0.3448275862068965
+    },
+    {
+      "index": 225,
+      "input": "*******: U both at home?\n******: No. I've just got ur msg. Why did u ask about it?\n*******: No reason. Keep my pasta in the microwave\n******: I haven't cooked anything",
+      "reference": "Lucian is not at home. Desiree wants Lucian to keep her pasta in the microwave.",
+      "prediction": "Summarize: U both at home? No. Why did u ask about it? Keep my pasta in the microwave.",
+      "rougeL": 0.42424242424242425
+    },
+    {
+      "index": 459,
+      "input": "****: Hello dear friends, here something to cheer you up on a cold day.\n****: <file_gif>\n******: LOL\n******: Hi there in the tropics! How are you doing?\n****: Staying healthy? Everything's ok?\n******: We are fine, thanks. Everything here is ok. At night the temps fall to -3. Nice white ground frost in the morning.\n******: <file_photo>\n****: Looks so pretty! But we're happy to give these views a miss for a while :)\n******: On Sunday we had a walk around the summit of Belchen - in icy wind but by brilliant sunshine. I think we even got some suntan!\n******: <file_photo>\n****: Gosh! That's pretty! You'll hear from us soon. Take care!\n******: You too!",
+      "reference": "The temperatures where Thomas stays are -3 at night. There is frost in the morning. Zoey is in the tropics. Thomas had a walk around Belchen's summit on Sunday.",
+      "prediction": "Summarize is a weekly, offbeat look at what's going on in the UK. This week, we take a look at the weather in the south of England.",
+      "rougeL": 0.17241379310344826
+    },
+    {
+      "index": 603,
+      "input": "*****: something happened yesterday, you need to come and see\n****: is it bad?\n*****: you better come home\n****: On my way",
+      "reference": "Brook wants Gyle to come and see what happened yesterday. ",
+      "prediction": "Summarize: *****: something happened yesterday, you need to come and see. is it bad?",
+      "rougeL": 0.34782608695652173
+    },
+    {
+      "index": 284,
+      "input": "***: Guys, so are we going out on Sat?\n***: I'm ready when you are\n*****: I'm OK too, in the centre right?\n***: I'm out guys sorry. \n***: come on Tom, what's wring this time\n***: told ya before. party at in-laws\n*****: always the same story right\n******: right guys, so what time?\n***: start @8? finish. 8 if we're lucky\n***: yeah, i need to be home at 2 and ready to drive on Sunday noon\n*****: so you takin it easy this time\n******: i guess i'd have to as well\n***: guys you sound like 60 yos\n*****: Tim, are the last two standing or what?\n***: i gather\n***: you two will also grow up one day. ",
+      "reference": "Dan,Tim, Chris and Martin will meet at 8. Dan and Martin will take it easy this time. Tom can't make it as he has a party at in-laws.",
+      "prediction": "Summarize: 'I'm ready when you are,' says Tom. 'I need to be home at 2 and ready to drive on Sunday noon,' says Tim.",
+      "rougeL": 0.07142857142857142
+    },
+    {
+      "index": 6,
+      "input": "***: Know any good sites to buy clothes from?\n******: Sure :) <file_other> <file_other> <file_other> <file_other> <file_other> <file_other> <file_other>\n***: That's a lot of them!\n******: Yeah, but they have different things so I usually buy things from 2 or 3 of them.\n***: I'll check them out. Thanks. \n******: No problem :)\n***: How about u?\n******: What about me?\n***: Do u like shopping?\n******: Yes and no.\n***: How come?\n******: I like browsing, trying on, looking in the mirror and seeing how I look, but not always buying.\n***: Y not?\n******: Isn't it obvious? ;)\n***: Sry ;)\n******: If I bought everything I liked, I'd have nothing left to live on ;)\n***: Same here, but probably different category ;)\n******: Lol\n***: So what do u usually buy?\n******: Well, I have 2 things I must struggle to resist!\n***: Which are?\n******: Clothes, ofc ;)\n***: Right. And the second one?\n******: Books. I absolutely love reading!\n***: Gr8! What books do u read?\n******: Everything I can get my hands on :)\n***: Srsly?\n******: Yup :)",
+      "reference": "Payton provides Max with websites selling clothes. Payton likes browsing and trying on the clothes but not necessarily buying them. Payton usually buys clothes and books as he loves reading.",
+      "prediction": "Summarize: Know any good sites to buy clothes from? If so, send us a picture. If not, send a picture of yourself.",
+      "rougeL": 0.07692307692307691
+    },
+    {
+      "index": 777,
+      "input": "****: Are u free now? Could u help me with that thesis?\n*******: I'm sick won't be of much help sorry. I've got a cold and I'm sneezing like a little bitch every 2 seconds\n****: Oh... hmm ok. Hope u will get better soon...",
+      "reference": "Ainsley is sick, so she's not able to help Jane with her thesis now.",
+      "prediction": "Summarize: Are u free now? Could u help me with that thesis?",
+      "rougeL": 0.22222222222222224
+    },
+    {
+      "index": 163,
+      "input": "******: Can you talk?\n*****: Not really, anything important?\n******: Not that much.\n*****: I'll be free at 5\n******: i'll you then",
+      "reference": "Simon will talk to Adrian in 5 minutes.",
+      "prediction": "Summarize: Can you talk? Not really, anything important?",
+      "rougeL": 0.125
+    },
+    {
+      "index": 714,
+      "input": "******: Did you get your grades yet?\n****: Yeah. My whole semester is screwed up now.\n******: Wait whaaat? Why?\n****: Well, I bombed my economy final and ended up with a bad score..\n******: Ouch. That must hurt :/ \n****: Well, it's my fault because I didn't study as much as I should have.\n******: Why don't you re-take the class next year?\n****: That's what I plan on doing unless I keep screwing up. How did you do this semester?\n******: I didn't do that bad. I ended up with a reasonable grade.\n****: Well someone did his homework :p\n******: I just pay attention during class, I don't study that much actually.\n****: Classes are boring, can't pay attention for too long...\n******: Anyway, why didn't you study for the economy final? \n****: Let's just say I screwed up more than my econ class.\n******: What happened?\n****: I started playing StarCraft and ended up wasting a lot of time.\n******: Oooohh I know that game but you better stop slacking off.\n****: You're right. I'm not going to play games during school anymore.\n******: You can play them, just don't loose focus and study for the exams :p\n****: Let's see how it goes xD",
+      "reference": "Bart didn't do well this semester because he didn't study much. He played a lot fo StarCraft. Adrian did well thanks to paying attention in class",
+      "prediction": "Summarize: Did you get your grades yet? encompass: Yeah. My whole semester is screwed up now.",
+      "rougeL": 0.045454545454545456
+    },
+    {
+      "index": 348,
+      "input": "*****: going home?\n****: not yet\n*****: please be back before 11 pm\n****: ok",
+      "reference": "Lisa isn't going home yet. Daisy wants her to be back before 11 p.m.",
+      "prediction": "Summarize: *****: going home? Not yet. Please be back before 11 pm.",
+      "rougeL": 0.5185185185185185
+    },
+    {
+      "index": 159,
+      "input": "***: Fuck you, you pimp\n****: What?\n***: Fuck you man, I want my money back\n****: Was your account hacked by some prankster?\n***: No, I'm the prankster, just having a laugh at your expense\n****: Well, fuck you too then XD",
+      "reference": "Ken is trying to play a prank on Greg.",
+      "prediction": "Summarize: \"I want my money back\" \"I'm the prankster\"",
+      "rougeL": 0.0
+    },
+    {
+      "index": 220,
+      "input": "****: Hello Peter. What have you been doing off late?\n*****: Bit busy with work.\n****: Too much of work, huh?\n*****: Not really, I’ve been working out\n****:  Ohh, trying to get in shape?\n*****: Nah, I don’t have much of weight to lose, just want to improve my health.\n****:  That’s a good thought. I was also thinking of working out a bit. What do you do? Do you go to a Gym?\n*****: Yes, I hold a membership with the one near our office.\n****: Which exercises do you do regularly?\n*****: I do weights and run on the treadmill.\n****:  Besides exercises, I think I need to eat better to help me keep in shape.\n*****: Another major requirement for good health is sleep. On an average one requires at least 7-8 hours of sleep.\n****:  There are a lot of things we can do to stay healthy.\n*****: Yes. One needs to maintain a regime to stay healthy for a long term.",
+      "reference": "Peter has been working out at the gym near their office lately to improve his health. Lisa is considering working out and eating better to be healthier.",
+      "prediction": "Peter says he is trying to get in shape, but doesn't have much weight to lose. He does weights and runs on the treadmill to stay in shape.",
+      "rougeL": 0.14285714285714285
+    },
+    {
+      "index": 781,
+      "input": "***: Is the dress ready?\n****: Not yet\n***: Hope to have it soon",
+      "reference": "Cael lets Mae know that the dress isn't ready yet.",
+      "prediction": "Summarize: Is the dress ready? Is it ready? Not yet.",
+      "rougeL": 0.380952380952381
+    },
+    {
+      "index": 344,
+      "input": "*****: Hi guys have you heard about Natalie?\n***: No. What about her?\n****: You're such a gossip girl, Sally!\n*****: Come on! I'm sure you're all curious.\n***: I am. \n*****: Relax Jane, what's your problem?!\n****: She told us in confidence, I don't think we should share it with others.\n****: Now I'm also curious\n*********: Tell us! \n*********: Is she pregnant? \n*****: 💣💣💣\n*****: Guess who's the father!!!\n*********: I knew it!\n*********: Is it Mike?\n*****: Dave!!! \n*********: WHAT????\n****: That's insane! ",
+      "reference": "Natalie is pregnant with Dave. Jane didn't think Sally should share it with others as Natalie told them that in confidence. Henriette and Greg are surprised that the father is Dave not Mike.",
+      "prediction": "Summarize: Have you heard about Natalie? What about her? You're such a gossip girl.",
+      "rougeL": 0.04081632653061225
+    },
+    {
+      "index": 94,
+      "input": "******: i can't talk rn, i'm rly busy\n******: can i call u back in about 2 hours?\n******: Not really, I'm going to a funeral.\n******: I'll call you tonight, ok?\n******: sure\n******: whose funeral is it?\n******: My colleague's, Brad.\n******: I told you about him, he had a liver cancer.\n******: i'm so sorry man, i hope u're ok\n******: i'll call u at 8 pm",
+      "reference": "Elliot can't talk to Jordan now, he's busy. He'll call him back at 8 pm. Jordan is going to Brad's funeral. He had liver cancer.",
+      "prediction": "Summarize:  can't talk rn, i'm rly busy. Can you call back in about 2 hours?",
+      "rougeL": 0.2608695652173913
+    },
+    {
+      "index": 389,
+      "input": "*******: Hi, just a quick question. Do you know if the readings for the next session of Stephen’s seminar are in the print shop?\n****: No idea, sorry\n**********: The only thing I know is that they were not yet there on Monday\n******: Yer, I’ve made the mistake of going on Monday as well and I can confirm the texts were not there and the staff was as rude as always\n*******: Sounds familiar\n****: I’ll go tomorrow morning and let you know if the texts are available\n****: I can’t buy the copies for you because they never have enough at hand but I’ll just ask them to print more for later\n**********: No worries\n******: Yeah, just let us know if they’re ready, that’s a huge favour already\n****: Cool. Will do! xx",
+      "reference": "Chae-yeong and Arthur inform Mariana that the readings for the next session of Stephen's seminar weren't available in the print shop on Monday. Rita decides to go and chcek if the situation's changed tomorrow and she'll let everyone know.",
+      "prediction": "Summarize: Do you know if the readings for the next session of Stephen’s seminar are in the print shop?",
+      "rougeL": 0.4375
+    },
+    {
+      "index": 99,
+      "input": "*****: I think you were right yesterday. \n*****: What about? I'm right about most things :P\n*****: Yeah, whole you ;)\n*****: About taking the blame etc. \n*****: Okey, I remeber. We'll talk later?\n*****: With pleasure. I'll call you when I get home.",
+      "reference": "According to Jacky, David did the right thing taking the blame. They will talk when Jack comes back home.",
+      "prediction": "Summarize: I think you were right yesterday. I'll call you when I get home.",
+      "rougeL": 0.17647058823529413
+    },
+    {
+      "index": 367,
+      "input": "*****: hiya the dishwasher has turned up\n***: good did they install it for you\n*****: yes they did a good job\n*****: <file_photo>\n***: looks really nice\n*****: yes it does its nice and quiet\n***: is it a 12 place setting one?\n*****: I think so, not that I ever have 12 for dinner lol\n***: not but you dont have to put it on every day\n*****: no every other\n***: yes I'm glad you are pleased with it xx\n*****: I am thanks mum xxx",
+      "reference": "Steve is happy that he got a new dishwasher installed.",
+      "prediction": "Summarize:  hiya the dishwasher has turned up. Do you have a 12 place setting one?",
+      "rougeL": 0.08
+    },
+    {
+      "index": 352,
+      "input": "*****: <file_gif>\n*****: Why are you so sad? Something’s happened?\n*****: I don’t want to talk about it…\n*****: Cheer up! Tomorrow’s another day 😊\n*****: <file_video>\n*****: Have you seen it? It’s viral on the internet\n*****: Nope, but it’s very funny 😊\n*****: <file_gif>",
+      "reference": "Cindy is sad, but doesn't want to talk about the reason. Ellie hasn't seen the funny video that went viral. ",
+      "prediction": "Summarize: Why are you so sad? Something's happened.",
+      "rougeL": 0.06451612903225805
+    },
+    {
+      "index": 618,
+      "input": "****: Hi darling, did you get your birthday card and money on time?\n******: hello Nanna! Thanks for the £20. Sorry I didn't ring you before.\n****: you still like Thomas the Tank engine don't you? I picked it specially.\n******: Yes, Nanna. I will always love him! Next time, get me a football one or something. I mean, I'm 11 now!\n****: I know, you are so grown up. Love you xxxxx\n******: Love you, Nan xx",
+      "reference": "Cass sent her grandson Jordan £20 and a birthday card for his 11th birthday. ",
+      "prediction": "Summarize: Did you get your birthday card and money on time?",
+      "rougeL": 0.16
+    },
+    {
+      "index": 270,
+      "input": "******: I'm outside the house\n******: I forgot my keys...\n*******: 💩\n*******: I'll be home at 10-11\n*******: I'm coming back even later\n******: Oh no...\n******: I'll wait in the coffee shop",
+      "reference": "Conrad can't enter the house because he forgot his keys. Since Rebecca and Tiffany are coming back late, he'll wait in the coffee shop. ",
+      "prediction": "Summarize: I'm outside the house. I forgot my keys...",
+      "rougeL": 0.2222222222222222
+    }
+  ]
+}
