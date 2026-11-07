@@ -1,0 +1,620 @@
+{
+  "summarizer": "google/flan-t5-large",
+  "nli_model": "facebook/bart-large-mnli",
+  "dataset": "CarperAI/openai_summarize_tldr:test",
+  "n": 20,
+  "rouge": {
+    "rouge1": {
+      "recall": 0.08270054504932949,
+      "precision": 0.2252065907948261
+    },
+    "rouge2": {
+      "recall": 0.016466349697773847,
+      "precision": 0.05277777777777778
+    },
+    "rougeL": {
+      "recall": 0.05941463919247969,
+      "precision": 0.16447209653092004
+    }
+  },
+  "nli_outcome_recall": 0.0,
+  "nli_outcome_recall_per_post": 0.0,
+  "examples": [
+    {
+      "post": "Person0: r/relationships\nPerson1: Me(21m) and one of my closest friends (21f) have become interested in each other. She's not single\nPOPerson2:  I've always been absolutely disgusted by the concept of cheating. But recently this girl who I've been friends with since 3rd grade told me she's regretted not being in a relationship with me while we were both in high school. I like her, she likes me.\n\nShe's also in a long term relationship, with a guy I know fairly well.\nShould I just tell her I won't get emotionally invested until she decides what she's going to do about her bf? It's not fair to her, and especially not to him to act like we are.\n\nIf we dated it would be 2 hours long distance, not much is going to change that. I'm just looking for an outlet to talk to people about this.\nPerson3: ",
+      "reference": "a very long lasting friendship has suddenly become something more, but the girl has a bf. If we dated it would be long distance. I have no idea what to do.",
+      "prediction": "My boyfriend broke up with me and I didn't know it.",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.06451612903225806,
+          "precision": 0.16666666666666666
+        },
+        "rouge2": {
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "recall": 0.03225806451612903,
+          "precision": 0.08333333333333333
+        }
+      },
+      "facts": [
+        {
+          "fact": "a very long lasting friendship has suddenly become something more, but the girl has a bf.",
+          "found": false
+        },
+        {
+          "fact": "If we dated it would be long distance.",
+          "found": false
+        },
+        {
+          "fact": "I have no idea what to do.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person0: r/relationships\nPerson1: Me [21 M] with my girlfriend [18F] of 4 months, she was raped, unsure how to even feel a month after\nPOPerson4:  the end of last month my girlfriend was raped by an acquaintance, she told me the next day about it, and has sought help for it too. I was there for her, to talk to, to do whatever I could to help. And after a few weeks, she had started feeling a bit better. She was more comfortable with being in public, with being physically close to me, things felt like they were looking up. \n\nThis week she went in to get tested and all that, and now after that, she doesn't want to be anywhere close to me, half the time doesn't even want to hold a hand. After things were looking up, I just feel devastated, I feel like a bad person for caring so much about what I'm getting, or not getting, but it's the feeling deep down. We had panned to spend this weekend together, but will probably only be for a few hours instead of two days. \n\nI feel unwanted and pushed away, I feel more like a friend than her boyfriend. I'm an affectionate person by nature, so being pushed away from that hurts. I hate being associated with what happened, that me touching her can bring those feelings up. \n\nI can feel motivation and drive slipping away from various parts of my life more and more. I love her, I want her to feel better more than anything, but it feels like there's nothing I can do, and that I'm becoming less and less of a boyfriend to her.  \n\nWhat do I even do? How do I help her, can I help her? Should I even still be in it?\nPerson3: ",
+      "reference": "Girlfriend was raped, was making progress, but still feels like I'm more of a friend than anything. Don't feel close anymore.",
+      "prediction": "@avbryaneo It's just a normal thing, I know.",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.08695652173913043,
+          "precision": 0.2222222222222222
+        },
+        "rouge2": {
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "recall": 0.043478260869565216,
+          "precision": 0.1111111111111111
+        }
+      },
+      "facts": [
+        {
+          "fact": "Girlfriend was raped, was making progress, but still feels like I'm more of a friend than anything.",
+          "found": false
+        },
+        {
+          "fact": "Don't feel close anymore.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person0: r/relationships\nPerson1: Me [27 M] with my girlfriend [25 F] of 3.5 years, are having a tattoo problem\nPOPerson5: ank you so much everyone! During my process of seeing things from a different view I sometimes come across an issue that I still see \"the old way\" and need help to see it differently. I just got off the phone with the prettiest woman in the world and told her about my epiphany - thanks to you all. It basically boils down to the fact that I would rather preserve her persona and who she really is rather than preserve her body the way I want to. She is amazing and very patient with me through this process and it made her very happy to hear my new view of things. She decided to wait until I get there to get it so that I can be there by her side and we will have that positive connection to the tattoo. That, and I may get one of my own!\n\nYou are all amazing, thank you again so much for your insight!\nPerson3: ",
+      "reference": "Girlfriend wants a tattoo, I don't like the idea. Need help to change my view so I feel better about it or find a way to compromise.",
+      "prediction": "r/fun/fm/",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rouge2": {
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "recall": 0.0,
+          "precision": 0.0
+        }
+      },
+      "facts": [
+        {
+          "fact": "Girlfriend wants a tattoo, I don't like the idea.",
+          "found": false
+        },
+        {
+          "fact": "Need help to change my view so I feel better about it or find a way to compromise.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person0: r/relationships\nPerson1: My [22m] ex-girlfriend broke up with me [22m] because she hates my firearms hobby- Dated 2 years\nPOPerson6: ease keep politics out of this, I don't care about your views as much you care about mine.\n\nMy ex girlfriend of 2 years broke up with me the day before Thanksgiving 2014. Three months prior to this happening, she moved 90 miles away for a job. I was still in school till graduation in May, but we saw each other on the weekends. We had a pretty good relationship, but she came from a very liberal family and I came from the opposite.  \n\nShe didn't dislike that I had guns nor did she not trust me with them. I'm a certified pistol and rifle instructor and she knew that I had the proper credentials and training from the start. Hell, I even brought her with me to the range on multiple occasions. However, when she moved away she started hanging out with a crowd that thought themselves to be pretty elite and apparently called me a hillbilly, redneck, etc. She started picking fights with me over little things and it went to hell fast.\n\nWhen I picked her up to drive her to the airport to fly home, she broke up with me out of the blue. I asked why and she said she hated all my firearms and my activity with them. I was pretty shocked, it was never a problem until then. She said she was embarassed to have a boyfriend who's hobby was so primitive. \n\nWhen she said that, I pretty much erased her from my life. Almost a year later, I am fairly certain that her reason was bullshit. We haven't spoken since that day even when I reached out to her to gain some real closure. Totally shut out. \n\nMy question to you is whether that reason is a valid reason to end a relationship? I think not, but I gotta get a second opinion. I do not want this girl back FYI.\nPerson3: ",
+      "reference": "My ex girlfriend broke up with me on the grounds that she hated my firearms and that I love to shoot. Dufaq?",
+      "prediction": "r/relationships [22m] My [22",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.045454545454545456,
+          "precision": 0.2
+        },
+        "rouge2": {
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "recall": 0.045454545454545456,
+          "precision": 0.2
+        }
+      },
+      "facts": [
+        {
+          "fact": "My ex girlfriend broke up with me on the grounds that she hated my firearms and that I love to shoot.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person0: r/relationships\nPerson1: Me 27F with my bf 32M 1,5 years. Would it be reasonable to discuss engagement?\nPOPerson7: s, I know it's early. Let me explain.\n\nWe are both from different countries and live together in another country. He moved here 4 years ago, I moved here 2 years ago. He was asked to transfer here for work, I came here because why not.\n\nVery recently, the topic of relocating for his work came up again. He is eager - he is a self-professed workaholic - because there is not much in his industry here apart from the company he works for, limiting his career growth. This would be yet another country where neither of us is native, I have never been to the place and I don't even speak the local language. Neither does he but then again he will obviously have a job already when we arrive.\n\nWe discussed it and said a tentative yes. To be honest, I am not entirely sure what would happen to the relationship if I said no. Things progressed now to the point where we are 90% sure it will happen, within 6 months or even within 2. \n\nWould it be reasonable to discuss getting engaged? Not in a tit for tat way, like I move somewhere for you so give me a ring, but more as an assurance to me he's in this with me and not only for his career. The stakes are so much higher for me, I will quit a good job, be unemployed and a bit disadvantaged in finding new work since I do not speak the local language, though I have been told the place is cosmopolitan enough that it might not matter.\n\nIs this fair? Or totally not? How do I bring it up?\nPerson3: ",
+      "reference": "moving to a new country for SO's work. Could I bring up engagement to feel a bit more secure with leaving everything behind to go with him?",
+      "prediction": "r/relationships Asking if it is ok to ask if moving",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.07142857142857142,
+          "precision": 0.18181818181818182
+        },
+        "rouge2": {
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "recall": 0.03571428571428571,
+          "precision": 0.09090909090909091
+        }
+      },
+      "facts": [
+        {
+          "fact": "moving to a new country for SO's work.",
+          "found": false
+        },
+        {
+          "fact": "Could I bring up engagement to feel a bit more secure with leaving everything behind to go with him?",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person0: r/relationships\nPerson1: Sister in love with 62-year old trainwreck who owes IRS, house being sold in foreclosure, recent student loan debt\nPOPerson8: ve spent a lot of time lurking, but I need your perspective in this unique situation.\n\nMy sister is in her late 50's. She is a self-employed professional, but not very good with her money. Sister taps equity in her home (which would have been paid off years ago) to travel internationally. She runs up credit card debt. She's never come to me for money, but I fear she hasn't made much provision for retirement outside Social Security.\n\nNow to the Person9: Sister has a long back track record with men.\n\nHere's the currePerson10: n: Sister met \"Jake\" a year ago. Jake was 61 (now 62) and living on student loans. Last month he graduated with a BA in English from the state university. Cost of attendance at the university is $24K/year.\n\nSister takes Jake to Paris after he graduates to celebrate. While they are gone the Writ of Execution for foreclosure is published in the local paper---Jake house is being sold at the end of the month. He hasn't paid on the mortgage in almost five years. WTF? Now I fear Jake will move in with sister to \"write his novel.\" I think he's a shyster playing at being a jazz musician who hasn't worked in years and has been living on bad debt.\n\nMy sister and I are close, or used to be, but she loses her brains when smitten by romance. (...or cock-smitten...)\n\nPPerson11: hat are the possible outcomes here? What liability might Sister have if Jake moves in with her? I can't make this stuff up and I can hardly stand to look at the guy. It's nearly impossible to refrain from judgments of character based on his fiscal freewheeling. Do I just keep my mouth shut?\nTLPerson12: ",
+      "reference": "Sister in love with freeloading in-debt 62-year old being kicked out of his house due to foreclosure, recent racked up student loan debt, and back taxes due to IRS.  UGH - just avoid them?",
+      "prediction": "r/relationships Person1: Sister in love with 62-year old train",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.2,
+          "precision": 0.6363636363636364
+        },
+        "rouge2": {
+          "recall": 0.14705882352941177,
+          "precision": 0.5
+        },
+        "rougeL": {
+          "recall": 0.2,
+          "precision": 0.6363636363636364
+        }
+      },
+      "facts": [
+        {
+          "fact": "Sister in love with freeloading in-debt 62-year old being kicked out of his house due to foreclosure, recent racked up student loan debt, and back taxes due to IRS.",
+          "found": false
+        },
+        {
+          "fact": "UGH - just avoid them?",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person0: r/relationship_advice\nPerson1: My [18/f] Boyfriend [19/m] is always busy and barely makes time for me because his degree is more intense than mine, what do I do?\nPOPerson13:  boyfriend (19) is really busy all the time with the copious amounts of work he has to do for his math degree so I only end up getting to see him once a week- if i'm lucky. \nI love him a lot and there are stretches throughout the semester when I do get to see him often and then life is good but there are times when I end up only seeing him if I place myself in his line of vision. A lot of the time I end up watching him do calculus or algebra work where he barely speaks to me. \nAs much as i'd like to talk to him about it, I fear that he'll only think I don't understand the commitment required to his program. That and my lack of patience could make him feel like i'm just being needy. He's a very logical person who only thinks things through without much emotion involved. So budgeting time for me wouldn't make sense to him when calc and algebra assignments take precedent. \nTo be fair, when he is present in our relationship he's very considerate and pays attention to me. He's a very loving guy but he just doesn't understand what it does to me every time he puts me back on the shelf.\nPerson3: ",
+      "reference": "my boyfriend spends a lot of time doing work and doesn't seem to be able to budget time for me. What do I do?",
+      "prediction": "r/relationship_advice",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rouge2": {
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "recall": 0.0,
+          "precision": 0.0
+        }
+      },
+      "facts": [
+        {
+          "fact": "my boyfriend spends a lot of time doing work and doesn't seem to be able to budget time for me.",
+          "found": false
+        },
+        {
+          "fact": "What do I do?",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person0: r/Advice\nPerson1: Married couple in our twenties looking to console a friend whose wife left him\nPOPerson14: r friend is about the same age. They were married for 2 years, together for about 3 years before that. We found out only after the wife left the husband (about 6 weeks ago) that they've been struggling for at least a year. The husband was incredibly stressed out with work and doesn't have good communication skills and had been taking it out on her, to the point that everyone involved now acknowledges he was verbally abusing her for at least this past year. She left and has no intention of coming back, and wants to speak to him minimally except about logistics of the divorce. \n\nHe's already made changes (read multiple books about verbal abuse, started seeing a therapist), and believes if he could just convince her to try that things would be better because he now understands that he was mistreating her. She's fully convinced that she doesn't want to try to fix things and feels relieved to be out of the marriage.\n\nNow that I've spoken with the wife a couple of times, I'm realizing that there's very little hope of reconciliation, and I'm trying to help the husband move on. He's stuck on the fact that she's not willing to try and that she's only talked to him for several hours total about the dissolution of their 5 year relationship. He believes he'll never be happy without her. I don't know how to help him!\n\nMy husband and I are the closest friends to them and are the main support system of the husband. We get together with him 1-2 times a week, and a lot of it is spent talking about their relationship (understandably). The other concern here is how to be helpful without also getting myself depressed, because it's been an extremely stressful year for me and I'm having my own struggles with optimism and being the main support system for someone whose life is crashing down around him is leading me to my own internal freakouts (e.g. when I first found out about their impending divorce, I was so affected that I cried a lot the next day and had had to take a personal day from work to deal with my new feelings about the fact that the optimistic beliefs I tend to hold about life might be irrational).\nPerson3: ",
+      "reference": "How do I be a support system for my friend whose wife left him, and do so without sending myself into a tailwind of depression too?",
+      "prediction": "r/Advice #fake_story",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rouge2": {
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "recall": 0.0,
+          "precision": 0.0
+        }
+      },
+      "facts": [
+        {
+          "fact": "How do I be a support system for my friend whose wife left him, and do so without sending myself into a tailwind of depression too?",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person0: r/Parenting\nPerson1: I'm so embarrassed! Showed up, sat awkwardly watching another kid 'test' and slipped out when I realized I wasn't suppose to be there.\nPOPerson15: told the instructor I'd see him on Saturday. Took my four year old to class this am, washed her uniform (karate) and told her we were going back to test later. Walked in early (to the small studio) with my young child. Only 2 instructors were there with a pre-teen seriously testing. I thought \"that's odd\" only the child's family was there to watch the test (for a new belt-serious stuff). I've never had her test before because we are new to the studio. So, I let my girl start to color, but had her be quiet. Almost 20 minutes later and I'm thinking \"why is this taking so long for him, why aren't they testing my kid\". I watch the boy do commands, a fitness test, three rounds of fighting and then think \"holy crap! Her test is NEXT Saturday!!!\" Oh dear. I wait till a break in his testing to not distract, and slip out with my kid.\nPerson3: ",
+      "reference": "Sat in for half of some kid I don't know's serious karate test in a small studio with my 4 yrs. old without talking to anyone and walking out. Left everyone wondering why I was there.",
+      "prediction": "My kids are having a test, and I'm the one that's sitting in the",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.21052631578947367,
+          "precision": 0.5
+        },
+        "rouge2": {
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "recall": 0.10526315789473684,
+          "precision": 0.25
+        }
+      },
+      "facts": [
+        {
+          "fact": "Sat in for half of some kid I don't know's serious karate test in a small studio with my 4 yrs.",
+          "found": false
+        },
+        {
+          "fact": "old without talking to anyone and walking out.",
+          "found": false
+        },
+        {
+          "fact": "Left everyone wondering why I was there.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person0: r/relationships\nPerson1: Me [26 F] with my family [all ages and genders] are having issues with me getting married\nPOPerson15: am getting married to a Christian man (I am a Muslim woman). Faith is a big deal to both of our families, but my family is making a bigger deal out of it than his. In our cultures, (we both are Pakistani), the bride and the groom's family each throw a wedding party in celebration of the union before the wedding. My family threw one and today, my groom's family is throwing one. My family refuses to come (all 25 of them as I have a large family) because of Ramadaan. However, they will attend birthdays and other celebrations without any issues. They say they \"support\" this marriage, but they have made this wedding process hell for me. They cause a fight over any little reason, often berate me for torturing them by marrying outside Islam, and gossip about me constantly amongst each other. We have a month left before the wedding, no other date worked this month since they have events planned for themselves every weekend, and they are refusing to attend this event. I feel so embarrassed not to have even a single member of my family supporting me at today's event. I want to tell them to not attend the wedding, but I don't know how to - am I being too dramatic?\nPerson3: ",
+      "reference": "Family doesn't support my upcoming marriage as much as they say they do - should I disinvite them to the wedding?",
+      "prediction": "r/relationships: r|",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rouge2": {
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "recall": 0.0,
+          "precision": 0.0
+        }
+      },
+      "facts": [
+        {
+          "fact": "Family doesn't support my upcoming marriage as much as they say they do - should I disinvite them to the wedding?",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person0: r/relationships\nPerson1: My husband (25m) of 5y thinks we don't have enough sex. I (26f) disagree.\nPOPerson2: . When we first started dating, my hubby and I were disgusting animals who just humped for like, days at a time. Then we got married and had kids, who are now 2 & 4. We currently live with his mom, which definitely puts a serious damper on the romance. My husband is working 60+ hours a week right now as well, and has to be at work at 5am every day. I am a full-time student, up at 6am every day with the kids who I do pretty much everything for, as well as all meal prep and cleaning (his mom doesn't really clean or cook unless it's a holiday).\n\nI mean, just like adults everywhere, we have a lot on our plates right now. It sucks. We are tired. I fall asleep on the couch by 9pm many nights. The relationship with his mom is tense at best, and we are planning to move into our own place within the next 3mo. \n\nAll things considered, I think our sex life is still pretty healthy. There have been dry spells in the past (especially postpartum). We have (great) sex 2-5 times every week. Even when I'm on my period, he still gets BJs. He gets frustrated because we only have sex at night, but I'm like.... when the hell else are we supposed to do it?!?! He wants me to start waking up with him at 4am so we can have sex (or at least oral) before he goes to work. I am so not into that idea, and he has called me a dick multiple times for rejecting his advances in the mornings. He initiates more than I do, but I still make a conscious effort to be the initiator at least once a week (it's been a complaint in the past). I have been making more efforts to be physically loving and adoring as well, to make him feel more appreciated without the need for sex constantly. I've tried telling him that this is as good as it gets, that we have two young kids AND we live with his mom who has no sense of privacy, personal space, or boundaries. So what to do?\nPerson3: ",
+      "reference": "Husband and I have sex between 2-5x per week, but he wants more. We have two young kids and live with his mom. I'm tired.",
+      "prediction": "r/relationships: My husband thinks we don't have enough s",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.1111111111111111,
+          "precision": 0.2727272727272727
+        },
+        "rouge2": {
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "recall": 0.1111111111111111,
+          "precision": 0.2727272727272727
+        }
+      },
+      "facts": [
+        {
+          "fact": "Husband and I have sex between 2-5x per week, but he wants more.",
+          "found": false
+        },
+        {
+          "fact": "We have two young kids and live with his mom.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person0: r/relationships\nPerson1: Me [33 M] with my mother[69 F] 20+ years, How do you deal with a parent that does not listen to you?\nPOPerson8: m not talking about family members that hear you, then ignore your advice. I mean it in the literal sense, where they only catch 2 maybe 3 words out of every 30 words you speak.\n\nI'm a 33 year old, accomplished, 100% independent man. For my entire life, my mother has treated me as if i were a 5 year old child. She'll hear one keyword out of a sentence, completely ignore the context and concepts being conveyed in the sentence, then start talking about something that's loosely related to that one word. It's literally driving me insane, and i'm about to cut all ties with her over it.\n\nFamily counseling hasn't worked, pointing it out every time it happens doesn't work, using a voice recorder and showing that she does it hasn't worked, writing instead of talking doesn't work. And the worst part is, even with undeniable proof that it's happening, she wont' even acknowledge it. I'm at wit's end with this, Does anyone have any suggestions?\n\nAlso, for context, she doesn't seem to have this problem with anyone else.\nPerson3: ",
+      "reference": "Ongoing respect and listening problems with my mother. About to cut all ties if i can't find a way to improve the situation.",
+      "prediction": "(It's like being in a room of your own, with your own personal voice",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.08333333333333333,
+          "precision": 0.13333333333333333
+        },
+        "rouge2": {
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "recall": 0.041666666666666664,
+          "precision": 0.06666666666666667
+        }
+      },
+      "facts": [
+        {
+          "fact": "Ongoing respect and listening problems with my mother.",
+          "found": false
+        },
+        {
+          "fact": "About to cut all ties if i can't find a way to improve the situation.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person0: r/relationships\nPerson1: I'm [19M] having difficulty with a girl [19F]\nPOPerson2:  I got with this girl at a student event in the city,\nI've been to her flat a few times and things have gone quite well,\nWe've been talking frequently and we both know that we like each other (will elaborate shortly)\nRecently, we've just been talking less and less to the point where I end up waiting hours for a reply from her OR I end up abandoning my previous message and sending a new one entirely.\nThis is made worse by the fact that my mind has a tendency to make a mountain out of a molehill and think of worse case scenarios that just make me get upset and all that other bullshit.\nI told her yesterday straight forward that I like her, to which she told me the same & that she wanted to see how things go, yet nothing has changed (still waiting on a reply to a text I sent 4 hours ago + a text i sent 20 minutes ago)\nThe fuck have i done wrong/should i do.\nPerson3: ",
+      "reference": "Got with a girl at a student event, kept in touch & done the deed more, got feels involved and i have no idea what to do.",
+      "prediction": "I can't get any responses to my messages...",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.07692307692307693,
+          "precision": 0.2222222222222222
+        },
+        "rouge2": {
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "recall": 0.07692307692307693,
+          "precision": 0.2222222222222222
+        }
+      },
+      "facts": [
+        {
+          "fact": "Got with a girl at a student event, kept in touch & done the deed more, got feels involved and i have no idea what to do.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person0: r/relationship_advice\nPerson1: [22M] Long distance issues with girlfriend and her male friend [21f]\nPOPerson2:  to start this off, I love my girlfriend. We've been dating a little bit over 3 years, and things have been well. The first year or so we lived in the same town; the next two years we've spent in different towns (she's moved around a bit). There's been a lot of ups and downs obviously, which brings us to the most recent event...\n\nWe recently had a sort of fight, which wasn't really a fight as much as it became a discussion. We talked about a lot of overdue issues, and she said that she didn't really want to break up and was still very much into the relationship. After all of this, we've been working on things again and talking a lot more, and it's much more like it used to be, which brings me to the issue.\n\nI found out recently that a guy that she hangs out with is very obviously into her. And when I say obvious, it's in a needy and constant sort of way. She and I have talked about it, and she says they are just friends. I'm inclined to believe her, as I trust her (not him though), but at the same time I feel like she has been giving him more of a priority than me, and it's starting to make me question why she decided to keep me. I probably have some sort of anxiety issues and jealousy, which contributes to the problem, but I can't help but question these things, especially with the frequency in which they hang out.\n\nSo, I'm wondering if anyone has had a similar situation? Or if anyone could give me some pointers on what to do here? Like I said, not really wanting to break up with her...just really unsure what to think.\nPerson3: ",
+      "reference": "Girlfriend and I agree we want to continue our relationship and to work on things. Her male friend has a crush and makes me feel like he has priority.",
+      "prediction": "I'm so confused! I've been dating my girlfriend for three years and she is the",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.10344827586206896,
+          "precision": 0.17647058823529413
+        },
+        "rouge2": {
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "recall": 0.06896551724137931,
+          "precision": 0.11764705882352941
+        }
+      },
+      "facts": [
+        {
+          "fact": "Girlfriend and I agree we want to continue our relationship and to work on things.",
+          "found": false
+        },
+        {
+          "fact": "Her male friend has a crush and makes me feel like he has priority.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person0: r/relationships\nPerson1: My boyfriend (m20) and I (f20) decided to go on a 'break' today, but honestly I feel like this break is a break up. I still love him but should I delete everything of him? Is it wrong not to?\nPOPerson13:  SO told me he didnt feel the same about me. At first we tried to get the spark back but it was more like ignoring the issue. Now we are on a 'break'... He said that he doesn't want to put an ending date to our break he will just message me when he knows what he wants. I was too weak to go tell him to fuck himself. \n\nI don't want this relationship to be over, I honestly didn't see anything was wrong (probably part of the problem). Now I'm here on reddit, I don't even know what I'm asking you guys! Should I delete everything about him, including viber (i won't know if he ever messages me if I do). \n\nI know everything gets better, but we also have a trip to Thailand booked in 2 months... I feel like it's such a waste of money if we don't go and I don't want to take anybody else, and i won't want him to take anyone else. It's stupid to even care about this. \n\nI still want to be with him, he's somebody that has challenged me and changed me for the better, he said he wants the relationship to work for me but not for himself so I told him I'm not going to be his excuse.\nPerson3: ",
+      "reference": "SO of 2 years wants a 'break' and said he will contact me when he knows what he wants. I don't know how to be or what to do, should I delete everything of him?",
+      "prediction": "So my boyfriend and I are on a 'break'.. I don't know",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.25,
+          "precision": 0.6923076923076923
+        },
+        "rouge2": {
+          "recall": 0.11428571428571428,
+          "precision": 0.3333333333333333
+        },
+        "rougeL": {
+          "recall": 0.19444444444444445,
+          "precision": 0.5384615384615384
+        }
+      },
+      "facts": [
+        {
+          "fact": "SO of 2 years wants a 'break' and said he will contact me when he knows what he wants.",
+          "found": false
+        },
+        {
+          "fact": "I don't know how to be or what to do, should I delete everything of him?",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person0: r/legaladvice\nPerson1: (Nebraska) I was hammered and got tossed out of a bar last weekend.\nPOPerson15: got hammered for someone's birthday last weekend shots kept coming and I rarely drink. I blacked out I don't remember any of this.\n\nSupposedly I had a verbal argument with the bartender and the doorguy ended up dragging me out of the bar by the neck. I know i was an idiot for getting so drunk. \n\nNow I'm fairly certain i have an injury to my hyoid bone in my neck, I can feel how far in the right side goes compared to my left. And it hurts to swallow. \n\nI set an appointment, but its through the VA so i have to wait. \n\nIf there is an actual injury can I sue the guy? \n\nFor what its worth my friends said they didn't see me do anything then all of a sudden i was put into a headlock from behind. They had no idea why. \n\nWhen i went back to the bar the next day to get my card (they threw it out) the bartender was the one that said what happened. Of course I believe them, why else would that have happened?\nPerson3: ",
+      "reference": "Got drunk, doorguy choked me out, now i think my hyoid bone is broken or at least something around it. Wondering if I can pursue any legal action. ",
+      "prediction": "(Nebraska) I was hammered and got tossed out of a",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.10714285714285714,
+          "precision": 0.3
+        },
+        "rouge2": {
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "recall": 0.07142857142857142,
+          "precision": 0.2
+        }
+      },
+      "facts": [
+        {
+          "fact": "Got drunk, doorguy choked me out, now i think my hyoid bone is broken or at least something around it.",
+          "found": false
+        },
+        {
+          "fact": "Wondering if I can pursue any legal action.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person0: r/relationships\nPerson1: Me [21M] with my Girlfriend [19 F] 4 months, who is depressed due to unsure future.\nPOPerson16:  both are foreign students studying in a different country. I liked her from the moment I saw her and finally after 2 weeks I asked her out and she agreed.\n\nThe relationship is going well and we just click. We have fun together and even give space to each other. The physical aspect got a little faster and we even got intimate a few times.\n \nI'm her 1st boyfriend and she is my 2nd. We both love each other, which brings us to our problem.\n\nOur culture doesn't prefer Love marriages and inter religious are a big No. Though families need to be convinced and a lot more people after that, the chances are very slim that this will happen.\n\nRecently she has become gloomy and even cried that she will have to eventually leave me after our course is done after 5 years.\nShe will probably be married soon after the course and I have a few years more after that.\n\nMy stand is that we should live everyday with each other and let see how things develop, because 5 years is a long time. She doesn't seem to understand this.\n\nI cant break up because it will create years of awkward interaction and is a very stupid reason.\nWhat should I do?\nPerson3: ",
+      "reference": "Great relation, different religion so future is unsure, she is worried that she will lose me after the course. What should I do?",
+      "prediction": "r/personality/grooming",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rouge2": {
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "recall": 0.0,
+          "precision": 0.0
+        }
+      },
+      "facts": [
+        {
+          "fact": "Great relation, different religion so future is unsure, she is worried that she will lose me after the course.",
+          "found": false
+        },
+        {
+          "fact": "What should I do?",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person0: r/relationships\nPerson1: Should I [18/m] leave my girlfriend [18/f] for my friends sister [26/f]?\nPOPerson17: ay so I have the details of mine and my friends sister's relationship in this like -->   \n\nSo that was it, if you didn't read, basically I have known her since I was in 6th grade and I've always had a crush on her.  My friend is cool with me dating her, and I think she's amazing.  She has a two year old baby and has had bad luck with guys.  But she's an awesome person and mother.  \n\nI'm 18, just out of high school and going into the military, my girlfriend is same as me, but going into college.  We've been together for almost 2 1/2 years.  It started out awesome, she's smart, and beautiful!  She still is, but she's driving me insane!!  She can't stand a day without me, gets mad when I'm with my friends, and straight up told me she is going to break up with me when I leave for the military!  Ever since she said that I've felt different about her and it made me feel like I don't mean very much.\n\nEvery time I talk to her now I just get agitated.  I haven't seen her for a week because she was out of town with family, and I went to see her for a little bit because I had to go home and clean (My mom is intense with cleaning) and she got pissed.  I haven't talked to her since, but I don't really want to.  What do you think I should do?\nPerson3: ",
+      "reference": "My girlfriend said she's gonna leave me when I go into the military.  I've been talking to my friends sister lately who has a baby and I like her a lot.  Don't know what to do.",
+      "prediction": "r/relationships | Should I [18/m] leave my girlfriend [18",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.10256410256410256,
+          "precision": 0.4
+        },
+        "rouge2": {
+          "recall": 0.02631578947368421,
+          "precision": 0.1111111111111111
+        },
+        "rougeL": {
+          "recall": 0.05128205128205128,
+          "precision": 0.2
+        }
+      },
+      "facts": [
+        {
+          "fact": "My girlfriend said she's gonna leave me when I go into the military.",
+          "found": false
+        },
+        {
+          "fact": "I've been talking to my friends sister lately who has a baby and I like her a lot.",
+          "found": false
+        },
+        {
+          "fact": "Don't know what to do.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person0: r/dogs\nPerson1: Could the break up/move have made my dog depressed?\nPOPerson15: am currently going through the heartbreak of a long term relationship that I ended and I think my dog is feeling just as terrible because of it. \n\nMy boyfriend and I adopted him 2 years ago but he's really been my dog because my boyfriend rarely paid attention to him. Even so, my dog was obsessed with him. Always wanted to play and if he was around, it's like I was invisible. Anyway, we lived in a two bedroom and gave my dog run of the second bedroom while we were at work. He hated the neighborhood because of all the noise so his walks were always short but he loved sitting in the sunlight in his bedroom and was always down to play. Basically, he was a happy dog. \n\nThen we moved to the west cost and my dog LOVED IT! Outside time was his favorite time. He would always stare longingly at the door and loved to go out to the balcony and people watch. Time of his life. \n\nThe breakup came around and my dog and I moved back to the east coast into my moms place where I am sharing a bedroom with my two siblings. This place drains the life out of me because there is no sunlight. But my dog is taking it pretty badly. It's been just over a week and he's slowly becoming more lethargic and withdrawn. His food hadn't changed at all and I play with him just as much if not more than before and he has two other people that smother him with petting all the time. \n\nHe keeps hiding under the bed and won't respond to commands. He sleeps all day and only wants to play for a few minutes. He hates going out now and the sight of his leash sends him running. He hasn't touched his food all day today. I think he hates this place more than I do. \n\nMy sister took him to her friend's place so he can play with two other dogs and she told me he was wagging his tail and eager to play and roam around. \n\nThis is making me feel worse. I want to make him feel better. What do I do?\nPerson3: ",
+      "reference": "moved back to east coast from west coast after breakup and my dog is not himself anymore. What do I do to make him better?",
+      "prediction": "Can dogs feel sad? | My Dog, My Cat, My Dogs",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.08,
+          "precision": 0.2
+        },
+        "rouge2": {
+          "recall": 0.041666666666666664,
+          "precision": 0.1111111111111111
+        },
+        "rougeL": {
+          "recall": 0.08,
+          "precision": 0.2
+        }
+      },
+      "facts": [
+        {
+          "fact": "moved back to east coast from west coast after breakup and my dog is not himself anymore.",
+          "found": false
+        },
+        {
+          "fact": "What do I do to make him better?",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person0: r/relationships\nPerson1: My boyfriend's [21M] mom [~45F] really doesn't like me [20F] and I'm not sure why\nPOPerson2:  I've been dating my boyfriend for two months now and I'm really into him. Just him and his mom live together, and I've never met his dad because he lives in the US while we live in Canada. I've met her about four or five times, and always had friendly but very short conversations. I just assumed she was shy. \n\nAbout three weeks ago, I overheard my boyfriend and his mother arguing and I heard her call me a skank. I was shocked and convinced myself I heard wrong because after all she's never really had a long conversation with me and she hardly knows me at all. I have never been unfaithful or even accused of being unfaithful to my boyfriend before. I only knew I heard her right when she texted him the day afterwards apologizing, and saying she wasn't right to say that since she didn't know me. \n\nBut last night me, my friend [19F] and boyfriend stayed the night at his place after a night out drinking. In the morning, my boyfriend was receiving text messages from his mother (who was in the other room) and she was calling me and my friend whores and sluts. My friend and I left right away and I drove her home. But when I went back to my boyfriends house later on in the day (he invited me) to watch some netflix and hang out, I noticed he was texting super fast and was very pissed off. Being the curious little shit I am I looked over his shoulder and saw that it was in fact his mother. She was telling him that if he continued dating \"this slut,\" he would be kicked out. Along with making comments like \"she's a childish whore,\" she also blamed him for ruining all of her past relationships and said that because of this, she didn't care about ours. \n\nHe's ready to move out soon anyways but I would still like to understand what her deal is, and how I can handle this properly. It's really hurtful, and I really like him. I don't want this to ruin our relationship.\nPerson3: ",
+      "reference": "Boyfriend's mom seems to hate me, and even told him that if he continued seeing me that he would be kicked out of the house. I don't know what to do.",
+      "prediction": "@Lisa_Morelis I can understand it. I'm not the",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.06060606060606061,
+          "precision": 0.2
+        },
+        "rouge2": {
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "recall": 0.030303030303030304,
+          "precision": 0.1
+        }
+      },
+      "facts": [
+        {
+          "fact": "Boyfriend's mom seems to hate me, and even told him that if he continued seeing me that he would be kicked out of the house.",
+          "found": false
+        },
+        {
+          "fact": "I don't know what to do.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    }
+  ]
+}

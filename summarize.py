@@ -1,10 +1,15 @@
+from functools import lru_cache
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 import torch
 
+@lru_cache(maxsize=2)
+def load_model(model_name: str):
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    return AutoTokenizer.from_pretrained(model_name), AutoModelForSeq2SeqLM.from_pretrained(model_name).to(device)
+
 def summarize_text(text: str, model_name: str, min_length: int, input_block_size: int, prefix: str = "Summarize: ") -> str:
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForSeq2SeqLM.from_pretrained(model_name).to(device)
+    tokenizer, model = load_model(model_name)
     inputs = tokenizer(text, return_tensors="pt").to(device)
     encoded_prefix = tokenizer(prefix, return_tensors="pt").to(device)
 

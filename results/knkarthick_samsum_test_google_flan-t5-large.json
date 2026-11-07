@@ -1,0 +1,628 @@
+{
+  "summarizer": "google/flan-t5-large",
+  "nli_model": "facebook/bart-large-mnli",
+  "dataset": "knkarthick/samsum:test",
+  "n": 20,
+  "rouge": {
+    "rouge1": {
+      "recall": 0.29601144237947646,
+      "precision": 0.5123563364739836
+    },
+    "rouge2": {
+      "recall": 0.15501150742710434,
+      "precision": 0.2562427156177156
+    },
+    "rougeL": {
+      "recall": 0.25795546864045316,
+      "precision": 0.4332497771836007
+    }
+  },
+  "nli_outcome_recall": 0.14634146341463414,
+  "nli_outcome_recall_per_post": 0.125,
+  "examples": [
+    {
+      "post": "Person0: I may be 10 min late. Sorry.\nPerson1: Ok. I'm by the left entrancPerson2: e: The bus is running late. I've just passed the supermaPerson3: Alex: No worries. I'll be waiting Person4: u.Person5:  Thnx\nAlex: Did you remember to take the file with thePerson6:  copies?\nJane: Yes. I hope it will be useful. ItPerson7: te a bricPerson8: x: Hope so too\nPerson0: We'll do fine :-)\nAlex: No other choice. Seems like it's our last chance oPerson9: ing through to them.\nJane: Maybe they will be convinced after they've seen our materials.",
+      "reference": "Jane will be about 10 minutes late. Alex is waiting at the left entrance and they are going to attend a meeting. This might be the last opportunity for Jane and Alex to get through to them.",
+      "prediction": "Jane will be 10 min late for her appointment with Alex.",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.1891891891891892,
+          "precision": 0.6363636363636364
+        },
+        "rouge2": {
+          "recall": 0.05555555555555555,
+          "precision": 0.2
+        },
+        "rougeL": {
+          "recall": 0.1891891891891892,
+          "precision": 0.6363636363636364
+        }
+      },
+      "facts": [
+        {
+          "fact": "Jane will be about 10 minutes late.",
+          "found": true
+        },
+        {
+          "fact": "Alex is waiting at the left entrance and they are going to attend a meeting.",
+          "found": false
+        },
+        {
+          "fact": "This might be the last opportunity for Jane and Alex to get through to them.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.3333333333333333
+    },
+    {
+      "post": "Person10: yoo guys\nPerson11: B-)\nPerson12: hey wassuPerson13: : beer? Person14: ren: hell yeahPerson15: cas: I'm free in the evening",
+      "reference": "Lucas, Johnatan and Darren are going to get some beer.",
+      "prediction": "Person10 and Ren will have a beer in the evening.",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.2,
+          "precision": 0.2
+        },
+        "rouge2": {
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "recall": 0.2,
+          "precision": 0.2
+        }
+      },
+      "facts": [
+        {
+          "fact": "Lucas, Johnatan and Darren are going to get some beer.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person16: Hey, do you know if our medical insurance covers hospital costs?\nPerson17: Hm, it depePerson18: el: What happenePerson19: ?\nKate: I broke my arm and they're sending me to thePerson20: tal :/\nGreg: Call Linda or ask someone at the reception, they should be able to tell you what kind of Person21: e you have\nKate: thnx",
+      "reference": "Kate broke her arm and she's going to the hospital. She'd like to know whether her medical insurance covers hospital costs. Greg suggests her to call Linda or ask someone at the reception about it.",
+      "prediction": "Kate broke her arm and she's going to the hospital. Greg can't give her any",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.35135135135135137,
+          "precision": 0.7647058823529411
+        },
+        "rouge2": {
+          "recall": 0.2777777777777778,
+          "precision": 0.625
+        },
+        "rougeL": {
+          "recall": 0.35135135135135137,
+          "precision": 0.7647058823529411
+        }
+      },
+      "facts": [
+        {
+          "fact": "Kate broke her arm and she's going to the hospital.",
+          "found": true
+        },
+        {
+          "fact": "She'd like to know whether her medical insurance covers hospital costs.",
+          "found": false
+        },
+        {
+          "fact": "Greg suggests her to call Linda or ask someone at the reception about it.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.3333333333333333
+    },
+    {
+      "post": "Person22: Yeah. So what bout him?\nPerson23: He's no longer our teacher :Person24: : I'm so happyPerson25: id: MePerson26: aPerson27: Bt y?\nSid: He got fired 2day and thrown ouPerson28: ool?\nOliver: LitePerson29: rown Person30: non: What?!\nVictor: I suppose he'Person31:  and lost it.\nOliver: Or maPerson32: ad one too many ;)\nSid: Not. Our. Teacher. Anymore!",
+      "reference": "He is no longer the teacher of Shanon, Victor, Oliver and Sid. He got fired today.",
+      "prediction": "He got fired today. He might have lost it.",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.3125,
+          "precision": 0.5555555555555556
+        },
+        "rouge2": {
+          "recall": 0.2,
+          "precision": 0.375
+        },
+        "rougeL": {
+          "recall": 0.25,
+          "precision": 0.4444444444444444
+        }
+      },
+      "facts": [
+        {
+          "fact": "He is no longer the teacher of Shanon, Victor, Oliver and Sid.",
+          "found": false
+        },
+        {
+          "fact": "He got fired today.",
+          "found": true
+        }
+      ],
+      "nli_recall": 0.5
+    },
+    {
+      "post": "Person33: Did you clean the hamster cage?\nPerson34: No. Is it my tuPerson35: te: Yes. After school, no excPerson36: elle: Fine.",
+      "reference": "Adelle has to clean the hamster cage after school.",
+      "prediction": "te doesn't clean the hamster cage.",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.4444444444444444,
+          "precision": 0.5714285714285714
+        },
+        "rouge2": {
+          "recall": 0.375,
+          "precision": 0.5
+        },
+        "rougeL": {
+          "recall": 0.4444444444444444,
+          "precision": 0.5714285714285714
+        }
+      },
+      "facts": [
+        {
+          "fact": "Adelle has to clean the hamster cage after school.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person37: are you still looking for someone to join netflix family?\nPerson38: yes, 1 personPerson39: ke: i am tPerson40: !\nPaul: sure, i will send you the login and passworPerson41: unday\nLuke: ok we caPerson42:  tomorrow\nPaul: i don't reaPerson43: member it now\nLuke: send me also the bank account details so I can wire you the money every month. Are you paying foPerson44:  or someone else?\nPaul: I do, and I keep track of everyone accessing so you shPerson45: ot expect any bans :D\nLuke: easy mate :D you stPerson46:  holidays with your girl?\nPaul:Person47: dinner :( tomorrow we are Person48: ke: how long have you been there?\nPaul: less than 8 days :/",
+      "reference": "Paul is going to share his Netflix account with Luke. In exchange Luke is going to contribute to the subscription. Paul will send Luke his bank details. Paul is on vacation with his girlfriend till tomorrow.",
+      "prediction": "Paul has been on netflix for less than 8 days. He will join Netflix family tomorrow.",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.1388888888888889,
+          "precision": 0.3125
+        },
+        "rouge2": {
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "recall": 0.1111111111111111,
+          "precision": 0.25
+        }
+      },
+      "facts": [
+        {
+          "fact": "Paul is going to share his Netflix account with Luke.",
+          "found": false
+        },
+        {
+          "fact": "In exchange Luke is going to contribute to the subscription.",
+          "found": false
+        },
+        {
+          "fact": "Paul will send Luke his bank details.",
+          "found": false
+        },
+        {
+          "fact": "Paul is on vacation with his girlfriend till tomorrow.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person49: Hey Bella, What happened today in boss's room?? Was he angry??\nPerson50: NO NO!!! He wasn't angry at all.. He actually appreciated on our brave deccision to dismiss the request of clienPerson51: ic: REALLY!! He appreciated this deciPerson52: Bella: Yeah he really did.. I too was astounded by his rPerson53: n...\nEric: What could possibly lead to this?? I mean , they were potentiPerson54: nts...\nBella: What he told me was that he was looking forward to bring in new clients which were our current cliePerson55: ompetitor..\nEric: Oh that could possibly be the reason.Well anyways you got apPerson56: ion xD congo\t\nBella: hahaha Blessing in disguise xD",
+      "reference": "Bella and Eric dismissed a request of a client. Their boss appreciated the decision. He brings in new clients.",
+      "prediction": "Bella's boss wasn't angry at all, but was looking forward to bring in new",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.2631578947368421,
+          "precision": 0.3125
+        },
+        "rouge2": {
+          "recall": 0.1111111111111111,
+          "precision": 0.13333333333333333
+        },
+        "rougeL": {
+          "recall": 0.2631578947368421,
+          "precision": 0.3125
+        }
+      },
+      "facts": [
+        {
+          "fact": "Bella and Eric dismissed a request of a client.",
+          "found": false
+        },
+        {
+          "fact": "Their boss appreciated the decision.",
+          "found": true
+        },
+        {
+          "fact": "He brings in new clients.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.3333333333333333
+    },
+    {
+      "post": "Person57: Have you got the paper from the office?\nPerson58: Not yet, I'm going there tomorrowPerson59: : You'd better... The deadline for the application is Friday at nPerson60: ula: Ok, sure! I promise I won't forget it!",
+      "reference": "Paula needs the paper from the office to submit an application.",
+      "prediction": "Ula will get the paper from the office tomorrow.",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.45454545454545453,
+          "precision": 0.5555555555555556
+        },
+        "rouge2": {
+          "recall": 0.4,
+          "precision": 0.5
+        },
+        "rougeL": {
+          "recall": 0.45454545454545453,
+          "precision": 0.5555555555555556
+        }
+      },
+      "facts": [
+        {
+          "fact": "Paula needs the paper from the office to submit an application.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person61: Heading out in a sec. You coming along?\nPerson62: Person63:Person64: Sally: Don't Person65: ell.\nMark: Oh. Can IPerson66: thing?\nSallyPerson67: GiPerson68: fPerson69: : TMI!\nSally: LOL!\nMark: Let me know if you change yoPerson70: . Person71: pick you up.\nSally: Okay.\nMark: We will miss you. Should IPerson72: ave your character sit out?\nPerson73:  Yes! Person74: ant herPerson75: d off!\nMark: Person76: !\nSally: Not funny!\nMark: Could be funny!\nSallyPerson77: se don't! I jusPerson78: ll her spelPerson79:  stuff!\nMark: I won't, I'm j/k.\nSally: You better be.\nMark: I swear!",
+      "reference": "Sally is not going out because she doesn't feel well. ",
+      "prediction": "Person71 will pick up Sally. Sally and her character will sit out.",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.18181818181818182,
+          "precision": 0.16666666666666666
+        },
+        "rouge2": {
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "recall": 0.18181818181818182,
+          "precision": 0.16666666666666666
+        }
+      },
+      "facts": [
+        {
+          "fact": "Sally is not going out because she doesn't feel well.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person80: <file_other>\nPerson80: I saw this offer todayPerson81:  Thailand?Person82: : ExPerson83: Adam: Not to expenPerson84: dison: Tickets cost pretty penny, but the rest is ePerson85: ap\nTaylor: And children under 12 Person86: off\nJordan: Seems ok",
+      "reference": "Madison considers buying flight tickets to Thailand as she has found a cheap offer with 50% discount for children under 12.",
+      "prediction": "There is a flight offer for Thailand.",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.23809523809523808,
+          "precision": 0.7142857142857143
+        },
+        "rouge2": {
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "recall": 0.14285714285714285,
+          "precision": 0.42857142857142855
+        }
+      },
+      "facts": [
+        {
+          "fact": "Madison considers buying flight tickets to Thailand as she has found a cheap offer with 50% discount for children under 12.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person87: Happy birthday my dear!\nPerson88: Oh thank you darling! Person89: a: I wish you all the best and I hope all your dreams come trueePerson90: a: Haha thPerson91: lena: Are you going to celebrate tPerson92: thea: Yes, I'm gonna meet Tom and we're going to eat something in thePerson93: )\nElena: Cool! So enjoy guys! And see you on your party on SatuPerson94: orothea: Thx! Love U :* and see you soon! ",
+      "reference": "Dorothea is having a birthday dinner in the town with Tom. Elena is seeing Dorothea at her party on Saturday. ",
+      "prediction": "Person89 is having a birthday. She is going to celebrate it with Tom and Elena.",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.4,
+          "precision": 0.5333333333333333
+        },
+        "rouge2": {
+          "recall": 0.21052631578947367,
+          "precision": 0.2857142857142857
+        },
+        "rougeL": {
+          "recall": 0.35,
+          "precision": 0.4666666666666667
+        }
+      },
+      "facts": [
+        {
+          "fact": "Dorothea is having a birthday dinner in the town with Tom.",
+          "found": false
+        },
+        {
+          "fact": "Elena is seeing Dorothea at her party on Saturday.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person95: Hello, here's the fair-trade brand I've been talking about <file_other>\nPerson96: Oh, thanks!\nPerson97: Looks grePerson98: ia: I'm glad, I hope you enjoy it. The quality's really great and knowing where it came from makes it easier to spend the extra dollarPerson99: le: I'll look into itPerson100: ce: Thx",
+      "reference": "Patricia is recommending a fair-trade brand to Elle and Florence.",
+      "prediction": "Person95 sent a fair-trade brand to Person97.",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.45454545454545453,
+          "precision": 0.625
+        },
+        "rouge2": {
+          "recall": 0.4,
+          "precision": 0.5714285714285714
+        },
+        "rougeL": {
+          "recall": 0.45454545454545453,
+          "precision": 0.625
+        }
+      },
+      "facts": [
+        {
+          "fact": "Patricia is recommending a fair-trade brand to Elle and Florence.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person101: I am in town, shopping. They have nice scarfs in the shop next to the church. Do you want one?\nPerson102: No, thanksPerson103:  But you don't have a Person104: .\nLeo: Because I don't nPerson105: atrice: Last winter you had a cold all the time. A scarPerson106: ld help.\nLeo: I doPerson107: hem.\nBeatrice: Actually, I don't care. YPerson108: ll get a scarf.\nLeo: How Person109: ing of you!\nBeatrice: You were complaining the whole winter that you're goiPerson110:  die. I've had enough.\nLeo: Eh.",
+      "reference": "Beatrice wants to buy Leo a scarf, but he doesn't like scarves. She cares about his health and will buy him a scarf no matter his opinion.",
+      "prediction": "Person101 is in town and wants to buy scarfs. Leo doesn't have one.",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.2857142857142857,
+          "precision": 0.5714285714285714
+        },
+        "rouge2": {
+          "recall": 0.1111111111111111,
+          "precision": 0.23076923076923078
+        },
+        "rougeL": {
+          "recall": 0.21428571428571427,
+          "precision": 0.42857142857142855
+        }
+      },
+      "facts": [
+        {
+          "fact": "Beatrice wants to buy Leo a scarf, but he doesn't like scarves.",
+          "found": false
+        },
+        {
+          "fact": "She cares about his health and will buy him a scarf no matter his opinion.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person111: This job is wearing me up\nPerson112: Oh no! I thought you loPerson113: \nJoe: I do, but because of it they give mPerson114: e work\nSam: Shit, this sucks man, don't lePerson115: burn you out\nTim: ExactlPerson116: ke my friePerson117: rry\nJoe: What did he do?\nTim: Quit eventually, but he had trouble sleeping, constantly tirPerson118: nd turned out to have an ulcer\nJoe: Fuck! I gotta slow down",
+      "reference": "Joe's job is wearing him up. Tim's friend Terry quit his job because he was burned out.",
+      "prediction": "Joe thinks the job is burning him out.",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.3157894736842105,
+          "precision": 0.75
+        },
+        "rouge2": {
+          "recall": 0.05555555555555555,
+          "precision": 0.14285714285714285
+        },
+        "rougeL": {
+          "recall": 0.2631578947368421,
+          "precision": 0.625
+        }
+      },
+      "facts": [
+        {
+          "fact": "Joe's job is wearing him up.",
+          "found": true
+        },
+        {
+          "fact": "Tim's friend Terry quit his job because he was burned out.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.5
+    },
+    {
+      "post": "Person119: Hello\nPerson120:  HePerson121: : Have you been to I-max cinePerson122: lePerson123: ailey:  You planning on tPerson124: \nWhitneyPerson125: ybe\nWhitney: But it all depends if you will be available the day Aqua man is Person126: leased\nHailey:  I'll break the laws to makePerson127:  it😂\nWhitney: HahaPerson128: t is Person129: iley:  Cool.\nWhitney: Before I forget Shadrack and his girlfriendPerson130:  accompanyinPerson131: ey:  Even better.\nWhitney: Fine.Person132:  I will see you then.\nHailey:  Definitely",
+      "reference": "Hailey hasn't been to I-max cinema yet and Whitney wants to take her to one to watch Aquaman. Hailey'll do everything to find some time for it. Whitney informs Hailey that Shadrack and his girlfriend are going with them.",
+      "prediction": "Hailey and Whitney are going to see Aquaman at I-max cinema.",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.23809523809523808,
+          "precision": 0.8333333333333334
+        },
+        "rouge2": {
+          "recall": 0.0975609756097561,
+          "precision": 0.36363636363636365
+        },
+        "rougeL": {
+          "recall": 0.11904761904761904,
+          "precision": 0.4166666666666667
+        }
+      },
+      "facts": [
+        {
+          "fact": "Hailey hasn't been to I-max cinema yet and Whitney wants to take her to one to watch Aquaman.",
+          "found": false
+        },
+        {
+          "fact": "Hailey'll do everything to find some time for it.",
+          "found": false
+        },
+        {
+          "fact": "Whitney informs Hailey that Shadrack and his girlfriend are going with them.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person133: hi kiddo, got home alright?\nPerson134: sPerson135: ne: did mum pick you up from the sPerson136: \nTommy: no, she texted me I shouldPerson137:Person138: ayne: :(\nTommy: it's alright! she'Person139: hooPerson140: dy\nWayne: forgot\nTommy: thanks for tPerson141: end dadPerson142: ed iPerson143: e: what most?\nTommy: angling\nWayPerson144: hPerson145: l do it again. Promised.\nToPerson146: ol\nTommy:Person147: ou send mPerson148: ics pls?Person149:  on their way\nWayne: <file_photo>\nToPerson150: anks dad!\nWayne: talk to you later kiddo.In the evening?\nTommy: yeah",
+      "reference": "Tommy took a bus. He enjoyed the weekend with Wayne. They will talk in the evening.",
+      "prediction": "Tommy's father forgot to pick him up from the s.",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.125,
+          "precision": 0.18181818181818182
+        },
+        "rouge2": {
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "recall": 0.125,
+          "precision": 0.18181818181818182
+        }
+      },
+      "facts": [
+        {
+          "fact": "Tommy took a bus.",
+          "found": false
+        },
+        {
+          "fact": "He enjoyed the weekend with Wayne.",
+          "found": false
+        },
+        {
+          "fact": "They will talk in the evening.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person151: Have you heard how much fuss British media made about meet and greet with James Charles in Birmingham?\nPerson152: no...! what happePerson153: ora: Well, there was a meet and greet with James Charles in one of the malls in Birmingham and about 8000 fans showed upPerson154: t.\nCora: It cause a gridlock around the mall and - of course - British media had to make some (quite negative) coPerson155: on it.\nEllie: they came for Person156: James?! >:(\nEllie: i Person157:  snaPerson158:  :p :D\nCora: Haha :D\nCora: You shouldn't watch so much youtube, you're Person159:  weirder and weirder. :d\nEllie: sistPerson160: t up :P so, what did they say?\nCora: ;) :* \"Daily Mail\" was surprised that a meet and greet with a \"virtually unPerson161:  youtuber gathered 8000 people. :p\nCora: A host from LPerson162: o find an answer to an unanswerable question: \"Who is James Charles?\". Eventually JPerson163: lled him and introduced himself. OnPerson164: :D\nEllPerson165: ere's something called google lol\nCora: Right? :p\nCora: Some hosts from ITV Central couldn't Person166: eir hPerson167: ound the fact that a guy can wear makeup.\nEllie: really???\nEllie: smh it's 21st century, they should hPerson168: ticed already...  there are so many amazing male makeup artists\nCora: I agree! There are still plenty of dinosaurs in the media. :/",
+      "reference": "There was a meet-and-greet with James Charles in Birmingham which gathered 8000  people.",
+      "prediction": "British media gathered 8000 fans to meet and greet James Charles in one of the malls in",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.5333333333333333,
+          "precision": 0.47058823529411764
+        },
+        "rouge2": {
+          "recall": 0.35714285714285715,
+          "precision": 0.3125
+        },
+        "rougeL": {
+          "recall": 0.4,
+          "precision": 0.35294117647058826
+        }
+      },
+      "facts": [
+        {
+          "fact": "There was a meet-and-greet with James Charles in Birmingham which gathered 8000  people.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person169: Any room in any of the cars going to the infinity pool? Im more handicapped than usual since I twisted my ancle yesterday :(\nPerson170: we can give you a lift. Don’t think the car can make it all the way up, so will park at the bottom and hike upPerson171: : Then I think I have to skip - cant really walk on my legPerson172: used: But thanksPerson173: \nIPerson174:  :(\nDan: I’m pretty sure Mr.Budd could make it, it’s 4wheel drive, if mr.budd is going, although I haven’t sePerson175:  hill \nLuke: have you been up there? how bad is Person176: ad actually?\nLukePerson177:  that explains it\nLuke: Person178: , is it vistas de olas?\nBen: Yes! Vistas de olas",
+      "reference": "Steffen twisted his ankle yesterday and needs a lift to the infinity pool. Irene's car probably won't make it up the hill, so they'd have to park at the bottom and hike up. Mr.Budd should make it up the hill since it's a 4-wheel drive.",
+      "prediction": "Person169 asks if there are cars going to the infinity pool and Person170 offers",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.11764705882352941,
+          "precision": 0.42857142857142855
+        },
+        "rouge2": {
+          "recall": 0.06,
+          "precision": 0.23076923076923078
+        },
+        "rougeL": {
+          "recall": 0.09803921568627451,
+          "precision": 0.35714285714285715
+        }
+      },
+      "facts": [
+        {
+          "fact": "Steffen twisted his ankle yesterday and needs a lift to the infinity pool.",
+          "found": false
+        },
+        {
+          "fact": "Irene's car probably won't make it up the hill, so they'd have to park at the bottom and hike up.",
+          "found": false
+        },
+        {
+          "fact": "Mr.Budd should make it up the hill since it's a 4-wheel drive.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person179: I'm 10 min late..\nPerson179: sPerson180: ura: no worries, I'll waPerson181: ide\nJack: ok.",
+      "reference": "Laura and Jack are about to meet. Jack is running 10 minutes late.",
+      "prediction": "Person179 will be 10 minutes late. Person180 will find out what to do next.",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.3076923076923077,
+          "precision": 0.2857142857142857
+        },
+        "rouge2": {
+          "recall": 0.16666666666666666,
+          "precision": 0.15384615384615385
+        },
+        "rougeL": {
+          "recall": 0.23076923076923078,
+          "precision": 0.21428571428571427
+        }
+      },
+      "facts": [
+        {
+          "fact": "Laura and Jack are about to meet.",
+          "found": false
+        },
+        {
+          "fact": "Jack is running 10 minutes late.",
+          "found": false
+        }
+      ],
+      "nli_recall": 0.0
+    },
+    {
+      "post": "Person182: So bored!\nPerson183: Well... can't help you tPerson184: ate: StilPerson185: ork\nJill: ugh I needPerson186: nd a job\nJill: I've watched everythingPerson187: utube already\nNate: Doubt it :P I'll call you when I get off work",
+      "reference": "Jill is bored and has watched YouTube. Nate is at work and will call Jill when he finishes it.",
+      "prediction": "Nate will call Jill when he gets off work.",
+      "rouge": {
+        "rouge1": {
+          "recall": 0.3684210526315789,
+          "precision": 0.7777777777777778
+        },
+        "rouge2": {
+          "recall": 0.2222222222222222,
+          "precision": 0.5
+        },
+        "rougeL": {
+          "recall": 0.3157894736842105,
+          "precision": 0.6666666666666666
+        }
+      },
+      "facts": [
+        {
+          "fact": "Jill is bored and has watched YouTube.",
+          "found": false
+        },
+        {
+          "fact": "Nate is at work and will call Jill when he finishes it.",
+          "found": true
+        }
+      ],
+      "nli_recall": 0.5
+    }
+  ]
+}
