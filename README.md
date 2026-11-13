@@ -60,7 +60,7 @@ Dealing with fully irrelevant data, human errors, and informal language.
 ### 4. Proposed evaluation
 | Metric / test | What it measures | How it will be calculated | Target / success criterion |
 |---|---|---|---|
-| Recall | How many outcomes it correctly reports | TP/(TP+FN) | 100% (It's bad if any major outcomes are not reported) |
+| Recall | How many outcomes it correctly reports | TP/(TP+FN) | 90% (It's bad if any major outcomes are not reported) |
 | Recall | How much personal information was correctly identified and redacted | TP/(TP+FN) | 90% |
 
 - **Evaluation examples:** [How will you build or select a development set?]
@@ -97,8 +97,8 @@ Including personal information or the report is missing any important details.
 WhatsApp-style-Conversations-Ar-En-Zh-Ko-Logs-Pack [Link](https://huggingface.co/datasets/ChristianCaballero/WhatsApp-style-Conversations-Ar-En-Zh-Ko-Logs-Pack)  
 facebook/bart-large-cnn  
 google/flan-t5-large  
-- **Example 1:** Input: [non-sensitive example] → Output: [result]
-- **Example 2:** Input: [non-sensitive example] → Output: [result]
+- **Example 1:** Input: ******: Pogba\n****: Pogboom\n******: what a s strike yoh!\n****: was off the seat the moment he chopped the ball back to his right foot\n******: me too dude\n****: hope his form lasts\n******: This season he's more mature\n****: Yeah, Jose has his trust in him\n******: everyone does\n****: yeah, he really deserved to score after his first 60 minutes\n******: reward\n****: yeah man\n******: cool then \n****: cool → Output: Richie and Clay saw a very good football game, with one football player chopping the ball back to his foot, which was particularly exciting. Jose has trust in that player.
+- **Example 2:** Input: Person0: r/dogs\nPerson1: Could the break up/move have made my dog depressed?\nPOPerson15: am currently going through the heartbreak of a long term relationship that I ended and I think my dog is feeling just as terrible because of it. \n\nMy boyfriend and I adopted him 2 years ago but he's really been my dog because my boyfriend rarely paid attention to him. Even so, my dog was obsessed with him. Always wanted to play and if he was around, it's like I was invisible. Anyway, we lived in a two bedroom and gave my dog run of the second bedroom while we were at work. He hated the neighborhood because of all the noise so his walks were always short but he loved sitting in the sunlight in his bedroom and was always down to play. Basically, he was a happy dog. \n\nThen we moved to the west cost and my dog LOVED IT! Outside time was his favorite time. He would always stare longingly at the door and loved to go out to the balcony and people watch. Time of his life. \n\nThe breakup came around and my dog and I moved back to the east coast into my moms place where I am sharing a bedroom with my two siblings. This place drains the life out of me because there is no sunlight. But my dog is taking it pretty badly. It's been just over a week and he's slowly becoming more lethargic and withdrawn. His food hadn't changed at all and I play with him just as much if not more than before and he has two other people that smother him with petting all the time. \n\nHe keeps hiding under the bed and won't respond to commands. He sleeps all day and only wants to play for a few minutes. He hates going out now and the sight of his leash sends him running. He hasn't touched his food all day today. I think he hates this place more than I do. \n\nMy sister took him to her friend's place so he can play with two other dogs and she told me he was wagging his tail and eager to play and roam around. \n\nThis is making me feel worse. I want to make him feel better. What do I do? → Output: moved back to east coast from west coast after breakup and my dog is not himself anymore. What do I do to make him better?
 
 ### Attempts and outcomes
 | Attempt / change | Worked? (Yes / Partly / No) | Evidence (output, metric, link) | What we learned / next step |
@@ -126,28 +126,48 @@ google/flan-t5-large
 **Deliverable during Week 8 Lab:** Preliminary evaluation results, metrics, development-set details, and 2–3 representative successes or failures. Include what you will improve next.
 
 ### Evaluation setup
-- **Development data:** [Source, size, selection, annotations, link or access instructions]
-- **Metrics and rationale:** [Why these metrics reflect the intended use]
+- **Development data:** [WhatsApp-style-Conversations](https://huggingface.co/datasets/ChristianCaballero/WhatsApp-style-Conversations-Ar-En-Zh-Ko-Logs-Pack) [openai_summarize_tldr](https://huggingface.co/datasets/CarperAI/openai_summarize_tldr) [synthetic-chat-logs-pii-spans](https://huggingface.co/datasets/aitrainingdatabroker/synthetic-chat-logs-pii-spans) [pii-masking-400k](https://huggingface.co/datasets/ai4privacy/pii-masking-400k) [samsum](https://huggingface.co/datasets/knkarthick/samsum)
+- **Metrics and rationale:**
+ROUGE: The ultimate goal of the project is generate human-readable and effective summaries of text chats and, more specifically, the measurable field outcomes they discuss. So, given a dataset centered around summarizing with good, human-written summary examples, ROUGE scores are a great fit given its purpose for comparing AI-generated text with human text.
+Recall: For redaction, we 
 - **Comparison:** [Baseline versus current approach, if different]
 
-| System / version | Metric 1 | Metric 2 | Notes |
+| System / version | Metric | Value | Notes |
 |---|---:|---:|---|
-| Baseline | [Value] | [Value] | [Notes] |
+| Baseline | Rouge1 recall : CarperAI/openai_summarize_tldr : google/flan-t5-large | 0.0827 | flan often erroneously copied sequences |
+| Baseline | Rouge1 precision : CarperAI/openai_summarize_tldr : google/flan-t5-large | 0.225 | flan often erroneously copied sequences |
+| Baseline | Rouge2 recall : CarperAI/openai_summarize_tldr : google/flan-t5-large | 0.0165 | flan often erroneously copied sequences |
+| Baseline | Rouge2 precision : CarperAI/openai_summarize_tldr : google/flan-t5-large | 0.0528 | flan often erroneously copied sequences |
+| Baseline | Rouge3 recall : CarperAI/openai_summarize_tldr : google/flan-t5-large | 0.0594 | flan often erroneously copied sequences |
+| Baseline | Rouge3 precision : CarperAI/openai_summarize_tldr : google/flan-t5-large | 0.164 | flan often erroneously copied sequences |
+| Baseline | samsum flan nli_outcome_recall | 0.1463 | Important chat outcomes were not summarized due to seq2seq models too frequently copying sequences, even with sampling with high temperature generation parameters |
+| Baseline | Redaction recall targeted | 0.193 | Needs improvement for phone numbers and names |
+| Baseline | samsum BART plain rouge1 : bart-large-cnn | 0.332 | BART often erroneously copied sequences |
+| Baseline | samsum BART plain rouge2 : bart-large-cnn | 0.1275 | BART often erroneously copied sequences |
+| Baseline | samsum BART plain rougeL : bart-large-cnn | 0.26 | BART often erroneously copied sequences |
+| Baseline | samsum flan plain rouge1 flan-t5-large | recall=0.2734, precision=0.4322 | flan often erroneously copied sequences |
+| Baseline | samsum flan plain rouge2 flan-t5-large | recall=0.1258, precision=0.1975 | flan often erroneously copied sequences |
+| Baseline | samsum flan plain rougeL flan-t5-large | recall=0.2311, precision=0.3610 | flan often erroneously copied sequences |
+| Baseline | openai_summarize_tldr flan rouge1 flan-t5-large | recall=0.1069 precision=0.2582 | flan often erroneously copied sequences |
+| Baseline | openai_summarize_tldr flan rouge2 flan-t5-large | recall=0.0205 precision=0.05496 | flan often erroneously copied sequences |
+| Baseline | openai_summarize_tldr flan rougeL flan-t5-large | recall=0.08074 precision=0.2008 | flan often erroneously copied sequences |
 | Current | [Value] | [Value] | [Notes] |
 
 ### Successes, failures, and interpretation
 | Example / category | Expected behavior | Actual behavior | Success or failure? | Likely reason |
 |---|---|---|---|---|
-| [Case] | [Expected] | [Observed] | [Status] | [Hypothesis] |
+| Summarization | For a decoder-only model, follow the given template in the system prompt to create a categorized report | Template followed, report correctly generated | Success | Switched from encoder-decoder to decoder-only, used transformer library's chat template methods, changed generation parameters to disable sampling, add preprocessing stage to remove system messages, special characters, and embedded media strings |
+| Resolving out of memory errors | VRAM stays within expected range (eg 4-6 GB for Qwen3 0.6B) | Allocated VRAM was as expected | Success | Generating summaries one at a time instead of passing all sequences at once, changing data format to bfloat16, regularly flushing CUDA |
+| Redaction | Names and other PII redacted and replaced with aliases | Most PII redacted, names in chats not redacted, unusual phone number formats not supported | Failure | Need more queries for different PII formats, need to add support for finding words similar to known names |
 
-- **What improved?** [Evidence]
-- **What did not improve?** [Evidence]
-- **Next experiment:** [Specific change and how you will measure it]
+- **What improved?** Chat summarization greatly improved. The generated report now contains multiple lines about field outcomes. Unlike last week, no copied sequences or blatant hallucinations were observed.
+- **What did not improve?** Redaction and evaluations. The redaction module was bugfixed, but no new features were added. Our previous evaluation setup must now be changed, as the summarizer now follows a chat template that does not align with the expected human-written predictions in the rouge scoring.
+- **Next experiment:** In the redaction stage, perform an additional pass searching for substrings similar to known names, and remove if found. As before, redaction will be evaluated with recall. Evaluations must also be made for audio transcriptions, likely with rouge scoring. It may be pertinent to classify and purge irrelevant text lines during the preprocessing stage, though small text generation models with proper chat templates have demonstrated the ability to discern which chat is relevant and which is not.
 
 ### Individual contributions during that week
 | Member | Work completed | Result (worked / partly / failed) | Evidence | Next step |
 |---|---|---|---|---|
-| [Name] | [Specific work] | [Status] | [Link] | [Next step] |
+| Davis Kim | Summarizer improvements/fixes: Testing decoder-only models, memory management, chat template + system prompt. Preprocessing stage for purging unnecessary text from the chat exports. Redaction bug fixes. | Worked | See commit history and [PR #1](https://github.com/SCU-CSEN166/Dandelion1/pull/1) | Improve redaction scanning, integrate audio transcription module, adjust evaluation setups |
 
 ---
 
