@@ -11,10 +11,13 @@
 ## Remember - Best Practices
 
 ### Data access and privacy
-[Explain where authorized data can be accessed. Do not commit personal information, private WhatsApp exports, API keys, credentials, or restricted grant/application records. Use synthetic or anonymized examples in the README.]
+All used datasets are publicly accessible and linked when mentioned. These datasets do not contain real personal information.
 
 ### Known limitations
-[Keep a current list of what the system cannot reliably do.]
+- The system may lose information on large chats when using models with small input sizes due to repeated summarizations
+-   This can also drastically increase processing time
+- The system does not yet properly insert transcribed audio into text prior to generation
+- The system cannot find and redact all information, sometimes leading to mismatches between names and censored aliases
 
 ## Week 5 — Scope: Project Plan
 
