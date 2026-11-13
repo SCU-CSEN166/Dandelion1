@@ -11,10 +11,13 @@
 ## Remember - Best Practices
 
 ### Data access and privacy
-[Explain where authorized data can be accessed. Do not commit personal information, private WhatsApp exports, API keys, credentials, or restricted grant/application records. Use synthetic or anonymized examples in the README.]
+All used datasets are publicly accessible and linked when mentioned. These datasets do not contain real personal information.
 
 ### Known limitations
-[Keep a current list of what the system cannot reliably do.]
+- The system may lose information on large chats when using models with small input sizes due to repeated summarizations
+-   This can also drastically increase processing time
+- The system does not yet properly insert transcribed audio into text prior to generation
+- The system cannot find and redact all information, sometimes leading to mismatches between names and censored aliases
 
 ## Week 5 — Scope: Project Plan
 
@@ -130,7 +133,7 @@ google/flan-t5-large
 - **Metrics and rationale:**
 ROUGE: The ultimate goal of the project is generate human-readable and effective summaries of text chats and, more specifically, the measurable field outcomes they discuss. So, given a dataset centered around summarizing with good, human-written summary examples, ROUGE scores are a great fit given its purpose for comparing AI-generated text with human text.
 Recall: For redaction, we 
-- **Comparison:** [Baseline versus current approach, if different]
+- **Comparison:** Original approach used a sequence-to-sequence model with a barebones prefix to generate summaries. Current approach uses a text generation model with a more deliberate chat system prompt with an additional preprocessing stage. Current approach retains the one-at-a-time block summarization so that VRAM is not exhausted
 
 Important note: Due to the redaction stage's use of aliases and the potential for missed names, NLI evaluation can be artificially reduced due to name mismatches. Additionally, the evaluation scripts currently treat redaction as an optional step and have no knowledge of the unredacted info, limiting the information it has. Additionally, even though the current outputs are clear and helpful from a human perspective, the ROUGE scores collapse because of the summarizer following a report template, which does not match the expected results when calculating the ROUGE scores. As a result, we've determined that our previous evaluation metrics must be changed given how significantly we updated the project this week.
 | System / version | Metric | Value | Notes |
