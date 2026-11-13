@@ -1,3 +1,4 @@
+import re
 from functools import lru_cache
 import gc
 import torch
@@ -17,6 +18,11 @@ DEFAULT_SYSTEM_PROMPT = (
 
 OLD_DEFAULT_PREFIX = "Summarize all following text in your own words:\r\n"
 
+
+
+def _strip_thinking(text: str) -> str:
+    """Remove a model's <think>...</think> reasoning block (e.g. Qwen3) so it does not end up in the report."""
+    return re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
 
 def format_prompt(
     tokenizer,
@@ -180,7 +186,7 @@ def _generate_chunk(
         if len(summary_ids) == 0:
             summary_ids = output[0]
 
-    summary = tokenizer.decode(summary_ids, skip_special_tokens=True).strip()
+    summary = _strip_thinking(tokenizer.decode(summary_ids, skip_special_tokens=True))
 
     del input_ids, attention_mask, output
     if torch.cuda.is_available():

@@ -1,0 +1,382 @@
+Abogeta
+Abothuguchi Central
+Abothuguchi East
+Ainabkoi
+Ainamoi
+Aldai
+Amagoro
+Amukura
+Asego
+Bahari
+Bahati
+Bamba
+Baringo
+Baringo Central
+Baringo County
+Barwesa
+Belgut
+Bomet
+Bomet Central
+Bomet County
+Bondo
+Bumula
+Bungoma
+Bungoma County
+Buret
+Busia
+Busia County
+Butere
+Butula
+Chakol
+Changamwe
+Chepalungu
+Chepkorio
+Cheptais
+Cherangany
+Chesumei
+Chilchila
+Chuka
+Chuluni
+Dadaab
+Dagoretti
+Danyere
+Ekerenyo
+Elburgon
+Eldama Ravine
+Elgeyo-Marakwet
+Elgeyo-Marakwet County
+Embakasi
+Embu
+Embu County
+Emgwen
+Endebess
+Etago
+Evurore
+Gachoka
+Galore
+Garissa
+Garissa County
+Garissa Township
+Gatanga
+Gatundu
+Gatundu North
+Gichugu
+Gilgil
+Githunguri
+Gwassi
+Hamisi
+Hindi
+Homa Bay
+Homa Bay County
+Igembe North
+Igoji
+Ikolomani
+Ileho
+Imenti North
+Isiolo
+Isiolo County
+Island
+Juja
+Kabartonjo
+Kabati
+Kabete
+Kabiyet
+Kabondo
+Kabras
+Kahuro
+Kaiti
+Kajiado
+Kajiado Central
+Kajiado County
+Kakamega
+Kakamega County
+Kakuma
+Kaloleni
+Kamara
+Kamariny
+Kandara
+Kanduyi
+Kangema
+Kangundo
+Kapcherop
+Kaplamai
+Kapsabet
+Kapsaret
+Kapseret
+Kaptama
+Kaptumo
+Kasarani
+Kasikeu
+Kasipul
+Kathiani
+Kathonzweni
+Kegonga
+Kehancha
+Keiyan
+Kericho
+Kericho County
+Keringet
+Kesses
+Keumbu
+Khwisero
+Kiambaa
+Kiambu
+Kiambu County
+Kiamwangi
+Kibera
+Kibwezi
+Kibwezi East
+Kieni East
+Kieni West
+Kigumo
+Kiharu
+Kikambala
+Kikuyu
+Kilibwoni
+Kilifi
+Kilifi County
+Kilome
+Kimilili
+Kiminini
+Kimulot
+Kinangop
+Kipipiri
+Kipkaren
+Kipkelion
+Kipkelion West
+Kipsaraman
+Kirindoni
+Kirinyaga
+Kirinyaga Central
+Kirinyaga County
+Kirinyaga West
+Kirisia
+Kisau
+Kisauni
+Kisii
+Kisii County
+Kisumu
+Kisumu Central
+Kisumu County
+Kisumu East
+Kisumu West
+Kitui
+Kitui Central
+Kitui County
+Kitui East
+Kongelai
+Konoin
+Kopsiro
+Kosirai
+Kubo
+Kuresoi
+Kwale
+Kwale County
+Kwanza
+Kyeni
+Laikipia
+Laikipia County
+Laikipia East
+Laikipia West
+Lamu
+Lamu County
+Lamu West
+Lamuria
+Lari
+Lelan
+Likoni
+Likuyani
+Limuru
+Loita
+Loitokitok
+Lokichoggio
+Lolgorian
+Londian
+Longisa
+Luanda
+Lugari
+Lurambi
+Mabera
+Machakos
+Machakos County
+Madiany
+Madogo
+Magumoni
+Makadara
+Makueni
+Makueni County
+Makuyu
+Malakisi
+Malindi
+Mandera
+Mandera County
+Manyatta
+Mara
+Marani
+Marigat
+Marsabit
+Marsabit County
+Masaba
+Matete
+Mathioya
+Mathira
+Mathira East
+Mathira West
+Matuga
+Matungu
+Matungulu
+Mavoko
+Mbita
+Mbitini
+Mbogoini
+Meru
+Meru County
+Migori
+Migori County
+Miriga Mieru East
+Miriga Mieru West
+Mogotio
+Moiben
+Molo
+Mombasa
+Mombasa County
+Mosop
+Mpeketoni
+Msambweni
+Mtito Andei
+Muhoroni
+Mukurwe-Ini
+Mukurweini
+Mumias
+Municipality
+Murang'a
+Murang'a County
+Muranga
+Muranga County
+Muthambi
+Mutomo
+Mwatate
+Mwea
+Mwimbi
+Nairobi
+Nairobi County
+Naivasha
+Nakuru
+Nakuru County
+Nakuru Muni.
+Nakuru West
+Namanga
+Nandi
+Nandi County
+Nandi Hills
+Narok
+Narok County
+Narok North
+Navakholo
+Ndanai
+Ndaragwa
+Ndhiwa
+Ndia
+Ndoleli
+Ngarua
+Ngong
+Nguu
+Njoro
+Nkuene
+North Kinangop
+North Tharaka
+Nyacheki
+Nyahururu
+Nyakach
+Nyamache
+Nyamarambe
+Nyamira
+Nyamira County
+Nyandarua
+Nyandarua County
+Nyando
+Nyarongi
+Nyatike
+Nyeri
+Nyeri Central
+Nyeri County
+Ol Joro Orok
+Ol Kalou
+Olenguruone
+Oljoro Orok
+Olokurto
+Ololunga
+Oropoi
+Othaya
+Pumwani
+Rarieda
+Riana
+Rongai
+Rongo
+Roret
+Ruiru
+Rumuruti
+Runyenjes
+Sabatia
+Samburu
+Samburu County
+Sankuri
+Sebule
+Sericho
+Shinyalu
+Siaya
+Siaya County
+Sigowet
+Sigowet/Soin
+Siongiroi
+Sirisia
+Sotik
+South Kinangop
+Suba East
+Suneka
+Taita-Taveta
+Taita-Taveta County
+Tana River
+Tana River County
+Tangulbei
+Tarbaj
+Taveta
+Tetu
+Tharaka-Nithi
+Tharaka-Nithi County
+Tigania East
+Tigania West
+Timau
+Tinderet
+Tongaren
+Trans-Nzoia
+Trans-Nzoia County
+Transmara West
+Tseikuru
+Turbo
+Turkana
+Turkana County
+Uasin Gishu
+Uasin Gishu County
+Ugunja
+Ukwala
+Uranga
+Uringu
+Usigu
+Vihiga
+Vihiga County
+Vitengeni
+Wajir
+Wajir County
+Wamba
+Webuye
+Webuye East
+Webuye West
+Wenje
+West Pokot
+West Pokot County
+Westlands
+Wundanyi
+Yala
+Yathui
+Yatta
