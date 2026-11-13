@@ -152,7 +152,9 @@ Important note: Due to the redaction stage's use of aliases and the potential fo
 | Baseline | openai_summarize_tldr flan rouge1 flan-t5-large | recall=0.1069 precision=0.2582 | flan often erroneously copied sequences |
 | Baseline | openai_summarize_tldr flan rouge2 flan-t5-large | recall=0.0205 precision=0.05496 | flan often erroneously copied sequences |
 | Baseline | openai_summarize_tldr flan rougeL flan-t5-large | recall=0.08074 precision=0.2008 | flan often erroneously copied sequences |
-| Current | [Value] | [Value] | [Notes] |
+| Current | knkarthick/samsum Qwen/Qwen3-0.6B rouge1 for n=50 | F-score=0.1633 recall=0.6002 precision=0.0974 | Generated report is significantly longer than the human benchmark; See note above table |
+| Current | knkarthick/samsum Qwen/Qwen3-0.6B rouge2 for n=50 | F-score=0.0433 recall=0.1667 precision=0.0257 | '' |
+| Current | knkarthick/samsum Qwen/Qwen3-0.6B rougeL for n=50 | F-score=0.1139 recall=0.4356 precision=0.0675 | '' |
 
 ### Successes, failures, and interpretation
 | Example / category | Expected behavior | Actual behavior | Success or failure? | Likely reason |
