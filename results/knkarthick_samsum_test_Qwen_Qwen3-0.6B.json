@@ -1,0 +1,1176 @@
+{
+  "model": "Qwen/Qwen3-0.6B",
+  "dataset": "knkarthick/samsum",
+  "n": 50,
+  "redact": false,
+  "seed": 42,
+  "mean_rouge": {
+    "rouge1": {
+      "fmeasure": 0.1633,
+      "recall": 0.6002,
+      "precision": 0.0974
+    },
+    "rouge2": {
+      "fmeasure": 0.0433,
+      "recall": 0.1667,
+      "precision": 0.0257
+    },
+    "rougeL": {
+      "fmeasure": 0.1139,
+      "recall": 0.4356,
+      "precision": 0.0675
+    }
+  },
+  "examples": [
+    {
+      "index": 0,
+      "input": "Olafur: are we doing anything for New Year's Eve?\nNathalie: I was thinking about something classy, like opera or sth like that\nZoe: how much does it cost?\nOlafur: opera is not for me\nNathalie: so what do you propose?\nNathalie: it's 100$ \nOlafur: I was thinking about partying somewhere\nNathalie: partying sounds fun, as long as it will be classy\nZoe: <file_link>\nZoe: Breakfast at Tiffany's party sounds classy\nOlafur: <file_link> \nOlafur: is it classy enough?\nNathalie: :O\nNathalie: this club is AMAZING\nZoe: whoa\nNathalie: we'll going to Soho then\nOlafur: we just need to hurry up and buy some tickets soon\nZoe: sure",
+      "reference": "Nathalie, Olafur and Zoe are planning the New Year's Eve. Nathalie wants something classy. Olafur doesn't like opera. They want to go to the Breakfast at Tiffany's party in Soho.",
+      "prediction": "<think>\nOkay, let's start by breaking down the user's request. They want a Field Outcomes Report from a WhatsApp conversation between four people: Olafur, Nathalie, Zoe, and someone else (Person0). The report needs to have four sections: Practical Actions Completed, Blockers & Technical Issues, Outcomes & Resolutions, and Pending Follow-Ups.\n\nFirst, looking at the conversation, the main points seem to be about planning a party for New Year's Eve. Let's list out each person's input. \n\nPractical Actions Completed would include actions taken. From the messages, they mention buying breakfast at Tiffany",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.3125,
+          "recall": 0.6060606060606061,
+          "precision": 0.21052631578947367
+        },
+        "rouge2": {
+          "fmeasure": 0.09523809523809525,
+          "recall": 0.1875,
+          "precision": 0.06382978723404255
+        },
+        "rougeL": {
+          "fmeasure": 0.171875,
+          "recall": 0.3333333333333333,
+          "precision": 0.11578947368421053
+        }
+      }
+    },
+    {
+      "index": 1,
+      "input": "Javier: Hey do you know any tattoo parlors over here with English speaking employees?\nJudie: Oh there's Warsaw ink\nJavier: the name sounds neat... have you had a tattoo done there?\nJudie: nope but my gf has\nJavier: got a pic?\nJudie: <file_photo>\nJavier: wow that looks amazing\nJavier: how much did she pay?\nJudie: it was a 1000\nJavier: fuck\nJavier: let me just get a tatttoo back in colombia then, thx",
+      "reference": "Javier was initially eager to have a tatoo done at Warsaw Ink but the price turned out to be too high. Javier decided to have a tatoo done in Colombia.",
+      "prediction": "<think>\nOkay, I need to create a Field Outcomes Report based on this WhatsApp conversation between Javier and Judie. Let me start by breaking down each section.\n\nFirst, the Practical Actions Completed. The user mentioned they saw a tattoo parlor named Warsaw ink. So that's one action. Then, when asked about the price, Judie said $1000, which seems like a significant amount. But wait, maybe there's more? Also, Javier mentions getting a \"tatttoo\" back in Colombia. Tatttoo might be a typo for \"tattoo,\" so he wants a tattoo there. That's",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.2113821138211382,
+          "recall": 0.43333333333333335,
+          "precision": 0.13978494623655913
+        },
+        "rouge2": {
+          "fmeasure": 0.049586776859504134,
+          "recall": 0.10344827586206896,
+          "precision": 0.03260869565217391
+        },
+        "rougeL": {
+          "fmeasure": 0.16260162601626016,
+          "recall": 0.3333333333333333,
+          "precision": 0.10752688172043011
+        }
+      }
+    },
+    {
+      "index": 2,
+      "input": "Martha: Hey, can I ask you a question?\nOphelia: Do we know each other?\nMartha: We don't, but do you mind if I ask you about the lenses from your profile picture? they are awesome and I would like to buy the similar ones\nOphelia: it's from Crazy Lenses. They have quite reasonable prices and very fast shipping.\nMartha: Thanks!!! I'll check them :)\nOphelia: No problem :)",
+      "reference": "Martha likes Ophelia's lenses and wants to buy similar ones. Ophelia got them from Crazy Lenses.",
+      "prediction": "<think>\nOkay, let me start by analyzing this WhatsApp conversation. The user wants a Field Outcomes Report based on the given text.\n\nFirst, the practical actions completed. Martha asked Ophelia about her profile picture lenses. She mentions that she likes the price and delivery speed. So, Martha has taken action by asking about the lenses, which is a concrete task. That should be included under Practical Actions Completed.\n\nNext, blockers or technical issues. There's no mention of equipment failure, vehicle trouble, or any technical problems here. All interactions seem straightforward without issues. So, Blockers & Technical Issues might list nothing here.\n\nOutcomes",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.13445378151260504,
+          "recall": 0.47058823529411764,
+          "precision": 0.0784313725490196
+        },
+        "rouge2": {
+          "fmeasure": 0.0,
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "fmeasure": 0.08403361344537814,
+          "recall": 0.29411764705882354,
+          "precision": 0.049019607843137254
+        }
+      }
+    },
+    {
+      "index": 3,
+      "input": "Miranda: Hi S, could we cancel tomorrow's meeting?\nStephanie: again? what happened?\nMiranda: I have to work :(\nStephanie: you work 20 hours a day!\nMiranda: that's what young doctors do\nStephanie: they kill themselves working\nMiranda: no they come close to death but survive and it makes them immortal\nStephanie: as long as you have an explanation :D",
+      "reference": "Miranda can't make her meeting with Stephanie as she has to work. ",
+      "prediction": "<think>\nOkay, let me start by understanding the user's request. They want me to analyze a WhatsApp conversation between Miranda and Stephanie about their job responsibilities and potential issues. The goal is to create a structured Field Outcomes Report with specific sections.\n\nFirst, I need to focus only on practical actions completed. From the conversation, Miranda mentions she has to work 20 hours a day, which Stephanie responds with her concern. But since both are talking about this, maybe there's some conflict here. However, the user wants factual outcomes, so perhaps the key point is that Miranda is working too hard, leading to Stephanie's response.",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.1322314049586777,
+          "recall": 0.6153846153846154,
+          "precision": 0.07407407407407407
+        },
+        "rouge2": {
+          "fmeasure": 0.05042016806722689,
+          "recall": 0.25,
+          "precision": 0.028037383177570093
+        },
+        "rougeL": {
+          "fmeasure": 0.09917355371900825,
+          "recall": 0.46153846153846156,
+          "precision": 0.05555555555555555
+        }
+      }
+    },
+    {
+      "index": 4,
+      "input": "Sam: Where are you?\nKate: downstairs\nSam: already?\nKate: sure, come down\nJeff: We're in the little room next to the reception\nKate: have you noticed the woman making a cake?\nSam: yes\nKate: did you see the cake?\nSam: I didn't pay attention, why?\nKate: there was a huge penis on it\nKate: made of marzipan or sth\nSam: hahah, really?\nKate: when I noticed it, I started laughing\nKate: so she laughed too\nSam: nice\nKate: I asked her what's she doing\nKate: Somebody ordered a cake with a huge penis with balls and chocolate hair\nSam: hahah, I must see it!\nKate: she is working in the small room under the stairs\nSam: right, there is a kitchen",
+      "reference": "Kate and Jeff are downstairs in a room next to the reception. Some lady is making a marzipan cake. ",
+      "prediction": "<think>\nOkay, let me start by analyzing this WhatsApp conversation. The user wants a Field Outcomes Report based on the given text. Let me break down each section.\n\nFirst, the practical actions completed. From the conversation, Sam mentions Kate being at the kitchen, Jeff stating they're in the small room next to the reception. So those two people went into their respective areas. That's two practical actions.\n\nNext, blockers and technical issues. There's no mention of equipment failures, vehicles broken, or resources not available here. All the information seems to be about the individuals' movements without any technical problems noted. So that part should be",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.15748031496062992,
+          "recall": 0.5263157894736842,
+          "precision": 0.09259259259259259
+        },
+        "rouge2": {
+          "fmeasure": 0.064,
+          "recall": 0.2222222222222222,
+          "precision": 0.037383177570093455
+        },
+        "rougeL": {
+          "fmeasure": 0.12598425196850394,
+          "recall": 0.42105263157894735,
+          "precision": 0.07407407407407407
+        }
+      }
+    },
+    {
+      "index": 5,
+      "input": "Pete: What flavour yogurt did you want again? My brain is like a sieve today.\nJen: Pear but only if they've got it. Otherwise don't worry about it.\nPete: I'll have a look around. If they don't have pear can I get a different flavour?\nJen: I don't like any other flavour. If they don't have pear just don't get anything at all then.\nPete: OK.",
+      "reference": "Pete will get a pear yogurt for Jen if they have it.",
+      "prediction": "<think>\nOkay, let's start by looking at this WhatsApp conversation between Pete and Jen. The user wants me to create a Field Outcomes Report based on the given text.\n\nFirst, section 1: Practical Actions Completed. From the conversation, Pete asks about the flavor of yogurt. Jen mentions \"pear\" but says otherwise. Then Pete responds with his own plan. So, he has already decided to check if there's a pear available. That seems like a practical action because he took some initiative to find out what flavors are available. But wait, does that count as completed? Maybe not yet. He said he will look around,",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.11864406779661019,
+          "recall": 0.5833333333333334,
+          "precision": 0.0660377358490566
+        },
+        "rouge2": {
+          "fmeasure": 0.01724137931034483,
+          "recall": 0.09090909090909091,
+          "precision": 0.009523809523809525
+        },
+        "rougeL": {
+          "fmeasure": 0.08474576271186442,
+          "recall": 0.4166666666666667,
+          "precision": 0.04716981132075472
+        }
+      }
+    },
+    {
+      "index": 6,
+      "input": "Bradley: haha look a cat invaded the pitch at Goodison <file_other>\nJill: hahahaha\nJulia: what a sweet little black ball of fur\nJill: here's the video :D <file_other>\nJulia: haha\nBradley: and the commentary :D\nBradley: that's the best entertainment Everton fans have had all season :D",
+      "reference": "A sweet little black cat got into the pitch during the Everton's football match.",
+      "prediction": "<think>\nOkay, let me start by looking at this WhatsApp conversation. The user wants a Field Outcomes Report based on the given text. First, I need to parse each part.\n\nThe first message from Bradley mentions a cat invading the pitch at Goodison. That seems like a problem. Then Jill responds with some comments about the cat and a video link. Julia adds more positive feedback. \n\nNow, breaking down the points into 1-4 sections as specified. For practical actions completed, since there's no specific action taken except maybe the video sharing, but the user says \"concrete tasks,\" so maybe just note the presence of",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.11570247933884298,
+          "recall": 0.4666666666666667,
+          "precision": 0.0660377358490566
+        },
+        "rouge2": {
+          "fmeasure": 0.016806722689075633,
+          "recall": 0.07142857142857142,
+          "precision": 0.009523809523809525
+        },
+        "rougeL": {
+          "fmeasure": 0.09917355371900827,
+          "recall": 0.4,
+          "precision": 0.05660377358490566
+        }
+      }
+    },
+    {
+      "index": 7,
+      "input": "Barry: I'm gonna go march in Women's strike, anyone interested?\nJake: I am, already made plans with some friends, wanna join?\nDave: I am down too, Kelly is coming with me\nBarry: Let's just meet around the campus at noon",
+      "reference": "Barry, Dave, Kelly, and Jake will meet around the campus at 12 to join Women's strike.",
+      "prediction": "<think>\nOkay, let's start by looking at the user's request to create a Field Outcomes Report based on the given WhatsApp conversation. The key points here are to focus only on practical actions completed, blockers/technical issues, outcomes/resolutions, and pending follow-up.\n\nFirst, I need to parse each message carefully. Barry mentions going on a women's strike march, Jake and Dave agreeing to join, and Kelly joining as well. Then they decide to meet around the campus at noon. \n\nFor Practical Actions Completed, the main action seems to be planning the march and meeting time. But wait, does that count as completing? Maybe",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.24193548387096775,
+          "recall": 0.8823529411764706,
+          "precision": 0.14018691588785046
+        },
+        "rouge2": {
+          "fmeasure": 0.11475409836065574,
+          "recall": 0.4375,
+          "precision": 0.0660377358490566
+        },
+        "rougeL": {
+          "fmeasure": 0.14516129032258063,
+          "recall": 0.5294117647058824,
+          "precision": 0.08411214953271028
+        }
+      }
+    },
+    {
+      "index": 8,
+      "input": "Harris: How are U?\nLena: Fine, U?\nHarris: Been better.\nLena: ?\nHarris: My friend Aoki died yesterday.\nLena: O No!\nHarris: Yeah.\nLena: What happened?\nHarris: Not sure yet. Thinking the worst...\nLena: O how awful!\nHarris: Yes.\nLena: You just never know.\nHarris: True.\nLena: Had you seen her lately?\nHarris: Not for a few months. She lives in Michigan.\nLena: Oh, that's far.\nHarris: Not too far but far enough.\nLena: Right.\nHarris: Got to go, mom's calling.\nLena: K bi. Feel better!\nHarris: K will do",
+      "reference": "Harris' friend, Aoki, who lives in Michigan, died yesterday. Harris hasn't seen her for a few months.",
+      "prediction": "<think>\nOkay, let me start by analyzing this WhatsApp conversation. The user wants a Field Outcomes Report based on the given text. Let me break it down step by step.\n\nFirst, the practical actions completed. From the conversation, Harris mentions Lena saying \"Fine\" and then asking about U? But since they're talking about someone named Aoki who died, maybe there was some action taken related to that. However, looking at the messages, I don't see any specific tasks done. Only responses from both people. So perhaps no practical actions were completed here. Wait, but Lena says she saw Aoki recently, which might indicate",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.09756097560975609,
+          "recall": 0.3333333333333333,
+          "precision": 0.05714285714285714
+        },
+        "rouge2": {
+          "fmeasure": 0.01652892561983471,
+          "recall": 0.058823529411764705,
+          "precision": 0.009615384615384616
+        },
+        "rougeL": {
+          "fmeasure": 0.08130081300813008,
+          "recall": 0.2777777777777778,
+          "precision": 0.047619047619047616
+        }
+      }
+    },
+    {
+      "index": 9,
+      "input": "Sam: Are you working tomorrow?\nCarla: No, it's my day off\nSam: I'm free in the afternoon, do you fancy meeting up?\nCarla: Yeah, sure\nSam: Ok, great! Shall we go to Meanwood?\nCarla: Ok, there's that cafe there that does the yummy cakes. Meet you at 2?\nSam: Yes - looking forward to it!\nCarla: See you tom! xx",
+      "reference": "Carla has a day off tomorrow. She will meet Sam in Meanwood in a cafe at 2 pm.",
+      "prediction": "<think>\nOkay, let me start by analyzing this WhatsApp conversation. The user wants a Field Outcomes Report based on the given text.\n\nFirst, the practical actions completed. Sam asked if Carla was working tomorrow, but she said no because it's her day off. Then Sam mentions he's free in the afternoon and asks if they can meet. Carla agrees, so that's one action—meeting up. They plan to go to Meanwood's café where they'll meet at 2 PM. That seems like a concrete task. So point 1 should include those two things.\n\nNext, blockers or technical issues. The only mention here is",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.22399999999999998,
+          "recall": 0.7777777777777778,
+          "precision": 0.1308411214953271
+        },
+        "rouge2": {
+          "fmeasure": 0.04878048780487805,
+          "recall": 0.17647058823529413,
+          "precision": 0.02830188679245283
+        },
+        "rougeL": {
+          "fmeasure": 0.144,
+          "recall": 0.5,
+          "precision": 0.08411214953271028
+        }
+      }
+    },
+    {
+      "index": 10,
+      "input": "Jane: google maps says it is at least 3h <file_other>\nSteven: I used to make it in 2, trust me :D\nJane: but it's almost 300km..\nSteven: the road is new , we will make it ^^\nJane: I don't want  to stress out , let's meet at 4:30 instead of 5, ok?\nSteven: ok, if u reaaly want, we can meet at 4:30\nJane: thx! \nJane: I will wait at the main entrance or where?\nSteven: main entrance is good for me;-) \nSteven: cu",
+      "reference": "Jane wants to leave at 4.30 instead of 5 because Google Maps suggests the 300 km drive should take them at least 3 hours and she doesn't want to be late. She will wait for Steven at the main entrance.",
+      "prediction": "<think>\nOkay, let's start by analyzing this WhatsApp conversation between Jane and Steven. The user wants a Field Outcomes Report with specific sections.\n\nFirst, the practical actions completed. From the conversation, Jane mentions that Google Maps shows the location as at least 3 hours away, which indicates they need to adjust their route. Then Steven confirms the road is new and suggests meeting at 4:30 instead of 5 PM. Both agree to meet there, so those are two practical actions.\n\nNext, blockers and technical issues. There's no mention of equipment failure, vehicle trouble, or any other technical issues here. They seem to",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.28571428571428575,
+          "recall": 0.5,
+          "precision": 0.2
+        },
+        "rouge2": {
+          "fmeasure": 0.12413793103448274,
+          "recall": 0.21951219512195122,
+          "precision": 0.08653846153846154
+        },
+        "rougeL": {
+          "fmeasure": 0.16326530612244897,
+          "recall": 0.2857142857142857,
+          "precision": 0.11428571428571428
+        }
+      }
+    },
+    {
+      "index": 11,
+      "input": "Timmy: Who do u wanna invite?\nGemma: Well, there's u and ur date :)\nTimmy: Not sure about the date, but I'll be there :) who else?\nGemma: I was thinking about Lona and Michelle.\nTimmy: Still thinking ur getting invites to their weddings?\nGemma: It's not like that.\nTimmy: Sure it is ;) just don't wanna admit it ;)\nGemma: Fine! I want to come to their wedding receptions!\nTimmy: There we go :) was it so hard?\nGemma: Yes.\nTimmy: And u think u can change their minds?\nGemma: Dunno.",
+      "reference": "Gemma will invite Timmy and his Date, as well as Lona and Michelle to her wedding.",
+      "prediction": "<think>\nOkay, let me start by analyzing this WhatsApp conversation. The user wants a Field Outcomes Report based on the given text. First, I need to focus only on practical actions completed, blockers, outcomes/resolutions, and pending follow-ups.\n\nLooking at Timmy and Gemma's messages, they're discussing inviting someone to their weddings. Initially, Timmy asks if anyone else is interested, and Gemma mentions Lona and Michelle. Then Timmy says he's still thinking of others, and Gemma responds with her plan to invite them. \n\nNow, looking at the actual content, Timmy states that \"there we go",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.17543859649122806,
+          "recall": 0.625,
+          "precision": 0.10204081632653061
+        },
+        "rouge2": {
+          "fmeasure": 0.053571428571428575,
+          "recall": 0.2,
+          "precision": 0.030927835051546393
+        },
+        "rougeL": {
+          "fmeasure": 0.14035087719298245,
+          "recall": 0.5,
+          "precision": 0.08163265306122448
+        }
+      }
+    },
+    {
+      "index": 12,
+      "input": "Anna: Mum, I have a awful stomachache.\nJoanna: Oh, dear, when did you get it?\nAnna: At night, and it won’t stop:-(\nJoanna: Is it something you ate?\nAnna: Maybe. I'm not sure.\nJoanna: What did you have for breakfast?\nAnna: The usual, cereal with milk and a banana.\nJoanna: Maybe the milk was bad.\nAnna: It didn't smell bad.\nJoanna: Maybe the banana was bad.\nAnna: No, the banana was delicious.\nJoanna: Maybe you just need to go to the bathroom.\nAnna: No, that's not the problem.\nJoanna: Maybe it will go away in a little while.\nAnna: I wish it would :-(\nAnna: Hopefully. If not, maybe we should go and see a doctor.\nJoanna: Yeah, I think so...\nAnna: I’ll get you a hot tea with some fresh mint leaves. Hope it will help. \nJoanna: Please do, I’m in my room...\nAnna: Will be in ten minutes:-)",
+      "reference": "Anna got an awful stomachache at night but she doesn't know its cause. Her mom Joanna will make her hot tea with some fresh mint leaves.",
+      "prediction": "<think>\nOkay, let me start by analyzing this WhatsApp conversation between Anna and Joanna. The user wants a Field Outcomes Report based on the given text.\n\nFirst, the practical actions completed. From what I can see, Anna mentions her stomachache at night, which she attributes to eating certain foods. She also asks about possible causes, but doesn't mention any specific solutions yet. However, there's a part where she suggests going to the bathroom as a solution. So, one action here is suggesting taking a break from the discomfort. But wait, does that count as a practical action? Or is it more of a recommendation?\n\nNext,",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.16417910447761194,
+          "recall": 0.4074074074074074,
+          "precision": 0.102803738317757
+        },
+        "rouge2": {
+          "fmeasure": 0.045454545454545456,
+          "recall": 0.11538461538461539,
+          "precision": 0.02830188679245283
+        },
+        "rougeL": {
+          "fmeasure": 0.1044776119402985,
+          "recall": 0.25925925925925924,
+          "precision": 0.06542056074766354
+        }
+      }
+    },
+    {
+      "index": 13,
+      "input": "Yaz: Going to slimming club tonight?\nMary: Well, I don't want to, but I really should. I've been so bad, though!\nYaz: Me too, choccies, wine, cake, you name it!\nMary: Well, we should bite the bullet. She'll tell us off, I expect. Feels like being back at school!\nYaz: Well, she IS our old cookery teacher! See you at 6ish, pick you up!?\nMary: Yep! See you then!",
+      "reference": "Yaz and Mary are meeting tonight around 6 and going for the slimming club together. They expect to be scolded for eating too much. ",
+      "prediction": "<think>\nOkay, let's start by analyzing this WhatsApp conversation between Mary and Yaz. The user wants me to create a Field Outcomes Report based on the given text.\n\nFirst, looking at the practical actions completed. They both mention going to a Slimming Club, which seems like they're planning their evening together. Mary mentions wanting to \"bite the bullet\" because of her bad habits, and Yaz agrees with that. So, these two actions are concrete—going to the club and agreeing to meet. That covers point 1.\n\nNext, blockers or technical issues. The conversation doesn't seem to have any equipment failures, vehicles broken down",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.2,
+          "recall": 0.5416666666666666,
+          "precision": 0.12264150943396226
+        },
+        "rouge2": {
+          "fmeasure": 0.015625000000000003,
+          "recall": 0.043478260869565216,
+          "precision": 0.009523809523809525
+        },
+        "rougeL": {
+          "fmeasure": 0.10769230769230771,
+          "recall": 0.2916666666666667,
+          "precision": 0.0660377358490566
+        }
+      }
+    },
+    {
+      "index": 14,
+      "input": "Ethan: who's going to see solstafir?\nNoah: solstafir! when?\nNoah: i had no idea they were playing\nArchie: I'm not :D.\nLeo: i'm going ofc!\nEthan: 21.11\nNoah: that's a wednesday... ehh...\nNoah: i'll have to see, might have to stay late at work...\nLeo: nooo you have to come\nEthan: yeah you have to!\nArchie: There are better concerts :P.\nNoah: i know, i would really like to see them, but yeah\nLeo: archie... :P\nEthan: don't mind him :P\nNoah: i'll see and let you know, it would really suck to miss them\nLeo: yup!\nEthan: yup! x2",
+      "reference": "Ethan and Leo are going to see Sólstafir on 21.11. Noah would like to go too, but he might have to stay late at work.",
+      "prediction": "<think>\nOkay, let me start by analyzing this WhatsApp conversation. The user wants a Field Outcomes Report based on the given text. Let me break down each section.\n\nFirst, the practical actions completed. From the conversation, Ethan mentions he's going to see Solstafir on 21.11, which is Wednesday. Noah says he had no idea they were playing, so maybe that's part of the action. Archie jokes about having better concerts, which could be a recommendation. But wait, does any of this count as a practical action? Maybe Ethan planning the trip and Noah confirming the date. So those two points",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.19999999999999998,
+          "recall": 0.48148148148148145,
+          "precision": 0.1262135922330097
+        },
+        "rouge2": {
+          "fmeasure": 0.0625,
+          "recall": 0.15384615384615385,
+          "precision": 0.0392156862745098
+        },
+        "rougeL": {
+          "fmeasure": 0.15384615384615383,
+          "recall": 0.37037037037037035,
+          "precision": 0.0970873786407767
+        }
+      }
+    },
+    {
+      "index": 15,
+      "input": "Natacha: hi, i can come and pick you up at the RER.\nCharles: so  nice. I just landed. I think i'll arrive about 5:30pm. I'll give you a call\nNatacha: ok ,call  me when  you'll be at the station Vesinet. \nCharles: thanks . see you",
+      "reference": "Charles has just landed and he will be at RER about 5.30 PM. Natacha will pick him up from there.",
+      "prediction": "<think>\nOkay, let's start by looking at the user's request to create a Field Outcomes Report based on the given WhatsApp conversation. The report needs four sections: Practical Actions Completed, Blockers & Technical Issues, Outcomes & Resolutions, and Pending Follow-Ups.\n\nFirst, I need to parse the conversation. Natacha mentions picking Charles up at the RER, which indicates that they're planning to meet him there. Then Charles responds with his arrival time and calls Natacha later. Both agree on calling her after arriving at Vesinet. \n\nPractical Actions Completed would include any actions taken directly related to the meeting",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.15000000000000002,
+          "recall": 0.42857142857142855,
+          "precision": 0.09090909090909091
+        },
+        "rouge2": {
+          "fmeasure": 0.0,
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "fmeasure": 0.08333333333333333,
+          "recall": 0.23809523809523808,
+          "precision": 0.050505050505050504
+        }
+      }
+    },
+    {
+      "index": 16,
+      "input": "Steve: hiya the dishwasher has turned up\nMum: good did they install it for you\nSteve: yes they did a good job\nSteve: <file_photo>\nMum: looks really nice\nSteve: yes it does its nice and quiet\nMum: is it a 12 place setting one?\nSteve: I think so, not that I ever have 12 for dinner lol\nMum: not but you dont have to put it on every day\nSteve: no every other\nMum: yes I'm glad you are pleased with it xx\nSteve: I am thanks mum xxx",
+      "reference": "Steve is happy that he got a new dishwasher installed.",
+      "prediction": "<think>\nOkay, let's start by analyzing this WhatsApp conversation between Steve and his mother. The user wants me to create a Field Outcomes Report based on the given text.\n\nFirst, looking at the practical actions completed. Steve mentions installing a dishwasher, which is clear. He also confirms the installation was done well, and he checks if it's a 12-place setting. Since he says \"not that I ever have 12\" and \"you don't have to put it on every day,\" there's some context about usage frequency. But since the report focuses only on actionable outcomes, maybe just stating the installation as completed would",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.11965811965811965,
+          "recall": 0.7,
+          "precision": 0.06542056074766354
+        },
+        "rouge2": {
+          "fmeasure": 0.0,
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "fmeasure": 0.08547008547008547,
+          "recall": 0.5,
+          "precision": 0.04672897196261682
+        }
+      }
+    },
+    {
+      "index": 17,
+      "input": "Joana: wana play some games?\nSandy: what games?\nJoana: maybe dixit?\nJoana: or carcassonne?\nSandy: why not?\nJoana: ok, I'll bring them 2 u\nSandy: great :)",
+      "reference": "Joana will bring Sandy some games like dixit and carcassonne.",
+      "prediction": "<think>\nOkay, let's start by looking at the user's request to create a Field Outcomes Report based on the given WhatsApp conversation. The report needs four sections: Practical Actions Completed, Blockers & Technical Issues, Outcomes & Resolutions, and Pending Follow-ups.\n\nFirst, I need to parse the conversation. Joana asks if they want to play games, Sandy responds with \"what games?\" then mentions possible options: DIXIT or CARCASSONE. Joana picks one, saying she will bring both. Then Sandy agrees and says it's good. \n\nNow, breaking this down into each section. For Practical Actions",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.13461538461538458,
+          "recall": 0.7,
+          "precision": 0.07446808510638298
+        },
+        "rouge2": {
+          "fmeasure": 0.0196078431372549,
+          "recall": 0.1111111111111111,
+          "precision": 0.010752688172043012
+        },
+        "rougeL": {
+          "fmeasure": 0.09615384615384615,
+          "recall": 0.5,
+          "precision": 0.05319148936170213
+        }
+      }
+    },
+    {
+      "index": 18,
+      "input": "Meg: still at school?\nAnn: i have extra math classes\nMeg: so when can i meet you?\nAnn: i will be home at 7",
+      "reference": "Ann is still at school. She will be home at 7 so she can meet Meg then.",
+      "prediction": "<think>\nOkay, let's start by looking at the user's request to create a Field Outcomes Report based on the given WhatsApp conversation. The key points here are to focus only on practical actions completed, blockers/technical issues, outcomes/resolutions, and pending follow-up.\n\nFirst, I need to parse the conversation. Meg asks if Ann is still at school, and Ann responds that she has extra math classes. Then Meg asks when they can meet, and Ann says she'll be home at 7 PM. \n\nLooking at this, the main action here seems to be Ann being home at 7 PM. That's a concrete task",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.24193548387096775,
+          "recall": 0.8823529411764706,
+          "precision": 0.14018691588785046
+        },
+        "rouge2": {
+          "fmeasure": 0.13114754098360656,
+          "recall": 0.5,
+          "precision": 0.07547169811320754
+        },
+        "rougeL": {
+          "fmeasure": 0.16129032258064516,
+          "recall": 0.5882352941176471,
+          "precision": 0.09345794392523364
+        }
+      }
+    },
+    {
+      "index": 19,
+      "input": "Mell: Hi there! How are you doing?\nGloria: Hi Mell! We are fine, just the daily grind ;) And yourselves?\nMell: Not much happening either. An odd phone call with the kids. Or Tad's sister:(( Not much otherwise.\nGloria: Yeah... Life has become so quite since the kids are out of the house. We had more to get used to it. But it must hard for you. Especially you I mean.\nMell: I don't know. Sometimes I even forget that I should be missing them. In a way I do like this peace and quiet now.\nGloria: Small wonder. You had a hell of a time with them just before they went to college. I'd say you need to recover now.\nMell: I guess you're right. But maybe I should feel guilty or something?\nGloria: Don't be silly! You are a fantastic mom.\nMell: Thanks Gloria.\nGloria: Anyway I'm happy to hear from you again. We should really have a nice do again.\nMell: YES! Splendid!\nGloria: The weather is just brilliant, perfect for a BBQ. What do you think?\nMell: I'm all for it. At my place? I'd love it.\nGloria: Can't be better. I love your garden.\nMell: We're thinking about extending the terrace. I must show you my drawings, just a few ideas. It would be great to hear your opinion.\nGloria: I'd love to. But you know how little I know about garden design, or however you call it.\nMell: We'll have a look at them. Now the BBQ. At the weekend I suppose?\nGloria: Let me check the calendar. Here's our family planner. A horrible name, isn't it? So this weekend suits us fine. At the next one, on Saturday, Mark has penciled something in but I can't read it. So what about this Saturday?\nMell: Perfect. At least we know the weather holds. Shall I do the food and you the drinks?\nGloria: And I'll get us some dessert as well. \nMell: Very good indeed. It's always so easy going with you.\nGloria: Ta! You were thinking about Tad's sister?\nMell: I'm afraid so. I'm so happy she moved up to Scotland and I don't have to put up with her trying to run my household. Tad feels relieved too.\nGloria: Good riddance! I could really never warm up to her.\nMell: Nobody can! Anyway she's gone and we're going to have a fantastic barbecue. Without her.\nGloria: Yes, we are. Oh I'm so happy you've phoned!\nMell: Looking forward to our BBQ on Saturday!\nGloria: So long!",
+      "reference": "Gloria and Mell plan to have a barbeque at Mell's place on Saturday. They are happy, because Tad's sister moved to Scotland. Mell needs Gloria's advice on garden design.",
+      "prediction": "<think>\nOkay, let's start by breaking down the user's request. They want a Field Outcomes Report based on a WhatsApp conversation between two people, GloRia and Mell. The report needs four sections: Practical Actions Completed, Blockers & Technical Issues, Outcomes & Resolutions, and Pending Follow-Ups.\n\nFirst, I need to identify any concrete actions taken during the field. From the conversation, Mell mentions planning a BBQ and discussing gardening ideas. That seems like practical action. Also, they mention showing drawings and having a plan for the weekend. Those are specific points here.\n\nNext, blockers or technical issues. The conversation",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.22900763358778628,
+          "recall": 0.46875,
+          "precision": 0.15151515151515152
+        },
+        "rouge2": {
+          "fmeasure": 0.04651162790697674,
+          "recall": 0.0967741935483871,
+          "precision": 0.030612244897959183
+        },
+        "rougeL": {
+          "fmeasure": 0.10687022900763357,
+          "recall": 0.21875,
+          "precision": 0.0707070707070707
+        }
+      }
+    },
+    {
+      "index": 20,
+      "input": "Ana: You sleeping?\nCatherine: Not yet.\nAna: Wanna go visit grandma tomorrow? I miss her.\nCatherine: Yeah that would be nice :) I'll call you when I wake up\nAna: Oki :) sleep well, good night.\nCatherine:  Good night, u too.",
+      "reference": "Ana wants to visit grandma tomorrow. Catherine will go with her. She will call Anna when she wakes up.",
+      "prediction": "<think>\nOkay, let's start by looking at the user's request to create a Field Outcomes Report based on the given WhatsApp conversation. The report needs four sections: Practical Actions Completed, Blockers & Technical Issues, Outcomes & Resolutions, and Pending Follow-Ups.\n\nFirst, I need to parse through the conversation. Ana asks if Catherine is asleep, she says not yet. Then they mention visiting Grandma tomorrow. Catherine agrees and calls Ana later. Ana responds with \"Oki\" and sleeps well. Catherine thanks them both.\n\nNow, translating this into the required structure. For Practical Actions Completed, since there's no specific action",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.15254237288135594,
+          "recall": 0.47368421052631576,
+          "precision": 0.09090909090909091
+        },
+        "rouge2": {
+          "fmeasure": 0.05172413793103448,
+          "recall": 0.16666666666666666,
+          "precision": 0.030612244897959183
+        },
+        "rougeL": {
+          "fmeasure": 0.1016949152542373,
+          "recall": 0.3157894736842105,
+          "precision": 0.06060606060606061
+        }
+      }
+    },
+    {
+      "index": 21,
+      "input": "Sam: You own a really nice hotel, guys 😊\nJessica: Thanks Sam 😊\nMichael: Thanks, mate \nSam: How is our hotel room set for next month? Hope that the manager will arrange the very best for us 😉\nMichael: you’re damn right, Sam\nMichael: are you coming on the 15th of August?\nSam: Yep! We’ll be at the hotel around 2 p.m.\nJessica: I’m soooo happy to see you again!\nSam: Me, too 😊",
+      "reference": "Sam appreciates the hotel owned by Jessica and Michael. Sam is going there on the 15th August at around 2pm.",
+      "prediction": "<think>\nOkay, let's start by analyzing this WhatsApp conversation. The user wants me to create a Field Outcomes Report based on the given text. Let me break down each section.\n\nFirst, the practical actions completed. From the conversation, Sam mentions arranging the hotel room for next month with Michael. They confirmed the date as August 15th. So those two points should be included here.\n\nNext, blockers or technical issues. The only mention is about the hotel being set up, but there's no indication of equipment failure, vehicle problem, or any other technical issue. Maybe it's just confirming the setup, so maybe nothing here",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.17460317460317462,
+          "recall": 0.55,
+          "precision": 0.10377358490566038
+        },
+        "rouge2": {
+          "fmeasure": 0.03225806451612903,
+          "recall": 0.10526315789473684,
+          "precision": 0.01904761904761905
+        },
+        "rougeL": {
+          "fmeasure": 0.11111111111111112,
+          "recall": 0.35,
+          "precision": 0.0660377358490566
+        }
+      }
+    },
+    {
+      "index": 22,
+      "input": "Casey: <file_photo>\nAmelia: these are so nice!!! did you do them yourself?\nKristen: wooow amazing\nAmelia: i want my nails done like that too!\nCasey: yeah i did it myself :D got a new nail polish but damn it took me nearly 4 hours lol\nAmelia: can you do it for us too?\nKristen: pretty please!\nCasey: sorry you guys... it was a nightmare :( seriously 4 hours for nails is too much",
+      "reference": "Casey got a new nail polish and did her nails herself. It took her nearly 4 hours, so she won't do her friends' nails, as it takes too long.",
+      "prediction": "<think>\nOkay, let's start by looking at the user's request to create a Field Outcomes Report based on the provided WhatsApp conversation. The key points here are to focus only on practical actions completed, blockers/technical issues, outcomes/resolutions, and pending follow-ups.\n\nFirst, I need to parse through each message. Casey mentions doing nails themselves, Amelia wants her nails done as well, Kristen agrees, and there's some mention of time spent. Then they ask if Casey can help with their nails, which leads to Kristen agreeing. However, Casey says he had his own nails done, taking almost four hours, and that's a",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.16058394160583941,
+          "recall": 0.36666666666666664,
+          "precision": 0.102803738317757
+        },
+        "rouge2": {
+          "fmeasure": 0.014814814814814814,
+          "recall": 0.034482758620689655,
+          "precision": 0.009433962264150943
+        },
+        "rougeL": {
+          "fmeasure": 0.1021897810218978,
+          "recall": 0.23333333333333334,
+          "precision": 0.06542056074766354
+        }
+      }
+    },
+    {
+      "index": 23,
+      "input": "Paul: I just came back home\nPaul: What a busy day\nPaul: I forgot about my physiotherapy \nEmma: Oh no\nPaul: It's ok, I'll schedule a new appointment\nEmma: I'll be home after midnight\nPaul: Do you want me to prepare some food for you?\nEmma: That would be lovely",
+      "reference": "Paul forgot about his physiotherapy and he will schedule a new appointment. Emma will be home after midnight, so Paul will prepare some food for her.",
+      "prediction": "<think>\nOkay, let's start by looking at the user's request. They want me to analyze a WhatsApp conversation between Paul and Emma from Dandelion Africa and create a Field Outcomes Report with specific sections.\n\nFirst, I need to focus only on actionable field outcomes and factual information. The identifiers like Person0 and Person1 are anonymized, so I can't use them. Let me read through the transcript again carefully.\n\nPaul mentions forgetting his physiotherapy appointment. Emma responds that it's okay and will schedule a new one. Then Paul asks if they can prepare food, which Emma agrees to. So those two actions seem straightforward",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.21052631578947364,
+          "recall": 0.5384615384615384,
+          "precision": 0.1308411214953271
+        },
+        "rouge2": {
+          "fmeasure": 0.07633587786259544,
+          "recall": 0.2,
+          "precision": 0.04716981132075472
+        },
+        "rougeL": {
+          "fmeasure": 0.16541353383458648,
+          "recall": 0.4230769230769231,
+          "precision": 0.102803738317757
+        }
+      }
+    },
+    {
+      "index": 24,
+      "input": "Ellie: hey, are you at the university?\nAaliyah: yep\nCamille: I'm sick :/\nEllie: shiet....that's bad\nEllie: Aali, where are we having our classes now?\nAaliyah: 342 on the second floor",
+      "reference": "Ellie's class is in 342 on the second floor.",
+      "prediction": "<think>\nOkay, let me start by looking at the user's request to create a Field Outcomes Report based on the given WhatsApp conversation. The key points are to focus only on practical actions completed, blockers/technical issues, outcomes/resolutions, and pending follow-up.\n\nFirst, I need to parse the conversation. Ellie asks if they're at the university, which Aaliyah confirms. Then Camille mentions she's sick, so Ellie responds with \"shiet\" which might be a typo but indicates concern. Next, Ellie asks about class times, and Aaliyah says 342 on the second floor. \n\nNow,",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.1509433962264151,
+          "recall": 0.8,
+          "precision": 0.08333333333333333
+        },
+        "rouge2": {
+          "fmeasure": 0.07692307692307691,
+          "recall": 0.4444444444444444,
+          "precision": 0.042105263157894736
+        },
+        "rougeL": {
+          "fmeasure": 0.1509433962264151,
+          "recall": 0.8,
+          "precision": 0.08333333333333333
+        }
+      }
+    },
+    {
+      "index": 25,
+      "input": "Peter: Can you send me the link of your beauty shop?\nJoy: Definitely\nJoy: It is https:// *********\nJoy: Hope you will like it and feel free to ask any questions.\nPeter: Okay. Let me look at it.",
+      "reference": "Joy sent Peter the link to her beauty shop.",
+      "prediction": "<think>\nOkay, let's start by analyzing this WhatsApp conversation. The user wants a Field Outcomes Report based on the given text.\n\nFirst, I need to identify each section: Practical Actions Completed, Blockers & Technical Issues, Outcomes & Resolutions, and Pending Follow-ups.\n\nLooking at Peter's message first. He asks for a link to Joy's beauty shop. Joy responds with the URL, which seems straightforward. So that's one practical action completed—sending the link.\n\nNext, there's no mention of equipment issues or technical problems here. Both parties seem to be communicating effectively without any obstacles. So blockers or technical issues would",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.125,
+          "recall": 0.7777777777777778,
+          "precision": 0.06796116504854369
+        },
+        "rouge2": {
+          "fmeasure": 0.05454545454545454,
+          "recall": 0.375,
+          "precision": 0.029411764705882353
+        },
+        "rougeL": {
+          "fmeasure": 0.08928571428571429,
+          "recall": 0.5555555555555556,
+          "precision": 0.04854368932038835
+        }
+      }
+    },
+    {
+      "index": 26,
+      "input": "Jake: dude, I just pulled a TOTW\nJake: my first this year!\nTom: grats!\nTom: gonna sell it?\nJake: yeah\nJake: I'll try him in one or two matches\nJake: he's not a good fit for my squads\nTom: you'll have plenty of coins to buy someone that fits\nJake: that's the plan\nJake: I got lucky with this one\nTom: my pull luck sucks this year\nTom: not a single great player \nJake: you're good at the game\nJake: you don't need help :P\nTom: I like shiny things :P",
+      "reference": "Jake has got his first TOTW this year. Tom doesn't have a great team. ",
+      "prediction": "<think>\nOkay, let me start by analyzing the user's request. They want a Field Outcomes Report based on a WhatsApp conversation between Jake and Tom from Dandelion Africa. The report needs four sections: Practical Actions Completed, Blockers & Technical Issues, Outcomes & Resolutions, and Pending Follow-Ups.\n\nFirst, looking at the practical actions completed. Jake mentions pulling a TOTW (Total Opportunity Ticket Work) and selling his first match. That seems like a concrete action where he successfully managed a team-building activity. Tom then talks about selling the product but also mentions issues with his pull luck. So maybe there was some",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.12068965517241383,
+          "recall": 0.4666666666666667,
+          "precision": 0.06930693069306931
+        },
+        "rouge2": {
+          "fmeasure": 0.01754385964912281,
+          "recall": 0.07142857142857142,
+          "precision": 0.01
+        },
+        "rougeL": {
+          "fmeasure": 0.08620689655172413,
+          "recall": 0.3333333333333333,
+          "precision": 0.04950495049504951
+        }
+      }
+    },
+    {
+      "index": 27,
+      "input": "Mary: hey, im kinda broke, lend me a few box\nCarter: okay, give me an hour, im at the train station\nMary: cool, thanks",
+      "reference": "Mary ran out of money. Carter is going to lend her some in an hour.",
+      "prediction": "<think>\nOkay, let's start by looking at the user's request to create a Field Outcomes Report based on the given WhatsApp conversation. The report needs four sections: Practical Actions Completed, Blockers & Technical Issues, Outcomes & Resolutions, and Pending Follow-Ups.\n\nFirst, I need to parse the conversation. Mary mentions she's broke and asks for some boxes. Carter responds with giving her an hour at the train station. Then Mary says \"cool, thanks.\" \n\nSo, practical actions completed would be Carter providing the boxes and agreeing to help during the time. That seems straightforward. But wait, maybe there's more?",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.12173913043478263,
+          "recall": 0.4666666666666667,
+          "precision": 0.07
+        },
+        "rouge2": {
+          "fmeasure": 0.01769911504424779,
+          "recall": 0.07142857142857142,
+          "precision": 0.010101010101010102
+        },
+        "rougeL": {
+          "fmeasure": 0.08695652173913045,
+          "recall": 0.3333333333333333,
+          "precision": 0.05
+        }
+      }
+    },
+    {
+      "index": 28,
+      "input": "Peyton: I have been asking you to bring that video game for me\nCameron: Honey, I am not having enough time to come home\nPeyton: When would you come home?\nCameron: I will have to stay out of town for another week i guess\nPeyton: Cant you just deliver that game through the courier? :P\nCameron: Dont be mean :/\nPeyton: Get the job done and come to home then. ASAP :P",
+      "reference": "Peyton is expecting Cameron to bring the video game. Cameron will probably be out for another week.",
+      "prediction": "<think>\nOkay, let's start by looking at this WhatsApp conversation between Peyton and Cameron. The user wants a Field Outcomes Report with four sections: Practical Actions Completed, Blockers & Technical Issues, Outcomes & Resolutions, and Pending Follow-Ups.\n\nFirst, the practical actions completed. From the conversation, Peyton asks Cameron to bring the video game. Cameron says he can't leave for a week. Then Peyton suggests using a courier instead. Cameron responds with \"Don't be mean\" and mentions staying out for another week. So, the action here is delivering via courier. That's one point under Practical Actions Completed.\n\nNext,",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.23931623931623933,
+          "recall": 0.8235294117647058,
+          "precision": 0.14
+        },
+        "rouge2": {
+          "fmeasure": 0.1565217391304348,
+          "recall": 0.5625,
+          "precision": 0.09090909090909091
+        },
+        "rougeL": {
+          "fmeasure": 0.22222222222222224,
+          "recall": 0.7647058823529411,
+          "precision": 0.13
+        }
+      }
+    },
+    {
+      "index": 29,
+      "input": "Tina: I'll tell you something, this Emirate staff looks amazing, as movie stars\nAla: Oh yes, I know, that's for purpose \nAla: It's how it's suppose to be\nAla: They pay a lot of attention to the image\nTina: Looks nice, pleasure to observe\nTina: And I sucked at the airport, they've kept us one hour in the plane and finally I'll catch the evening flight back home\nTina: Could You imagine?\nTina: And you know, this way we had such a talkative pilot :-)\nAla: Oh, poor you\nAla: Pfff\nAla: And I'm on my way to a meeting\nTina: THE meeting?\nAla: Yes, keep your finger crossed\nTina: Sure, let me know how did it go\nAla: Ok darling, in touch",
+      "reference": "Tina will catch the evening flight back home. Ala is on her way to the meeting. She will let Tina know how it went.",
+      "prediction": "<think>\nOkay, so I need to analyze this WhatsApp conversation between Tina and Ala from Dandelion Africa. The user wants a Field Outcomes Report with four sections: Practical Actions Completed, Blockers & Technical Issues, Outcomes & Resolutions, and Pending Follow-Ups.\n\nFirst, looking at the practical actions completed. Both people mention their experiences. Tina talks about her performance at the airport, getting a one-hour stay, and catching the evening flight. She also mentions having a talkative pilot. That seems like practical actions because she's doing things correctly. Then, there's a part where she asks if they can meet again,",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.1935483870967742,
+          "recall": 0.5,
+          "precision": 0.12
+        },
+        "rouge2": {
+          "fmeasure": 0.04918032786885246,
+          "recall": 0.13043478260869565,
+          "precision": 0.030303030303030304
+        },
+        "rougeL": {
+          "fmeasure": 0.0967741935483871,
+          "recall": 0.25,
+          "precision": 0.06
+        }
+      }
+    },
+    {
+      "index": 30,
+      "input": "Ann: Congratulations!!\nAnn: You did great, both of you!\nSue: Thanks, Ann\nJulie: I'm glad it's over!\nJulie: That's co cute of you, girl!\nAnn: Let's have a little celebration tonight! \nSue: I'm in\nJulie: me too!!! aww",
+      "reference": "Ann, Sue and Julie did a great job and they will have a little celebration tonight.",
+      "prediction": "<think>\nOkay, let's start by looking at the user's request to create a Field Outcomes Report based on the given WhatsApp conversation. The report needs four sections: Practical Actions Completed, Blockers & Technical Issues, Outcomes & Resolutions, and Pending Follow-Ups.\n\nFirst, I need to parse through the conversation. The main participants are Sue, Julie, and Ann. They all seem happy with each other's achievements. Ann congratulates them, Sue thanks Ann, Julie expresses happiness, and they agree to celebrate together. \n\nLooking at practical actions completed, since there's no specific task mentioned except celebrating, maybe those aren't",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.13913043478260873,
+          "recall": 0.5,
+          "precision": 0.08080808080808081
+        },
+        "rouge2": {
+          "fmeasure": 0.017699115044247787,
+          "recall": 0.06666666666666667,
+          "precision": 0.01020408163265306
+        },
+        "rougeL": {
+          "fmeasure": 0.10434782608695653,
+          "recall": 0.375,
+          "precision": 0.06060606060606061
+        }
+      }
+    },
+    {
+      "index": 31,
+      "input": "Callan: Something's wrong with my Samsung S8.\nWade: What, exactly?\nCallan: All I get is a black screen.\nWade: Did you drop it or something?\nCallan: I think I know, this has happened before.\nWade:  It did? What happened before?\nCallan: It overheats and then it takes a while for it to restart again..\nWade: That sucks.. Be carefull with the battery, it can be dangerous.\nCallan: It sure can, but I'm going to the store and let them see it. It's still under warranty.\nWade: Will you lose all your stuff?\nCallan: No, I always back up my files.",
+      "reference": "Callan's Samsung S8 overheats, so he's going to the store to get it repaired.",
+      "prediction": "<think>\nOkay, so I need to create a Field Outcomes Report based on the given WhatsApp conversation between Callan and Wade. Let me start by breaking down each section.\n\nFirst, the practical actions completed. The user mentioned that Callan reported a problem with his Samsung S8, which had a black screen. They also said he overheated and took time to restart. Wade asked if they dropped it or if there was anything else. Then Callan confirmed it's under warranty and mentioned backing up data. So, the practical action here would be checking the device and confirming the issue. Also, Wade suggested taking him to the store",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.17886178861788618,
+          "recall": 0.6875,
+          "precision": 0.102803738317757
+        },
+        "rouge2": {
+          "fmeasure": 0.049586776859504134,
+          "recall": 0.2,
+          "precision": 0.02830188679245283
+        },
+        "rougeL": {
+          "fmeasure": 0.13008130081300812,
+          "recall": 0.5,
+          "precision": 0.07476635514018691
+        }
+      }
+    },
+    {
+      "index": 32,
+      "input": "Terence: What the hell, Danny. You took my money, didn't you? :/\nDaniel: What, your money?? Why would I\nTerence: Don't play dumb\nDaniel: Are you calling me a liar, Terry??\nTerence: I'm not stupid, Danny\nDaniel: And I'm not a thief?? That's not cool, man :/\nTerence: ... Oh shit, I'm sorry, I've just found it. Forgot I'd placed it elsewhere last month\nDaniel: Good for you then\nTerence: Are you upset\nDaniel: What do you think?? Yeah, oh-fucking-course I am",
+      "reference": "Terence accused Daniel of taking his money. Terence finds the money later and apologizes to Daniel. Daniel is still upset.",
+      "prediction": "<think>\nOkay, let's start by analyzing this WhatsApp conversation between Terence and Daniel. The user wants a Field Outcomes Report with specific sections: Practical Actions Completed, Blockers & Technical Issues, Outcomes & Resolutions, and Pending Follow-Ups.\n\nFirst, looking at the practical actions completed. They mention that Terence forgot to place his money earlier, so he now has it. This seems like a direct action where they resolved the issue. So Practical Action 1 could be \"Found missing funds\" as a concrete task.\n\nNext, blockers and technical issues. There's no mention of equipment failures, vehicles broken down, or",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.15254237288135591,
+          "recall": 0.45,
+          "precision": 0.09183673469387756
+        },
+        "rouge2": {
+          "fmeasure": 0.017241379310344827,
+          "recall": 0.05263157894736842,
+          "precision": 0.010309278350515464
+        },
+        "rougeL": {
+          "fmeasure": 0.10169491525423728,
+          "recall": 0.3,
+          "precision": 0.061224489795918366
+        }
+      }
+    },
+    {
+      "index": 33,
+      "input": "Joyce: Check this out!\nJoyce: <link>\nMichael: That's cheap!\nEdson: No way! I'm booking my ticket now!! ",
+      "reference": "Edson is booking his ticket now.",
+      "prediction": "<think>\nOkay, let me start by looking at the user's request to create a Field Outcomes Report based on the given WhatsApp conversation. The user wants it structured into four sections: Practical Actions Completed, Blockers & Technical Issues, Outcomes & Resolutions, and Pending Follow-Ups.\n\nFirst, I need to parse the conversation. The participants are Joyce, Michael, and Edson. Let's break down each message. \n\nStarting with Joyce saying \"Check this out!\" followed by a link. Then Michael responds with \"That's cheap!\" and Edson says \"No way! I'm booking my ticket now!!\"\n\nNow,",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.08,
+          "recall": 0.6666666666666666,
+          "precision": 0.0425531914893617
+        },
+        "rouge2": {
+          "fmeasure": 0.020408163265306128,
+          "recall": 0.2,
+          "precision": 0.010752688172043012
+        },
+        "rougeL": {
+          "fmeasure": 0.08,
+          "recall": 0.6666666666666666,
+          "precision": 0.0425531914893617
+        }
+      }
+    },
+    {
+      "index": 34,
+      "input": "Damian: are you downtown?\nEthan: yes\nEthan: why?\nDamian: can you buy me a kebab?\nDamian: i'm starving\nEthan: why won't you cook something for both of us, huh?\nDamian: man, give me a break, i had a rough day\nEthan: ok ok\nEthan: but i really wish you weren't such a parasite\nDamian: i'll change, scout's honour",
+      "reference": "Ethan will buy Damian a kebab. Damian had a bad day.",
+      "prediction": "<think>\nOkay, let's start by analyzing this WhatsApp conversation between Ethan and Damian. The user wants a Field Outcomes Report with specific sections: Practical Actions Completed, Blockers & Technical Issues, Outcomes & Resolutions, and Pending Follow-Ups.\n\nFirst, looking at the practical actions completed. The conversation starts with Damian asking if they're downtown. Ethan confirms it. Then Ethan asks why, and Damian explains he's hungry because he had a bad day. Ethan responds that he needs to cook for both, so Damian says he will change. So, the key action here is Damian agreeing to help cook, which is a practical outcome",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.15789473684210528,
+          "recall": 0.8181818181818182,
+          "precision": 0.08737864077669903
+        },
+        "rouge2": {
+          "fmeasure": 0.05357142857142857,
+          "recall": 0.3,
+          "precision": 0.029411764705882353
+        },
+        "rougeL": {
+          "fmeasure": 0.14035087719298245,
+          "recall": 0.7272727272727273,
+          "precision": 0.07766990291262135
+        }
+      }
+    },
+    {
+      "index": 35,
+      "input": "Steve: Bought the new Dream Theater album 5 minutes ago. I hope it's good.\nRob: I have it here on my desk, ready for the first listening.\nSteve: Ok, I'll tell you later what I think about it.\nRob: Same here. See you later!",
+      "reference": "Steve and Rob will talk about new Dream Theater album, after they finish listening.",
+      "prediction": "<think>\nOkay, let me start by analyzing this WhatsApp conversation. The user wants a Field Outcomes Report based on the given text.\n\nFirst, looking at the practical actions completed. Steve bought the album, and Rob has it on his desk. Both confirmed they have the album. So those two points should be included under \"Practical Actions Completed.\"\n\nNext, blockers or technical issues. There's no mention of equipment failures, vehicles broken down, or any other technical problems. The only things mentioned are their possession and confirmation. So maybe nothing here? Or perhaps there's something else that needs to be noted. Wait, maybe the person who",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.08333333333333334,
+          "recall": 0.35714285714285715,
+          "precision": 0.04716981132075472
+        },
+        "rouge2": {
+          "fmeasure": 0.016949152542372885,
+          "recall": 0.07692307692307693,
+          "precision": 0.009523809523809525
+        },
+        "rougeL": {
+          "fmeasure": 0.06666666666666667,
+          "recall": 0.2857142857142857,
+          "precision": 0.03773584905660377
+        }
+      }
+    },
+    {
+      "index": 36,
+      "input": "Sue: Call me when you get this.\nSue: it's important\nSteve: OK, I'm calling",
+      "reference": "Steve is calling Sue at her request.",
+      "prediction": "<think>\nOkay, let's start by looking at the user's request to create a Field Outcomes Report based on the given WhatsApp conversation. The report needs four sections: Practical Actions Completed, Blockers & Technical Issues, Outcomes & Resolutions, and Pending Follow-Ups.\n\nFirst, I need to parse the conversation. Sue says \"Call me when you get this\" and mentions that it's important. Then Steve responds with \"OK, I'm calling.\" So from this, practical actions completed would be Sue contacting him. But wait, Sue is the one who called, so maybe Sue is the person completing the action here? Or",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.11214953271028037,
+          "recall": 0.8571428571428571,
+          "precision": 0.06
+        },
+        "rouge2": {
+          "fmeasure": 0.0,
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "fmeasure": 0.07476635514018691,
+          "recall": 0.5714285714285714,
+          "precision": 0.04
+        }
+      }
+    },
+    {
+      "index": 37,
+      "input": "Anne: You were right, he was lying to me :/\nIrene: Oh no, what happened?\nJane: who? that Mark guy?\nAnne: yeah, he told me he's 30, today I saw his passport - he's 40\nIrene: You sure it's so important?\nAnne: he lied to me Irene",
+      "reference": "Mark lied to Anne about his age. Mark is 40.",
+      "prediction": "<think>\nOkay, let's start by looking at the user's request. They want a Field Outcomes Report based on a WhatsApp conversation between Anne, Irene, and Jane. The report needs four sections: Practical Actions Completed, Blockers & Technical Issues, Outcomes & Resolutions, and Pending Follow-Ups.\n\nFirst, I need to parse the conversation. The key points seem to be about a person named Mark being involved in some situation where there was a lie. Anne says Mark lied to her, and they're talking about seeing his passport. So practical actions completed would probably include verifying the information or taking action related to the passport check",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.1217391304347826,
+          "recall": 0.7,
+          "precision": 0.06666666666666667
+        },
+        "rouge2": {
+          "fmeasure": 0.03539823008849558,
+          "recall": 0.2222222222222222,
+          "precision": 0.019230769230769232
+        },
+        "rougeL": {
+          "fmeasure": 0.08695652173913042,
+          "recall": 0.5,
+          "precision": 0.047619047619047616
+        }
+      }
+    },
+    {
+      "index": 38,
+      "input": "Phil: Good evening Deana! Many thanks for this nice card from you. Constantine was very happy!\nPhil: Are these sunglasses also from you?\nDeana: I thought they belonged your Cathreen!\nPhil: Nope. She says they aren't hers.\nDeana: Mine either. Look, maybe you feel like keeping them?\nDeana: I seem to have so many sunglasses...\nDeana: 8‑D\nPhil: Where did you find them, possible that they belong to Adrian?\nDeana: In this empty place above the radio. In the very back.\nDeana: If Adrian wants it, no pro!\nDeana: :)\nPhil: :))\nDeana: Exactly!\nPhil: Ok, they don't belong to any of us, and nobody else drove your car. But we can look after these sunglasses.\nDeana: Glad to hear it!",
+      "reference": "Phil received a card from Deana. Constantine was happy. Phil has sunglasses, that Deana found in the back above the radio. Deana and Phil don't know who they belong too. Phil will keep the sunglasses.",
+      "prediction": "<think>\nOkay, let's start by breaking down the user's request. They want me to analyze a WhatsApp conversation between two people, Phil and Deana, and create a Field Outcomes Report with specific sections.\n\nFirst, I need to focus only on practical actions completed. The conversation mentions finding sunglasses belonging to someone named Adrian. So, one action here would be confirming that the sunglasses were found and not owned by anyone at the time. \n\nNext, blockers or technical issues. From the message, there's mention of \"no pro\" which might indicate a problem with the equipment or resources being used. Also, the location where the sunglasses",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.1958041958041958,
+          "recall": 0.3888888888888889,
+          "precision": 0.1308411214953271
+        },
+        "rouge2": {
+          "fmeasure": 0.02836879432624113,
+          "recall": 0.05714285714285714,
+          "precision": 0.018867924528301886
+        },
+        "rougeL": {
+          "fmeasure": 0.12587412587412586,
+          "recall": 0.25,
+          "precision": 0.08411214953271028
+        }
+      }
+    },
+    {
+      "index": 39,
+      "input": "Marika: Are you coming today?\nLara: Yes!\nMarika: Great!",
+      "reference": "Marika is coming today.",
+      "prediction": "<think>\nOkay, let's start by looking at the user's request. They want me to analyze a WhatsApp conversation between Marika and Lara from Dandelion Africa and create a Field Outcomes Report with specific sections.\n\nFirst, I need to focus only on the practical actions completed, blockers, outcomes/resolutions, and pending follow-ups. The identifiers like Person0 and Person1 are anonymized, so I can't use those names directly. \n\nThe initial message is \"Are you coming today?\" with Lara confirming yes. That seems straightforward. Since both are responding positively, there's no action taken yet. But maybe they have some other",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.07547169811320754,
+          "recall": 1.0,
+          "precision": 0.0392156862745098
+        },
+        "rouge2": {
+          "fmeasure": 0.019230769230769232,
+          "recall": 0.3333333333333333,
+          "precision": 0.009900990099009901
+        },
+        "rougeL": {
+          "fmeasure": 0.07547169811320754,
+          "recall": 1.0,
+          "precision": 0.0392156862745098
+        }
+      }
+    },
+    {
+      "index": 40,
+      "input": "Pedro: batman or superman??\nAlex: honestly..  neither\nPedro: WHAT??\nAlex: i honestly like the flash\nPedro: whats so good about the flash :P\nAlex: duuude, he can do almost anything\nPedro: not anything\nAlex: yea im sure batman can run as fast -_-\nPedro: superhuman speed? thats your pitch?\nAlex: that speed opens up the whole multiverse for him.. you seriously dont get how powerful he can be\nPedro: yeah i get your point",
+      "reference": "Alex prefers the Flash to Barman and Superman thanks to his speed.",
+      "prediction": "<think>\nOkay, let's start by analyzing this WhatsApp conversation between Pedro and Alex. The user wants me to create a Field Outcomes Report based on the given text.\n\nFirst, I need to focus only on practical actions completed. From what I see, Pedro and Alex are discussing their preferences for superhero movies. Pedro initially asks if it's Batman or Superman, but Alex says neither. Then they talk about liking the Flash, with Pedro responding humorously. They mention things like speed being a key factor for Batman, which Alex points out. \n\nLooking at the content, there's no specific action taken by either person in the field. They",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.1487603305785124,
+          "recall": 0.75,
+          "precision": 0.08256880733944955
+        },
+        "rouge2": {
+          "fmeasure": 0.01680672268907563,
+          "recall": 0.09090909090909091,
+          "precision": 0.009259259259259259
+        },
+        "rougeL": {
+          "fmeasure": 0.09917355371900827,
+          "recall": 0.5,
+          "precision": 0.05504587155963303
+        }
+      }
+    },
+    {
+      "index": 41,
+      "input": "Linda: Hi Dad, I want to buy flowers for mum! But I don't remember which one she likes :(\nMichael: Well, she likes all the flowers I believe\nLinda: That doesn't help! I'm on a flower market right now!\nMichael: Send me some pics then\nLinda: <file_photo> \nMichael: Tulips are nice, roses too\nLinda:  What about carnations?\nMichael: No, carnations are boring :D\nLinda: Thanks Dad, srsly…\nMichael:  What about freesias? She likes them a lot, are there any there?\nLinda: <file_photo> \nMichael: Take those!",
+      "reference": "Linda wants to buy flowers for her mother and asks Michael which flowers does she like. Michael suggests Linda to buy freesias.",
+      "prediction": "<think>\nOkay, let's start by analyzing this WhatsApp conversation between Linda and Michael. The user wants a Field Outcomes Report with specific sections.\n\nFirst, the practical actions completed. From the conversation, Linda mentions buying flowers but can't recall which ones her mom likes. Then Michael suggests tulips, roses, and freesias based on Linda's previous responses. So Linda has bought flowers from Michael's suggestions. Wait, does that count as completing a task? Yes, purchasing flowers. Also, Linda sent photos of the flowers, so that's another action. So two practical actions here.\n\nNext, blockers and technical issues. The problem seems",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.23999999999999996,
+          "recall": 0.6818181818181818,
+          "precision": 0.14563106796116504
+        },
+        "rouge2": {
+          "fmeasure": 0.03252032520325203,
+          "recall": 0.09523809523809523,
+          "precision": 0.0196078431372549
+        },
+        "rougeL": {
+          "fmeasure": 0.15999999999999998,
+          "recall": 0.45454545454545453,
+          "precision": 0.0970873786407767
+        }
+      }
+    },
+    {
+      "index": 42,
+      "input": "Nathan: <file_video>\nAaron: OMG!!! \nAaron: 😂😂😂😂\nAaron: looool\nAaron: do you know her mate? 🤣🤣\nAaron: my cat's face looks like that when he's taking a dump..🤣🤣🤣\nAaron: <file_gif>\nAaron: the angels must be weeping 🤭🤭🤭 \nAaron: <file_gif>\nAaron: <file_gif>\nNathan: Hahahaha\nNathan: She's having a spiritual moment 😉\nNathan: No clue mate, Dan sent it over\nNathan: A tragedy to say the least 😂😂\nAaron: <file_gif>\nAaron: looking for Jesus\nNathan: 😂😂😂\nAaron: hilarious..hahahaha",
+      "reference": "Nathan and Aaron are discussing a video which Nathan sent. ",
+      "prediction": "<think>\nOkay, let me start by analyzing this WhatsApp conversation. The user wants a Field Outcomes Report with four sections: Practical Actions Completed, Blockers & Technical Issues, Outcomes & Resolutions, and Pending Follow-Ups.\n\nFirst, I need to identify any concrete actions taken. From the messages, Nathan mentions Aaron sending a file video and GIFs. Then there's a mention of Aaron laughing at his cat's face and the angel GIFs. But wait, the actual content isn't clear if these were actions or just comments. Maybe some parts are just reactions without specific actions. So maybe only the sending of files and GIF",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.10619469026548674,
+          "recall": 0.6,
+          "precision": 0.05825242718446602
+        },
+        "rouge2": {
+          "fmeasure": 0.0,
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "fmeasure": 0.07079646017699115,
+          "recall": 0.4,
+          "precision": 0.038834951456310676
+        }
+      }
+    },
+    {
+      "index": 43,
+      "input": "Mia: God, he keeps talking about the stupid wall\nJennifer: I think he's just senile\nKarine: unfortunately it's much more\nKarine: this populist strategy to scare people with a minority\nKarine: and then present himself as the only savior\nPeter: Karine is right, I think he's not as senile and stupid as we would like to believe\nMia: so it's even worse - he's pure evil\nPeter: possibly yes\nKarine: I really think so, because it's not only about politics anymore\nKarine: he is destroying the Earth\nKarine: trying to shake the world's order\nJennifer: but he's also quite stupid\nJennifer: and the dangerous thing is his self confidence\nJennifer: he's persistence \nJennifer: and ignorance\nKarine: but we have a chance to change it\nKarine: maybe Trump will be over soon?\nMia: we will see\nMia: but we should do anything to win the next elections\nKarine: everything!",
+      "reference": "Mia, Jennifer, Karine and Peter do not like Trump.",
+      "prediction": "<think>\nOkay, let me start by analyzing the user's request. They want a Field Outcomes Report based on a WhatsApp conversation between four individuals. The report needs to focus solely on practical actions completed, blockers/technical issues, outcomes/resolutions, and pending follow-ups.\n\nFirst, looking at the conversation, there seems to be some discussion around a political figure named Karin who talks about her strategies. Mia and Jennifer express concern that she's acting out of malice, while Peter agrees. Then there's mention of potential changes and future predictions.\n\nI need to extract each section. For Practical Actions Completed, any concrete tasks done? The",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.08695652173913045,
+          "recall": 0.5555555555555556,
+          "precision": 0.04716981132075472
+        },
+        "rouge2": {
+          "fmeasure": 0.0,
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "fmeasure": 0.052173913043478265,
+          "recall": 0.3333333333333333,
+          "precision": 0.02830188679245283
+        }
+      }
+    },
+    {
+      "index": 44,
+      "input": "Barbara: I'm home already, you can come over\nSean: May I bring the dog?\nZac: I'm on my way\nBarbara: sure you can, Sean\nBarbara: do you want to stay overnight?\nSean: great!\nSean: I thought about it\nBarbara: nice!",
+      "reference": "Barbara, Sean and Zac are meeting at Barbara's place tonight. Sean will bring the dog. Sean and Zac will stay overnight.",
+      "prediction": "<think>\nOkay, let's start by looking at the user's request. They want me to analyze a WhatsApp conversation between Barbara, Sean, and Zac from Dandelion Africa and create a Field Outcomes Report with specific sections.\n\nFirst, I need to focus only on the practical actions completed. The conversation mentions Barbara bringing the dog, Sean agreeing to stay overnight, and Zac being on his way. Those are all concrete actions that were done. So I'll list those as part of Practical Actions Completed.\n\nNext, blockers and technical issues. The chat doesn't mention any equipment failures, vehicles broken down, or resources not available. All the",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.24806201550387594,
+          "recall": 0.7272727272727273,
+          "precision": 0.14953271028037382
+        },
+        "rouge2": {
+          "fmeasure": 0.12598425196850394,
+          "recall": 0.38095238095238093,
+          "precision": 0.07547169811320754
+        },
+        "rougeL": {
+          "fmeasure": 0.17054263565891473,
+          "recall": 0.5,
+          "precision": 0.102803738317757
+        }
+      }
+    },
+    {
+      "index": 45,
+      "input": "Fiona: Are you free?\nTina: Yes, what's up?\nFiona: I'm trying to prepare a nice dinner for Chris and I thought that maybe I could prepare this tart of yours :)\nTina: I'm flattered!\nFiona: Well, it IS delicious :) Could help me do it?\nTina: Sure! It's not difficult. Do you have anything ready?\nFiona: I must admit I bought the crust...\nTina: Oh, ok :P Pity, but well, it's too late now.\nFiona: I tried making the filling once, but I finished with lemony scrambled eggs...\nTina: It happens, don't worry. The thing is that once you start adding eggs you can't stop mixing it, otherwise you'll end up with scrambled eggs.",
+      "reference": "Fiona wants to prepare dinner for Chris. She is thinking of Tina's tart. She will help her make it.",
+      "prediction": "<think>\nOkay, let's see. The user wants me to analyze the WhatsApp conversation between Fiona and Tina from Dandelion Africa and create a Field Outcomes Report based on the given text.\n\nFirst, I need to focus only on practical actions completed, blockers/technical issues, outcomes/resolutions, and pending follow-ups. Ignore any casual language or personal banter.\n\nLooking at the conversation: Fiona mentions she bought the crust, which might be a problem if she didn't have it. She tried making the filling but ended up with scrambled eggs instead. Tina explains that when you add eggs, you can't stop mixing them, leading to",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.15873015873015875,
+          "recall": 0.5,
+          "precision": 0.09433962264150944
+        },
+        "rouge2": {
+          "fmeasure": 0.0,
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "fmeasure": 0.07936507936507937,
+          "recall": 0.25,
+          "precision": 0.04716981132075472
+        }
+      }
+    },
+    {
+      "index": 46,
+      "input": "John: wanna go see \"A Star is Born\" on Wed?\nJoan: sorry can't\nJoan: super busy \nJoan: don't have time for anything :( \nJohn: that's a shame\nJoan: I'm free on Thursday\nJohn: I could do Thursday\nJoan: ok! so around 8pm?\nJohn: sure sounds great\nJohn: I'll see where it's palying and send you the details\nJoan: ok great!",
+      "reference": "Joan and John are going to watch \"A Star is Born\" on Thursday around 8 p.m.",
+      "prediction": "<think>\nOkay, let me start by analyzing this WhatsApp conversation between John and Joan. The user wants a Field Outcomes Report with specific sections.\n\nFirst, the practical actions completed. From the conversation, John mentions he will check if \"A Star is Born\" is playing on Wednesday. He also says he'll send details to Joan. So those are two clear actions. \n\nNext, blockers or technical issues. There's no mention of equipment failure, vehicle trouble, or any other technical problem here. Both parties seem to be coordinating without issues. So maybe blockers aren't present.\n\nOutcomes and resolutions: They agreed to meet on Thursday",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.18181818181818185,
+          "recall": 0.6470588235294118,
+          "precision": 0.10576923076923077
+        },
+        "rouge2": {
+          "fmeasure": 0.06722689075630252,
+          "recall": 0.25,
+          "precision": 0.038834951456310676
+        },
+        "rougeL": {
+          "fmeasure": 0.1322314049586777,
+          "recall": 0.47058823529411764,
+          "precision": 0.07692307692307693
+        }
+      }
+    },
+    {
+      "index": 47,
+      "input": "Jones: Hey.\nAngelina: Hey.\nAngelina: Long time. How are you doing?\nJones: I'm fine\nJones: You?\nAngelina: I'm cool too.\nJones: You think we can meet today later in the afternoon in town?\nAngelina: Definitely.\nJones: Okay. I will call you to confirm where we will meet.\nAngelina: Cool",
+      "reference": "Jones and Angelina will meet in town in the afternoon.",
+      "prediction": "<think>\nOkay, let's start by looking at the user's request. They want me to analyze a WhatsApp conversation between Jones and Angelina from Dandelion Africa and create a structured Field Outcomes Report.\n\nFirst, I need to focus only on practical actions completed, blockers/technical issues, outcomes/resolutions, and pending follow-ups. The identifiers like Person0 and Person1 are anonymized, so I'll use those without including them.\n\nLooking at the conversation: \n\n- Jones starts with \"Hey\" and responds to Angelina about their well-being. Then they mention meeting later in the afternoon. Both agree to meet that day.",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.12844036697247704,
+          "recall": 0.7,
+          "precision": 0.0707070707070707
+        },
+        "rouge2": {
+          "fmeasure": 0.07476635514018691,
+          "recall": 0.4444444444444444,
+          "precision": 0.04081632653061224
+        },
+        "rougeL": {
+          "fmeasure": 0.12844036697247704,
+          "recall": 0.7,
+          "precision": 0.0707070707070707
+        }
+      }
+    },
+    {
+      "index": 48,
+      "input": "Christie: how are you after the party?\nKatie: really tired... and you?\nChristie: same\nChristie: the party was great!\nKatie: Yeah, we had fun! :)",
+      "reference": "Christie and Katie are tired after the party. They both had fun.",
+      "prediction": "<think>\nOkay, let's start by looking at the user's request to create a Field Outcomes Report based on the given WhatsApp conversation. The key points here are to focus only on practical actions completed, blockers/technical issues, outcomes/resolutions, and pending follow-up.\n\nFirst, I need to parse the conversation. Christie asks Katie about her status after the party, and Katie responds with \"really tired...\" and mentions that they had fun. Then Christie confirms it again. \n\nLooking at the structure of the report, each section should have specific entries. For Practical Actions Completed, since there's no mention of any actual tasks done, maybe",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.18644067796610173,
+          "recall": 0.9166666666666666,
+          "precision": 0.10377358490566038
+        },
+        "rouge2": {
+          "fmeasure": 0.06896551724137932,
+          "recall": 0.36363636363636365,
+          "precision": 0.0380952380952381
+        },
+        "rougeL": {
+          "fmeasure": 0.13559322033898305,
+          "recall": 0.6666666666666666,
+          "precision": 0.07547169811320754
+        }
+      }
+    },
+    {
+      "index": 49,
+      "input": "Freddie: What are you watching on Netflix? I've just finished Mad Men.\nKelly: I've just finished The Crown. \nFreddie: There should be new episodes coming soon.\nKelly: OMG! i can't wait! :)\nFreddie: Try Outlander or The Tudors in the meantime.\nJim: i'm watching I, Zombie.\nBob: try Grimm or Sabrina. They're both great!\nKelly: they are all horrible and disgusting! \nBob: i think they are funny. They're just TV shows don't take them too seriously. x \nGreg: I'm watching House of Cards though must admit the new series is boring.\nMike: i agree. not the same without Kevin Spacey! You should try The West Wing if you enjoy political dramas.\nGreg: Netflix original Bodyguard is supposed to be good from what I've heard.\nMary: I'm a bit ashamed to confess i enjoy stuff like Pretty Little Liars or Gossip Girl ;)\nNancy: don't be ashamed i enjoy them too! and my favourite one is Desperate Housewives!!!\nMary: I know! I watched it twice!\nAlan: I'm catching up with Friends.\nNancy: OMG! i used to love Friends!",
+      "reference": "Freddie, Kelly, Jim, Greg, Bob, Mike, Mary, Alan and Nancy are watching different shows on Netflix.",
+      "prediction": "<think>\nOkay, let's start by analyzing this WhatsApp conversation between several people. The user wants me to create a Field Outcomes Report based on the given text.\n\nFirst, I need to identify each section: Practical Actions Completed, Blockers & Technical Issues, Outcomes & Resolutions, and Pending Follow-Ups. \n\nLooking at the conversation, Freddie and Kelly mention their watchlists. They talk about new episodes, trying out shows, and some reactions. So practical actions would include checking their schedules and suggesting shows. That's covered under Practical Actions Completed.\n\nNext, blockers or technical issues. The participants seem okay with the information but might",
+      "rouge": {
+        "rouge1": {
+          "fmeasure": 0.08620689655172414,
+          "recall": 0.3125,
+          "precision": 0.05
+        },
+        "rouge2": {
+          "fmeasure": 0.0,
+          "recall": 0.0,
+          "precision": 0.0
+        },
+        "rougeL": {
+          "fmeasure": 0.06896551724137932,
+          "recall": 0.25,
+          "precision": 0.04
+        }
+      }
+    }
+  ]
+}
