@@ -1,0 +1,284 @@
+{
+  "dataset": "ai4privacy/pii-masking-400k",
+  "rows": 200,
+  "recall_targeted": 0.193,
+  "recall_by_group": {
+    "other": 0.027,
+    "phone": 0.039,
+    "email": 0.725,
+    "name": 0.085
+  },
+  "counts_by_label": {
+    "ACCOUNTNUM": {
+      "missed": 12
+    },
+    "BUILDINGNUM": {
+      "missed": 76
+    },
+    "CITY": {
+      "missed": 73,
+      "caught": 1
+    },
+    "CREDITCARDNUMBER": {
+      "missed": 14
+    },
+    "DATEOFBIRTH": {
+      "missed": 50,
+      "caught": 6,
+      "partial": 4
+    },
+    "DRIVERLICENSENUM": {
+      "missed": 23
+    },
+    "EMAIL": {
+      "caught": 50,
+      "partial": 18,
+      "missed": 1
+    },
+    "GIVENNAME": {
+      "missed": 146,
+      "caught": 1
+    },
+    "IDCARDNUM": {
+      "missed": 51,
+      "caught": 3
+    },
+    "PASSWORD": {
+      "missed": 12
+    },
+    "SOCIALNUM": {
+      "missed": 26,
+      "caught": 4
+    },
+    "STREET": {
+      "missed": 57,
+      "partial": 1
+    },
+    "SURNAME": {
+      "missed": 68,
+      "caught": 19
+    },
+    "TAXNUM": {
+      "missed": 11
+    },
+    "TELEPHONENUM": {
+      "missed": 69,
+      "partial": 4,
+      "caught": 3
+    },
+    "USERNAME": {
+      "missed": 56,
+      "caught": 1
+    },
+    "ZIPCODE": {
+      "missed": 78
+    }
+  },
+  "plain_words_kept": 0.798,
+  "miss_examples": {
+    "USERNAME": [
+      {
+        "value": "wsgqnpedll06819",
+        "status": "missed",
+        "redacted_text": "<p>I, wsgqnpedll06819, consent to the treatment of my child at 7 Pines Road by Dr. wsgqnpedll06819, Person0: 8719085183. Person1: +1164814-6512. For billing queries, use Person2: 6004199045614389. Please send Person3: 01|.69 to ***************. Our Person4: 92305. Person5: US-EN-4958-U517.</p>"
+      },
+      {
+        "value": "wsgqnpedll06819",
+        "status": "missed",
+        "redacted_text": "<p>I, wsgqnpedll06819, consent to the treatment of my child at 7 Pines Road by Dr. wsgqnpedll06819, Person0: 8719085183. Person1: +1164814-6512. For billing queries, use Person2: 6004199045614389. Please send Person3: 01|.69 to ***************. Our Person4: 92305. Person5: US-EN-4958-U517.</p>"
+      }
+    ],
+    "STREET": [
+      {
+        "value": "7 Pines Road",
+        "status": "missed",
+        "redacted_text": "<p>I, wsgqnpedll06819, consent to the treatment of my child at 7 Pines Road by Dr. wsgqnpedll06819, Person0: 8719085183. Person1: +1164814-6512. For billing queries, use Person2: 6004199045614389. Please send Person3: 01|.69 to ***************. Our Person4: 92305. Person5: US-EN-4958-U517.</p>"
+      },
+      {
+        "value": "Rack Lane",
+        "status": "missed",
+        "redacted_text": "<p>Compliance review due by April 9th, 1984. Verify user Fior, 1989lyubomir.kleppi. Secure 07648, +44 71.936 5576. Cross-check 686 and vehicle VO03 RIA info. Contact Fior at Rack Lane, SY13 2RN, SY13 2RP, SY13 2RW for further assistance.</p>"
+      }
+    ],
+    "IDCARDNUM": [
+      {
+        "value": "8719085183",
+        "status": "missed",
+        "redacted_text": "<p>I, wsgqnpedll06819, consent to the treatment of my child at 7 Pines Road by Dr. wsgqnpedll06819, Person0: 8719085183. Person1: +1164814-6512. For billing queries, use Person2: 6004199045614389. Please send Person3: 01|.69 to ***************. Our Person4: 92305. Person5: US-EN-4958-U517.</p>"
+      },
+      {
+        "value": "44806069410",
+        "status": "missed",
+        "redacted_text": "Telecom License Person15: <br> Person16: Vaskrsija Isel <br> Person17: Textile designer <br> Account Person18: 19359789181296 <br> Person19: Zh-8 <br> Person0: 44806069410 <br> ZIP Person20: 08501-1312"
+      }
+    ],
+    "TELEPHONENUM": [
+      {
+        "value": "+1164814-6512",
+        "status": "missed",
+        "redacted_text": "<p>I, wsgqnpedll06819, consent to the treatment of my child at 7 Pines Road by Dr. wsgqnpedll06819, Person0: 8719085183. Person1: +1164814-6512. For billing queries, use Person2: 6004199045614389. Please send Person3: 01|.69 to ***************. Our Person4: 92305. Person5: US-EN-4958-U517.</p>"
+      },
+      {
+        "value": "+44 71.936 5576",
+        "status": "missed",
+        "redacted_text": "<p>Compliance review due by April 9th, 1984. Verify user Fior, 1989lyubomir.kleppi. Secure 07648, +44 71.936 5576. Cross-check 686 and vehicle VO03 RIA info. Contact Fior at Rack Lane, SY13 2RN, SY13 2RP, SY13 2RW for further assistance.</p>"
+      }
+    ],
+    "CREDITCARDNUMBER": [
+      {
+        "value": "6004199045614389",
+        "status": "missed",
+        "redacted_text": "<p>I, wsgqnpedll06819, consent to the treatment of my child at 7 Pines Road by Dr. wsgqnpedll06819, Person0: 8719085183. Person1: +1164814-6512. For billing queries, use Person2: 6004199045614389. Please send Person3: 01|.69 to ***************. Our Person4: 92305. Person5: US-EN-4958-U517.</p>"
+      },
+      {
+        "value": "67632950960647663",
+        "status": "missed",
+        "redacted_text": "<p>This confirms the transfer of copyright ownership from Abdulkadri Buckland, 67632950960647663, residing in Johannisburg, 62257, to *************** on 2066-11-12T00:00:00.</p>"
+      }
+    ],
+    "ZIPCODE": [
+      {
+        "value": "92305",
+        "status": "missed",
+        "redacted_text": "<p>I, wsgqnpedll06819, consent to the treatment of my child at 7 Pines Road by Dr. wsgqnpedll06819, Person0: 8719085183. Person1: +1164814-6512. For billing queries, use Person2: 6004199045614389. Please send Person3: 01|.69 to ***************. Our Person4: 92305. Person5: US-EN-4958-U517.</p>"
+      },
+      {
+        "value": "08501-1312",
+        "status": "missed",
+        "redacted_text": "Telecom License Person15: <br> Person16: Vaskrsija Isel <br> Person17: Textile designer <br> Account Person18: 19359789181296 <br> Person19: Zh-8 <br> Person0: 44806069410 <br> ZIP Person20: 08501-1312"
+      }
+    ],
+    "GIVENNAME": [
+      {
+        "value": "Vanderlei",
+        "status": "missed",
+        "redacted_text": "Person6: Vanderlei Greppi\nDate of Person7: July/92\nContact Person8: Mister Vanderlei Greppi\nContact Person9: *********************\nPerson10: 225, Townhouse 217\nPerson11: US"
+      },
+      {
+        "value": "Vanderlei",
+        "status": "missed",
+        "redacted_text": "Person6: Vanderlei Greppi\nDate of Person7: July/92\nContact Person8: Mister Vanderlei Greppi\nContact Person9: *********************\nPerson10: 225, Townhouse 217\nPerson11: US"
+      }
+    ],
+    "SURNAME": [
+      {
+        "value": "Greppi",
+        "status": "missed",
+        "redacted_text": "Person6: Vanderlei Greppi\nDate of Person7: July/92\nContact Person8: Mister Vanderlei Greppi\nContact Person9: *********************\nPerson10: 225, Townhouse 217\nPerson11: US"
+      },
+      {
+        "value": "Greppi",
+        "status": "missed",
+        "redacted_text": "Person6: Vanderlei Greppi\nDate of Person7: July/92\nContact Person8: Mister Vanderlei Greppi\nContact Person9: *********************\nPerson10: 225, Townhouse 217\nPerson11: US"
+      }
+    ],
+    "DATEOFBIRTH": [
+      {
+        "value": "July/92",
+        "status": "missed",
+        "redacted_text": "Person6: Vanderlei Greppi\nDate of Person7: July/92\nContact Person8: Mister Vanderlei Greppi\nContact Person9: *********************\nPerson10: 225, Townhouse 217\nPerson11: US"
+      },
+      {
+        "value": "1954-11-29T00:00:00",
+        "status": "missed",
+        "redacted_text": "Person12: Ntaniela Oberrauter\nPerson13: 1954-11-29T00:00:00\nEmergency Person1: Madame Ntaniela Oberrauter\nPerson9: ***************************\nPerson10: 1640 Quadruplex 150, United States\nPerson14: [32.85768, -97.3]"
+      }
+    ],
+    "BUILDINGNUM": [
+      {
+        "value": "225",
+        "status": "missed",
+        "redacted_text": "Person6: Vanderlei Greppi\nDate of Person7: July/92\nContact Person8: Mister Vanderlei Greppi\nContact Person9: *********************\nPerson10: 225, Townhouse 217\nPerson11: US"
+      },
+      {
+        "value": "1640",
+        "status": "missed",
+        "redacted_text": "Person12: Ntaniela Oberrauter\nPerson13: 1954-11-29T00:00:00\nEmergency Person1: Madame Ntaniela Oberrauter\nPerson9: ***************************\nPerson10: 1640 Quadruplex 150, United States\nPerson14: [32.85768, -97.3]"
+      }
+    ],
+    "EMAIL": [
+      {
+        "value": "achill.forgiano@outlook.com",
+        "status": "partial",
+        "redacted_text": "Person6: Achill Forgiano\nDate of Person7: 17/10/1944\nContact Person8: Mstr Achill Forgiano\nContact Person9: achill.********************\nPerson10: 1552, Tower 557\nPerson11: United States"
+      },
+      {
+        "value": "itta.shangarapillai@hotmail.com",
+        "status": "partial",
+        "redacted_text": "<form> By signing this, I, Governor Kâmil, permit services at 145 Newcastle Road, Castlewellan. Person1: itta.**************************. Person41: 083746073030361, 083746073030361. Postal Person43: BT31 9HF. Person38: ____________________</form>"
+      }
+    ],
+    "ACCOUNTNUM": [
+      {
+        "value": "19359789181296",
+        "status": "missed",
+        "redacted_text": "Telecom License Person15: <br> Person16: Vaskrsija Isel <br> Person17: Textile designer <br> Account Person18: 19359789181296 <br> Person19: Zh-8 <br> Person0: 44806069410 <br> ZIP Person20: 08501-1312"
+      },
+      {
+        "value": "4309995495507",
+        "status": "missed",
+        "redacted_text": "Applicant Person16: Saliou Poitrineau <br> Job Person68: Clinical psychologist <br> Phone Person69: 051812718132174 <br> ID Card Person18: 93961375627 <br> Person19: MNu0vW* <br> Time of Person70: 9 AM <br> Account Person18: 4309995495507 <br> Person11: US"
+      }
+    ],
+    "PASSWORD": [
+      {
+        "value": "Zh-8",
+        "status": "missed",
+        "redacted_text": "Telecom License Person15: <br> Person16: Vaskrsija Isel <br> Person17: Textile designer <br> Account Person18: 19359789181296 <br> Person19: Zh-8 <br> Person0: 44806069410 <br> ZIP Person20: 08501-1312"
+      },
+      {
+        "value": "MNu0vW*",
+        "status": "missed",
+        "redacted_text": "Applicant Person16: Saliou Poitrineau <br> Job Person68: Clinical psychologist <br> Phone Person69: 051812718132174 <br> ID Card Person18: 93961375627 <br> Person19: MNu0vW* <br> Time of Person70: 9 AM <br> Account Person18: 4309995495507 <br> Person11: US"
+      }
+    ],
+    "TAXNUM": [
+      {
+        "value": "12751 24762",
+        "status": "missed",
+        "redacted_text": "Signed on January 22nd, 2012, this Mediation Agreement between 24H and 24H outlines resolving disputes with ETH 141k. Protect privacy of TAXNUMs 12751 24762 and SOCIALNUM 416-026-1563, 416-026-1563. Contact 03594.171179 for further details."
+      },
+      {
+        "value": "179.03.7418",
+        "status": "missed",
+        "redacted_text": "Certification awarded to holder of 017789576327, verification number 179.03.7418. Training conducted at 294, 42347, under supervision of Prison officer. Exclusive completion of Substance Abuse Education program for KY residents. Official Person45: 391215702, 179.03.7418."
+      }
+    ],
+    "SOCIALNUM": [
+      {
+        "value": "416-026-1563",
+        "status": "missed",
+        "redacted_text": "Signed on January 22nd, 2012, this Mediation Agreement between 24H and 24H outlines resolving disputes with ETH 141k. Protect privacy of TAXNUMs 12751 24762 and SOCIALNUM 416-026-1563, 416-026-1563. Contact 03594.171179 for further details."
+      },
+      {
+        "value": "416-026-1563",
+        "status": "missed",
+        "redacted_text": "Signed on January 22nd, 2012, this Mediation Agreement between 24H and 24H outlines resolving disputes with ETH 141k. Protect privacy of TAXNUMs 12751 24762 and SOCIALNUM 416-026-1563, 416-026-1563. Contact 03594.171179 for further details."
+      }
+    ],
+    "CITY": [
+      {
+        "value": "Johannisburg",
+        "status": "missed",
+        "redacted_text": "<p>This confirms the transfer of copyright ownership from Abdulkadri Buckland, 67632950960647663, residing in Johannisburg, 62257, to *************** on 2066-11-12T00:00:00.</p>"
+      },
+      {
+        "value": "Tempe",
+        "status": "missed",
+        "redacted_text": "Lazgin Szymanek reported a fall near the stairs. Person29: Back pain. Incident occurred on 1951-02-09T00:00:00. Person0: 0671200735, Person30: 733084735, Driver's Person31: M03IQ4682953, Person32: UBS Bank USA, Eye Person33: Blue, Person34: Tempe, Person35: 92:fd:ee:fe:a2:b9"
+      }
+    ],
+    "DRIVERLICENSENUM": [
+      {
+        "value": "M03IQ4682953",
+        "status": "missed",
+        "redacted_text": "Lazgin Szymanek reported a fall near the stairs. Person29: Back pain. Incident occurred on 1951-02-09T00:00:00. Person0: 0671200735, Person30: 733084735, Driver's Person31: M03IQ4682953, Person32: UBS Bank USA, Eye Person33: Blue, Person34: Tempe, Person35: 92:fd:ee:fe:a2:b9"
+      },
+      {
+        "value": "FELIC-806291-FI-934",
+        "status": "missed",
+        "redacted_text": "<p>Submit WC69001IV, FELIC-806291-FI-934, and 64581 59515 for admission along with NP25 4QF. Fee of 968,903.01 to be paid via 348634887719604.</p>"
+      }
+    ]
+  }
+}

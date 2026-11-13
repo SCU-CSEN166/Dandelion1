@@ -22,6 +22,11 @@ def scan_batch(batch, namemap):
         bytes_text = text.encode()
         db.scan(bytes_text, match_event_handler=lambda id, start, end, *_: line_matches.append((id, start, end)))
 
+        # offset = running total of how much earlier replacements grew/shrank the text, so later
+        # match positions (found on the ORIGINAL text) still point at the right bytes.
+        # Bug fix: this used to be overwritten with only the last replacement's delta
+        # (`bytes_text, offset = ...`), so after 2+ name replacements every later slice was off,
+        # redacting the wrong bytes and eventually splitting a multi-byte char -> UnicodeDecodeError.
         offset = 0
         for id, start, end in line_matches:
             start += offset
@@ -32,9 +37,11 @@ def scan_batch(batch, namemap):
                     if name not in namemap['map']:
                         namemap['map'][name] = f"Person{namemap['count']}"
                         namemap['count'] += 1
-                    bytes_text, offset = replace_subs(bytes_text, namemap['map'][name] + ': ', start, end)
+                    bytes_text, delta = replace_subs(bytes_text, namemap['map'][name] + ': ', start, end)
+                    offset += delta  # accumulate, don't overwrite
                 case _:
-                    bytes_text, offset = replace_subs(bytes_text, '*' * (end-start), start, end)
+                    bytes_text, delta = replace_subs(bytes_text, '*' * (end-start), start, end)
+                    offset += delta  # always 0 here (same-length mask), kept for consistency
         
         redacted_texts.append(bytes_text.decode())
 

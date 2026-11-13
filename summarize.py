@@ -1,8 +1,8 @@
-from functools import lru_cache
+from functools import cache
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 import torch
 
-@lru_cache(maxsize=2)
+@cache
 def load_model(model_name: str):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     return AutoTokenizer.from_pretrained(model_name), AutoModelForSeq2SeqLM.from_pretrained(model_name).to(device)
