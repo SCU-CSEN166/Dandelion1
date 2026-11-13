@@ -6,3 +6,5 @@ numpy<2
 hyperscan
 rouge_score
 sentencepiece
+openpyxl
+pandas
