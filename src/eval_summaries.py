@@ -46,7 +46,7 @@ def main():
     examples = []
 
     for idx, dialogue, reference in zip(indices, dialogues, references):
-        prediction = summarize.summarize_text(dialogue, args.summarizer, args.length, 0)
+        prediction = summarize.summarize_text(dialogue, args.summarizer, args.length, False)
         scores = scorer.score(reference, prediction)
         for key in totals:
             totals[key] += scores[key].fmeasure
