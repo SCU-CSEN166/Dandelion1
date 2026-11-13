@@ -132,6 +132,7 @@ ROUGE: The ultimate goal of the project is generate human-readable and effective
 Recall: For redaction, we 
 - **Comparison:** [Baseline versus current approach, if different]
 
+Important note: Due to the redaction stage's use of aliases and the potential for missed names, NLI evaluation can be artificially reduced due to name mismatches. Additionally, the evaluation scripts currently treat redaction as an optional step and have no knowledge of the unredacted info, limiting the information it has. Additionally, even though the current outputs are clear and helpful from a human perspective, the ROUGE scores collapse because of the summarizer following a report template, which does not match the expected results when calculating the ROUGE scores. As a result, we've determined that our previous evaluation metrics must be changed given how significantly we updated the project this week.
 | System / version | Metric | Value | Notes |
 |---|---:|---:|---|
 | Baseline | Rouge1 recall : CarperAI/openai_summarize_tldr : google/flan-t5-large | 0.0827 | flan often erroneously copied sequences |
