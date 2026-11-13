@@ -1,0 +1,95 @@
+{
+  "dataset": "aitrainingdatabroker/synthetic-chat-logs-pii-spans",
+  "rows": 360,
+  "recall_targeted": 0.2,
+  "recall_by_group": {
+    "name": 0.0,
+    "phone": 1.0,
+    "other": 0.0,
+    "email": 0.0
+  },
+  "counts_by_label": {
+    "API_KEY": {
+      "missed": 90
+    },
+    "EMAIL": {
+      "partial": 90
+    },
+    "ID_NUMBER": {
+      "missed": 135
+    },
+    "IP_ADDRESS": {
+      "missed": 90
+    },
+    "PERSON": {
+      "partial": 90,
+      "missed": 180
+    },
+    "PHONE": {
+      "caught": 90
+    }
+  },
+  "plain_words_kept": 0.95,
+  "miss_examples": {
+    "PERSON": [
+      {
+        "value": "Liesel Marchetti",
+        "status": "partial",
+        "redacted_text": "[14:03] Liesel Person0: customer rang from***************, ticket is TCK-61349."
+      },
+      {
+        "value": "Fenwick Lindqvist",
+        "status": "partial",
+        "redacted_text": "[10:42] Fenwick Person1: can you email the file to hollis.****************** before lunch?"
+      }
+    ],
+    "ID_NUMBER": [
+      {
+        "value": "TCK-61349",
+        "status": "missed",
+        "redacted_text": "[14:03] Liesel Person0: customer rang from***************, ticket is TCK-61349."
+      },
+      {
+        "value": "TCK-19092",
+        "status": "missed",
+        "redacted_text": "thanks Ravindra Abernethy, closing TCK-19092 now"
+      }
+    ],
+    "EMAIL": [
+      {
+        "value": "wren.gruber@mail.example",
+        "status": "partial",
+        "redacted_text": "Reach me on*************** if the deploy fails, or wren.*******************."
+      },
+      {
+        "value": "hollis.nwosu@mail.example",
+        "status": "partial",
+        "redacted_text": "[10:42] Fenwick Person1: can you email the file to hollis.****************** before lunch?"
+      }
+    ],
+    "API_KEY": [
+      {
+        "value": "demo_key_e6j944f1h9rauzjgp05b",
+        "status": "missed",
+        "redacted_text": "config Person3: token=demo_key_e6j944f1h9rauzjgp05b host=10.21.217.187"
+      },
+      {
+        "value": "demo_key_8l6rvx73j7mqgwowmdt6",
+        "status": "missed",
+        "redacted_text": "oops I pasted the key in Person4: demo_key_8l6rvx73j7mqgwowmdt6 please rotate it"
+      }
+    ],
+    "IP_ADDRESS": [
+      {
+        "value": "10.21.217.187",
+        "status": "missed",
+        "redacted_text": "config Person3: token=demo_key_e6j944f1h9rauzjgp05b host=10.21.217.187"
+      },
+      {
+        "value": "10.80.144.46",
+        "status": "missed",
+        "redacted_text": "config Person3: token=demo_key_lhor8sjqt7iqkgpp3v67 host=10.80.144.46"
+      }
+    ]
+  }
+}
