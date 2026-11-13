@@ -1,5 +1,10 @@
 import argparse
+import glob
+import os
 import io
+import shutil
+import subprocess
+import numpy as np
 import soundfile as sf
 import pandas as pd
 from datasets import Audio, load_dataset
@@ -18,12 +23,18 @@ p.add_argument("--gen_config", help="Borrow generation config from this model, f
 p.add_argument("--accent", help="Keep only rows whose 'accent' column contains this, e.g. 'Kenyan' (EdAcc)")
 p.add_argument("-n", "--num_samples", type=int, default=50, help="0 = all")
 p.add_argument("-o", "--output", default="results/asr_out.csv")
-p.add_argument("-s", "--summarizer", help="Also redact + summarize + score the transcripts with eval.py, e.g. google/flan-t5-large")
+p.add_argument("-s", "--summarizer", help="Also redact + summarize the transcripts, e.g. google/flan-t5-large (datasets: also scored by eval.py)")
 p.add_argument("--sum_ref_col", default="abstract", help="Column holding the reference summary (SLUE-TED: abstract)")
-p.add_argument("--files", nargs="+", help="Transcribe local audio/video files instead of a dataset (mp4, m4a, mp3, wav...; needs ffmpeg). No WER.")
+p.add_argument("--files", nargs="+", help="Transcribe local audio/video files instead of a dataset (mp4, m4a, mp3, wav...; needs ffmpeg or pip install imageio-ffmpeg). No WER.")
 args = p.parse_args()
-if args.files and args.summarizer:
-    p.error("-s needs reference summaries, which --files doesn't have")
+if args.files:
+    # expand globs/folders here: notebooks and unmatched shell globs pass "*.mp4" through literally
+    exts = ("*.mp4", "*.m4a", "*.mp3", "*.wav", "*.flac")
+    args.files = sorted(f for x in args.files
+                        for f in ([g for e in exts for g in glob.glob(os.path.join(x, e))] if os.path.isdir(x) else glob.glob(x)))
+    if not args.files:
+        p.error("--files matched nothing; check the path (a leading / means the filesystem root)")
+    print(f"Transcribing {len(args.files)} files")
 
 if not args.files:
     # streaming: only downloads the clips we use, instead of every split (sw_ke train alone is ~3 GB)
@@ -48,13 +59,37 @@ def load_audio(a):
     arr, sr = sf.read(io.BytesIO(a["bytes"]) if a.get("bytes") else a["path"], dtype="float32")
     return {"raw": arr.mean(axis=1) if arr.ndim > 1 else arr, "sampling_rate": sr}  # stereo -> mono; pipeline resamples
 
-# a file path makes the pipeline decode with ffmpeg, so any format ffmpeg reads works (incl. video)
-inputs = args.files or [load_audio(r["audio"]) for r in rows]
+def load_file(path):
+    # ffmpeg pulls the audio track out of any container (mp4, m4a, ...); imageio-ffmpeg ships a binary when the system has none
+    exe = shutil.which("ffmpeg")
+    if not exe:
+        import imageio_ffmpeg  # pip install imageio-ffmpeg
+        exe = imageio_ffmpeg.get_ffmpeg_exe()
+    # ponytail: whole file decoded into RAM (~230 MB per hour of audio), stream it if files get huge
+    r = subprocess.run([exe, "-loglevel", "error", "-i", path, "-f", "f32le", "-ac", "1", "-ar", "16000", "-"],
+                       capture_output=True)
+    if r.returncode:
+        raise RuntimeError(f"ffmpeg failed on {path}: {r.stderr.decode(errors='replace')}")
+    return {"raw": np.frombuffer(r.stdout, np.float32), "sampling_rate": 16000}
+
+inputs = [load_file(f) for f in args.files] if args.files else [load_audio(r["audio"]) for r in rows]
 out = asr(inputs, batch_size=8, generate_kwargs={"language": args.language, "task": "transcribe"})
 hyp = [o["text"].strip() for o in out]
 
 if args.files:
     df = pd.DataFrame({"text": hyp, "file": args.files})
+    if args.summarizer:
+        # your own files have no reference summaries, so redact + summarize only, no scoring
+        import gc, inspect, torch
+        from redact import scan_batch
+        from summarize import summarize_text
+        del asr; gc.collect(); torch.cuda.empty_cache()  # free Whisper's VRAM for the summarizer
+        if len(inspect.signature(scan_batch).parameters) > 1:  # newer redact.py: names -> Person0, Person1, ...
+            redacted = scan_batch({"text": hyp}, {"map": {}, "count": 0})["text"]
+        else:
+            redacted = scan_batch({"text": hyp})["text"]
+        df["redacted"] = redacted
+        df["summary"] = [summarize_text(t, args.summarizer, 10, 1024) for t in redacted]  # 1024: long talks go in blocks
 else:
     ref = [r[args.ref_col] for r in rows]
     norm = BasicTextNormalizer()
@@ -67,7 +102,7 @@ else:
 df.to_csv(args.output, index=False)
 print(f"Saved {args.output}")
 
-if args.summarizer:
+if args.summarizer and not args.files:
     # ponytail: reuses eval.py's CLI instead of refactoring it into functions
     import sys, gc, torch, eval as ev
     del asr; gc.collect(); torch.cuda.empty_cache()  # free Whisper's VRAM for the summarizer
