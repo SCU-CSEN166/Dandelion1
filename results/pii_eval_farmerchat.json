@@ -1,0 +1,28 @@
+{
+  "dataset": "data/farmerchat_kenya_labeled.jsonl",
+  "rows": 50,
+  "recall_targeted": null,
+  "recall_by_group": {
+    "other": 0.0
+  },
+  "counts_by_label": {
+    "LOCATION": {
+      "missed": 64
+    }
+  },
+  "plain_words_kept": 1.0,
+  "miss_examples": {
+    "LOCATION": [
+      {
+        "value": "Kericho",
+        "status": "missed",
+        "redacted_text": "What are the benefits of intercropping maize with beans in Kericho, and how should I go about it?"
+      },
+      {
+        "value": "Burnt Forest",
+        "status": "missed",
+        "redacted_text": "Do pumpkins grow well in Burnt Forest, Ol'leinguse, Kesses, Uasin Gishu County, Kenya, and what planting guidance can you provide?"
+      }
+    ]
+  }
+}
