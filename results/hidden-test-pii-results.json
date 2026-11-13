@@ -1,0 +1,60 @@
+{
+  "dataset": "/private/tmp/claude-501/-Users-aliparpia-Library-Application-Support-Claude-scratch-workspaces-fb0af57c-cea2-4caa-b873-54e0220328d0-000f5fd4-7e9e-40a0-97e5-825ea323c5eb-scratch-2026-11-06-ee919a/a2866464-7f03-45ab-9026-4c09d37194cf/scratchpad/hidden/hidden_labeled.jsonl",
+  "rows": 10,
+  "recall_targeted": 0.0,
+  "recall_by_group": {
+    "name": 0.0,
+    "other": 0.0,
+    "phone": 0.0
+  },
+  "counts_by_label": {
+    "LOCATION": {
+      "missed": 15
+    },
+    "NAME": {
+      "missed": 21
+    },
+    "PHONE": {
+      "missed": 10
+    }
+  },
+  "plain_words_kept": 0.998,
+  "miss_examples": {
+    "NAME": [
+      {
+        "value": "Grace Wanjiru",
+        "status": "missed",
+        "redacted_text": "Habari team, this is Grace Wanjiru, the CHV from Rongai. I want to report on today's family planning outreach at Kampi ya Moto dispensary. We started at nine in the morning with a short talk on the different methods, then the nurse, Sister Mary Chebet, gave services. In total, forty-two women came, "
+      },
+      {
+        "value": "Mary Chebet",
+        "status": "missed",
+        "redacted_text": "Habari team, this is Grace Wanjiru, the CHV from Rongai. I want to report on today's family planning outreach at Kampi ya Moto dispensary. We started at nine in the morning with a short talk on the different methods, then the nurse, Sister Mary Chebet, gave services. In total, forty-two women came, "
+      }
+    ],
+    "LOCATION": [
+      {
+        "value": "Rongai",
+        "status": "missed",
+        "redacted_text": "Habari team, this is Grace Wanjiru, the CHV from Rongai. I want to report on today's family planning outreach at Kampi ya Moto dispensary. We started at nine in the morning with a short talk on the different methods, then the nurse, Sister Mary Chebet, gave services. In total, forty-two women came, "
+      },
+      {
+        "value": "Rongai",
+        "status": "missed",
+        "redacted_text": "Habari team, this is Grace Wanjiru, the CHV from Rongai. I want to report on today's family planning outreach at Kampi ya Moto dispensary. We started at nine in the morning with a short talk on the different methods, then the nurse, Sister Mary Chebet, gave services. In total, forty-two women came, "
+      }
+    ],
+    "PHONE": [
+      {
+        "value": "0711 000 482",
+        "status": "missed",
+        "redacted_text": "Habari team, this is Grace Wanjiru, the CHV from Rongai. I want to report on today's family planning outreach at Kampi ya Moto dispensary. We started at nine in the morning with a short talk on the different methods, then the nurse, Sister Mary Chebet, gave services. In total, forty-two women came, "
+      },
+      {
+        "value": "0722 000 917",
+        "status": "missed",
+        "redacted_text": "Good evening everyone, it's Faith Achieng. I was also at the Kampi ya Moto outreach today with Grace. Just to confirm the numbers, we served forty-two women on family planning, and six were referred for implants. The turnout was very good, even though the rain started around noon. The women asked if"
+      }
+    ]
+  }
+}
