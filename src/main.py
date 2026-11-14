@@ -16,6 +16,9 @@ def main():
     parser.add_argument("-b", "--use_blocks", action="store_true")
     parser.add_argument("-o", "--output", type=str, help="File to write the summary to")
     parser.add_argument("--input_out", type=str, help="File to write the input text to")
+    parser.add_argument("--classify_relevance", action="store_true", help="Classify line relevance with zero-shot classifier")
+    parser.add_argument("--filter_relevant", action="store_true", help="Filter out irrelevant lines before summarization")
+    parser.add_argument("--classifier_model", type=str, default="facebook/bart-large-mnli", help="Model for zero-shot relevance classification")
 
     args = parser.parse_args()
 
@@ -24,7 +27,12 @@ def main():
         sys.exit(1)
 
     dataset_name = args.dataset
-    dataset = prepare_dataset(dataset_name)
+    dataset = prepare_dataset(
+        dataset_name,
+        classify_relevance=args.classify_relevance,
+        filter_relevant=args.filter_relevant,
+        classifier_model=args.classifier_model,
+    )
 
     text_input = "\n".join(dataset["train"]["text"])
     if (args.input_out):
