@@ -193,26 +193,33 @@ Important note: Due to the redaction stage's use of aliases and the potential fo
 
 **Deliverable during Week 9 Lab:** Hidden-test results (as provided by the TA), analysis of at least three important failure cases, and a prioritized improvement plan.
 
-- **Submitted system version / commit:** [Add the commit hash from main after PR #2 is merged]
-- **Hidden-test metrics and leaderboard result:** [Add the TA's results when available]. I ran my own check on the 10 hidden transcripts. Before making the changes, it caught none of the 46 private details, which included 21 names, 10 phone numbers, and 15 places. After the changes, it caught 20 of 21 names, all 10 phone numbers, and 11 of 15 places. The targeted recall was 0.968. However, since I made these changes after looking at the transcripts, the results might not be as good on new data.
-- **Difference from development results:** On our FarmerChat development dataset, the system originally missed all 64 places. After the changes, it caught 41 of 64 using a list of places from other rows. The hidden transcripts were different because they included voice notes where people introduced themselves or used titles like "Sister." Our original code was not designed to catch names written this way.
+- **Submitted system version / commit:** [Add the commit the TA ran for the official test]. Current version after fixes: 2ed6484 (PR #5).
+- **Hidden-test metrics and leaderboard result:** [Add the TA's official result]. We also scored our output against the TA's expected-output table (10 messages). Before the fixes (main at 3242a83): relevance 8/10, activity type 6/8, participants 10/10, no duplicate column, PII recall 10/46 (only phone numbers were hidden). After the fixes (2ed6484): relevance 10/10, activity type 8/8, participants 10/10, duplicates 10/10, PII recall 42/46, pii_count 7/10, anonymized text exact match 7/10. The "after" numbers are in-sample because the fixes were written after seeing this test, and they use the TA's clean transcripts, not our Whisper transcripts.
+- **Difference from development results:** On our FarmerChat dev set, which the rules were not tuned on, place recall is 40/64 (0.62) with no ordinary words redacted, lower than the hidden-test score. Real voice notes also add speech-recognition errors ("Soli" for Solai, "Kampia Motor" for Kampi ya Moto) that the clean-transcript scores don't measure.
 
 | Failure case / category | What went wrong | Possible cause | Severity / user impact | Proposed fix |
 |---|---|---|---|---|
-| Redaction on voice-note transcripts | The system failed to catch the names, phone numbers, and places. | Our code only checked for emails, US phone numbers, and names written after "Name:". | High: Private information could end up in reports. | Added patterns for Kenyan phone numbers, names in introductions, and places in PR #2. |
+| Redaction of names and places | Main caught only 10 of 46 private items (phone numbers only) | No detection for names without "Name:" labels or for places | High: private details in reports | PR #5: titles, introductions, group names, facilities, Kenyan place list. Now 42/46 |
+| Relevance and duplicates | All 10 messages labeled relevant, repeated reports not flagged, and the TA's columns missing | Zero-shot labels too broad, no duplicate step, output table not in the TA's format | High: chit-chat and double counts in reports | PR #5: rule-based Event/Chit-chat, duplicate_of, and a table with the TA's columns |
+| Remaining PII misses | Solai, Kabarak and a bare "Ruth" were not hidden | Places missing from our list; a first name with no title or introduction | Medium: some private details still shown | Larger Kenyan town list from a public source; detection for bare names |
 | Summary content | The summary included a name, got some facts wrong, and left out some messages. It changed "referred" to "refused," used the wrong currency, and made up a percentage. | The system missed a name, the model was small, and the input was long. | High: Reports could contain incorrect or private information. | Removed the reasoning block. Next, we will try a larger model and improve the prompt. |
-| Small talk in reports | The report included things like transport problems and a lost charger as field blockers. | We don't have a step that removes messages that aren't relevant. | Medium: Reports include unnecessary information. | We will add a step to filter out unrelated messages before making the summary. |
 
 ### Changes attempted after stress-testing
 | Change | Worked? (Yes / Partly / No) | Evidence | Keep, revise, or revert? |
 |---|---|---|---|
-| Added patterns for Kenyan phone numbers, names, and places. | Partly | The hidden test score went from 0 to 0.968, although this is probably too high because we had already seen the data. On FarmerChat, the system went from catching 0 to 41 of 64 places. The ai4privacy targeted recall improved from 0.193 to 0.245. The rate of keeping normal words unchanged dropped slightly from 0.998 to 0.993 on the hidden set. | Keep the changes but improve them. We will add more places and a stop-word list, and fix cases where normal phrases like "I'm Tired" get hidden by mistake. |
+| Name, place and PII-column redaction plus TA-format output table (PR #5) | Yes | Against the TA key: PII recall 10/46 to 42/46, relevance 8/10 to 10/10, duplicates 0 to 10/10 (in-sample) | Keep |
 | Removed the `<think>` block from summaries. | Yes | The model's reasoning text no longer shows up in the final report. | Keep this change. |
+
+**Improvement plan (in priority order):**
+1. Hide the remaining places with a larger public list of Kenyan towns (privacy is the highest risk).
+2. Rerun on our Whisper transcripts and handle misspelled names and places (e.g. fuzzy matching against the place list).
+3. Test on new messages we haven't seen, so the scores aren't only in-sample.
+4. Improve the summary so it doesn't invent facts or include chit-chat.
 
 ### Individual contributions during that week
 | Member | Work completed | Result (worked / partly / failed) | Evidence | Next step |
 |---|---|---|---|---|
-| Ali Parpia | I tested our system using the 10 hidden transcripts, marked the private information, and looked at what the system was missing. I then updated the code to better recognize Kenyan phone numbers, names, and places on the redaction-kenya-fixes branch. | Partly successful | Commits 4754f30, 194b272, 16111e0 and PR #2 | I will work on fixing the remaining 4 missed places and 1 missed name. I will also fix cases where normal words get hidden by mistake and check the TA's results when they are available. |
+| Ali Parpia | Evaluated our hidden-test table against the TA's expected outputs, fixed the gaps (name and place redaction, chit-chat detection, duplicates, TA-format columns), and added an evaluation script | Worked | PR #5 (commit b60cbfa, merged as 2ed6484); results/hidden_test_ta_table.csv; src/eval_ta_table.py | Larger Kenyan place list, test on Whisper transcripts |
 
 ---
 
