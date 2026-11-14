@@ -162,6 +162,11 @@ Important note: Due to the redaction stage's use of aliases and the potential fo
 | Current | knkarthick/samsum Qwen/Qwen3-0.6B rouge2 for n=50 | F-score=0.0433 recall=0.1667 precision=0.0257 | '' |
 | Current | knkarthick/samsum Qwen/Qwen3-0.6B rougeL for n=50 | F-score=0.1139 recall=0.4356 precision=0.0675 | '' |
 | Current | PII redaction recall (places) : FarmerChat Kenya : redact.py | 0.0 (0 of 64) | It caught none of the 64 place names, so we need to add place detection. |
+| Current | PII redaction recall (targeted) : synthetic-chat-logs-pii-spans (n=360) : redact.py | 0.20 | Phones 1.0, but names 0.0 and emails only partially masked (username left visible) |
+| Current | ASR WER : EdAcc Kenyan-accent English (n=50) : openai/whisper-small | 0.241 | Normalized with Whisper's BasicTextNormalizer; unscored IGNORE segments excluded |
+| Current | ASR WER : EdAcc Kenyan (n=50) : openai/whisper-medium | 0.219 | Best of the models tested |
+| Current | ASR WER : EdAcc Kenyan (n=50) : openai/whisper-large-v3 | 0.228 | Larger model did not help on this accent set |
+| Current | ASR WER : EdAcc Kenyan (n=50) : AfriSpeech fine-tuned Whisper-medium | 0.942 | Degenerate, off-topic output; the fine-tune's outdated generation config had to be borrowed from whisper-medium |
 
 ### Successes, failures, and interpretation
 | Example / category | Expected behavior | Actual behavior | Success or failure? | Likely reason |
@@ -180,6 +185,7 @@ Important note: Due to the redaction stage's use of aliases and the potential fo
 |---|---|---|---|---|
 | Davis Kim | Summarizer improvements/fixes: Testing decoder-only models, memory management, chat template + system prompt. Preprocessing stage for purging unnecessary text from the chat exports. Redaction bug fixes. | Worked | See commit history and [PR #1](https://github.com/SCU-CSEN166/Dandelion1/pull/1) | Improve redaction scanning, integrate audio transcription module, adjust evaluation setups |
 | Ali Parpia | I built the 50-query FarmerChat Kenya dev set and the label converter (src/label_to_spans.py), then tested our redaction on it | Worked | Commit 865f516; data/farmerchat_kenya_labeled.jsonl; results/pii_eval_farmerchat.json | I will add Kenyan place names and the +254 phone pattern and test it again |
+| Christopher Le | Wrote src/transcribe.py (Whisper ASR + WER) and evaluated 4 models on Kenyan-accent English (EdAcc). Fixed the redact.py offset bug that corrupted multi-speaker lines. Wrote src/pii_eval.py and scored redaction on ai4privacy and synthetic chat-log PII spans. Reran SAMSum and TL;DR summarization at n=200. | Partly | edacc_kenyan_*.csv; pii_eval.json, pii_eval_chatlogs.json; samsum_flan-t5-large_n200.json, tldr_flan-t5-large_n200.json | Connect transcription to summarization and support real voice-note/video files |
 
 ---
 

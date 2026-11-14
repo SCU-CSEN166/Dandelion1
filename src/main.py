@@ -10,6 +10,7 @@ def main():
 
     parser = argparse.ArgumentParser(description="Process a WhatsApp dataset and summarize its content.")
     parser.add_argument("-d", "--dataset", type=str, help="Name of the dataset to process, either locally stored or from Huggingface")
+    parser.add_argument("-a", "--audio", nargs="+", help="Voice messages to transcribe instead of a dataset: files, folders or globs (mp4, m4a, mp3, wav...)")
     parser.add_argument("-s", "--summarizer", type=str, help="Name of the summarization model to use, either locally or from Huggingface (such as 'facebook/bart-large-cnn')")
     parser.add_argument("-l", "--length", type=int, default=100, help="Minimum length of the summary")
     parser.add_argument("-m", "--max_new_tokens", type=int, default=1024, help="Maximum number of new tokens to generate in the summary")
@@ -19,12 +20,19 @@ def main():
 
     args = parser.parse_args()
 
-    if not args.dataset:
-        print("Dataset name is required")
+    if not args.dataset and not args.audio:
+        print("A dataset (-d) or audio files (-a) are required")
         sys.exit(1)
 
-    dataset_name = args.dataset
-    dataset = prepare_dataset(dataset_name)
+    if args.audio:
+        from datasets import Dataset, DatasetDict
+        from redact import process_dataset_pii
+        from transcribe import transcribe, unload
+        transcripts = transcribe(args.audio)
+        unload()  # free Whisper's GPU memory for the summarizer
+        dataset = process_dataset_pii(DatasetDict(train=Dataset.from_dict({"text": [t for _, t in transcripts]})))
+    else:
+        dataset = prepare_dataset(args.dataset)
 
     text_input = "\n".join(dataset["train"]["text"])
     if (args.input_out):
