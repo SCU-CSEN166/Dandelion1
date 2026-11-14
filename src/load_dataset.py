@@ -1,5 +1,6 @@
 import json
 import os
+import tempfile
 
 import pandas as pd
 from datasets import Dataset, DatasetDict, load_dataset
@@ -11,31 +12,36 @@ LOCAL_EXTENSIONS = {".csv", ".tsv", ".json", ".jsonl", ".xlsx", ".xls"}
 TEXT_COLUMN_CANDIDATES = ["text", "transcript", "message", "content", "body", "dialogue", "utterance", "caption"]
 
 
-def _read_json(path: str) -> pd.DataFrame:
-    """Read a .json (list of records, or an object holding a list of records) or .jsonl file."""
-    with open(path, encoding="utf-8") as f:
-        raw = f.read()
+def _json_field(path: str) -> str | None:
+    """For a .json file shaped like {"messages": [ {...}, {...} ]}, the name of the list to read (else None)."""
     try:
-        data = json.loads(raw)
-    except json.JSONDecodeError:
-        data = [json.loads(line) for line in raw.splitlines() if line.strip()]  # JSON Lines
-    if isinstance(data, dict):  # e.g. {"messages": [ {...}, {...} ]}
-        lists = [v for v in data.values() if isinstance(v, list) and v and isinstance(v[0], dict)]
-        if not lists:
-            raise ValueError(f"{path}: expected a list of records or an object that contains one")
-        data = lists[0]
-    return pd.DataFrame(data)
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return None  # JSON Lines: load_dataset reads those directly
+    if isinstance(data, dict):
+        for key, value in data.items():
+            if isinstance(value, list) and value and isinstance(value[0], dict):
+                return key
+    return None
 
 
 def _read_table(path: str) -> pd.DataFrame:
     ext = os.path.splitext(path)[1].lower()
-    if ext == ".csv":
-        return pd.read_csv(path, encoding_errors="replace")
-    if ext == ".tsv":
-        return pd.read_csv(path, sep="\t", encoding_errors="replace")
-    if ext in (".json", ".jsonl"):
-        return _read_json(path)
-    return pd.read_excel(path)  # .xlsx / .xls (needs openpyxl)
+    if ext in (".xlsx", ".xls"):
+        return pd.read_excel(path)  # load_dataset has no Excel support (needs openpyxl)
+    builder = "csv" if ext in (".csv", ".tsv") else "json"
+    kwargs = {"delimiter": "\t"} if ext == ".tsv" else {}
+    if builder == "csv":
+        kwargs["encoding_errors"] = "replace"
+    else:
+        field = _json_field(path)
+        if field:
+            kwargs["field"] = field
+    # load_dataset caches whatever it reads on disk. The raw text here is not redacted yet, so use a throwaway
+    # cache folder and copy the data into memory before the folder is deleted.
+    with tempfile.TemporaryDirectory() as cache_dir:
+        return load_dataset(builder, data_files=path, cache_dir=cache_dir, **kwargs)["train"].to_pandas()
 
 
 def _pick_text_column(df: pd.DataFrame, text_col: str | None, path: str) -> str:
