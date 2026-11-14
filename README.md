@@ -220,6 +220,7 @@ Important note: Due to the redaction stage's use of aliases and the potential fo
 | Member | Work completed | Result (worked / partly / failed) | Evidence | Next step |
 |---|---|---|---|---|
 | Ali Parpia | Evaluated our hidden-test table against the TA's expected outputs, fixed the gaps (name and place redaction, chit-chat detection, duplicates, TA-format columns), and added an evaluation script | Worked | PR #5 (commit b60cbfa, merged as 2ed6484); results/hidden_test_ta_table.csv; src/eval_ta_table.py | Larger Kenyan place list, test on Whisper transcripts |
+| Christopher Le | Made transcribe.py accept the hidden test's voice messages: local audio/video files (mp4, m4a, ...) or a whole folder, decoded with a bundled ffmpeg (imageio-ffmpeg) because the WAVE HPC has none. Connected transcription to redaction and summarization in one command, and ran all 10 hidden-test mp4s through it on WAVE with whisper-small. Turned transcribe.py into a module fixed to whisper-medium. Whisper-medium is now the default ASR model. | Partly: (1) and (2) worked | Commits eb12963, 085e8c3, 3e221d3; results/old/hidden_test_table.csv | Reconnect audio to main.py with the team's chosen approach |
 
 ---
 

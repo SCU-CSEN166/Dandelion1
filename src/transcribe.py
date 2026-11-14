@@ -21,7 +21,7 @@ from transformers.models.whisper.english_normalizer import BasicTextNormalizer
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("-m", "--model", default="openai/whisper-small", help="e.g. openai/whisper-large-v3")
+    p.add_argument("-m", "--model", default="openai/whisper-medium", help="Best on EdAcc Kenyan dev (WER 0.219 vs small 0.241, large-v3 0.228)")
     p.add_argument("-d", "--dataset", default="google/fleurs")
     p.add_argument("--config", default="sw_ke", help="FLEURS language, e.g. sw_ke (Swahili-Kenya), en_us")
     p.add_argument("--language", default="swahili", help="Language Whisper should transcribe in")
