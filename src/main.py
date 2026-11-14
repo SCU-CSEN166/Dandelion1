@@ -19,6 +19,8 @@ def main():
     parser.add_argument("--classify_relevance", action="store_true", help="Classify line relevance with zero-shot classifier")
     parser.add_argument("--filter_relevant", action="store_true", help="Filter out irrelevant lines before summarization")
     parser.add_argument("--classifier_model", type=str, default="facebook/bart-large-mnli", help="Model for zero-shot relevance classification")
+    parser.add_argument("--extract_info", action="store_true", help="Extract event type and participant counts using QA model")
+    parser.add_argument("--qa_model", type=str, default="deepset/roberta-base-squad2", help="Model for question answering extraction")
 
     args = parser.parse_args()
 
@@ -32,6 +34,8 @@ def main():
         classify_relevance=args.classify_relevance,
         filter_relevant=args.filter_relevant,
         classifier_model=args.classifier_model,
+        extract_info=args.extract_info,
+        qa_model=args.qa_model,
     )
 
     text_input = "\n".join(dataset["train"]["text"])
