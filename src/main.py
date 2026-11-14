@@ -26,6 +26,9 @@ def main():
     parser.add_argument("--qa_model", type=str, default="deepset/roberta-base-squad2", help="Model for question answering extraction")
     parser.add_argument("--row_summaries", action="store_true", help="Generate row-level summary column in tabular output")
     parser.add_argument("--row_summarizer", type=str, default="facebook/bart-large-cnn", help="Model for per-row summaries (default: facebook/bart-large-cnn)")
+    parser.add_argument("--review_out", type=str, help="File (.csv or .xlsx) for the human review queue: confidence, reasons to check, sensitive topic, and report text with sentences about individuals withheld")
+    parser.add_argument("--followups_out", type=str, help="File (.csv or .xlsx) for the follow-up list: referrals, people to call back, return visits, reports to send, supplies")
+    parser.add_argument("--protect_sensitive", action="store_true", help="Give the summarizer the protected report text (sentences about individuals in sensitive messages withheld)")
     parser.add_argument("--ta_table_out", type=str, help="File (.csv or .xlsx) to write one row per message in the TA's hidden-test format: relevance, activity_type, participants, duplicate_of, pii_count, pii_items, expected_anonymized_text")
 
     args = parser.parse_args()
@@ -75,12 +78,25 @@ def main():
             active_split.to_csv(args.table_out)
         print(f"Saved processed tabular dataset to {args.table_out}")
 
-    # Export the table in the TA's hidden-test format if requested
-    if args.ta_table_out:
+    # Export the table in the TA's hidden-test format, the review queue and the follow-up list if requested
+    protected_texts = None
+    if args.ta_table_out or args.review_out or args.followups_out or args.protect_sensitive:
         from ta_table import build_ta_table, write_ta_table
-        os.makedirs(os.path.dirname(args.ta_table_out) or ".", exist_ok=True)
-        write_ta_table(build_ta_table(list(active_split)), args.ta_table_out)
-        print(f"Saved TA-format table to {args.ta_table_out}")
+        from insights import build_followups, build_review_table, write_table
+        rows = list(active_split)
+        ta_table = build_ta_table(rows)
+        review = build_review_table(ta_table, rows)
+        for path, table, label, writer in (
+            (args.ta_table_out, ta_table, "TA-format table", write_ta_table),
+            (args.review_out, review, "review queue", write_table),
+            (args.followups_out, build_followups(ta_table), "follow-up list", write_table),
+        ):
+            if path:
+                os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+                writer(table, path)
+                print(f"Saved {label} to {path}")
+        if args.protect_sensitive:
+            protected_texts = list(review["report_text"])
 
     # Collect structured facts from extraction stage to enrich the summarizer prompt
     extracted_facts = []
@@ -94,7 +110,7 @@ def main():
                     fact += f" | Attendees/Participants: {part}"
                 extracted_facts.append(fact)
 
-    text_input = "\n".join(active_split["text"])
+    text_input = "\n".join(protected_texts if protected_texts is not None else active_split["text"])
     if args.input_out:
         os.makedirs(os.path.dirname(args.input_out) or ".", exist_ok=True)
         with open(args.input_out, "w", encoding="utf-8") as f:
