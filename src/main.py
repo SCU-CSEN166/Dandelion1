@@ -26,6 +26,7 @@ def main():
     parser.add_argument("--qa_model", type=str, default="deepset/roberta-base-squad2", help="Model for question answering extraction")
     parser.add_argument("--row_summaries", action="store_true", help="Generate row-level summary column in tabular output")
     parser.add_argument("--row_summarizer", type=str, default="facebook/bart-large-cnn", help="Model for per-row summaries (default: facebook/bart-large-cnn)")
+    parser.add_argument("--ta_table_out", type=str, help="File (.csv or .xlsx) to write one row per message in the TA's hidden-test format: relevance, activity_type, participants, duplicate_of, pii_count, pii_items, expected_anonymized_text")
 
     args = parser.parse_args()
 
@@ -73,6 +74,13 @@ def main():
         else:
             active_split.to_csv(args.table_out)
         print(f"Saved processed tabular dataset to {args.table_out}")
+
+    # Export the table in the TA's hidden-test format if requested
+    if args.ta_table_out:
+        from ta_table import build_ta_table, write_ta_table
+        os.makedirs(os.path.dirname(args.ta_table_out) or ".", exist_ok=True)
+        write_ta_table(build_ta_table(list(active_split)), args.ta_table_out)
+        print(f"Saved TA-format table to {args.ta_table_out}")
 
     # Collect structured facts from extraction stage to enrich the summarizer prompt
     extracted_facts = []
