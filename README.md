@@ -162,6 +162,11 @@ Important note: Due to the redaction stage's use of aliases and the potential fo
 | Current | knkarthick/samsum Qwen/Qwen3-0.6B rouge2 for n=50 | F-score=0.0433 recall=0.1667 precision=0.0257 | '' |
 | Current | knkarthick/samsum Qwen/Qwen3-0.6B rougeL for n=50 | F-score=0.1139 recall=0.4356 precision=0.0675 | '' |
 | Current | PII redaction recall (places) : FarmerChat Kenya : redact.py | 0.0 (0 of 64) | It caught none of the 64 place names, so we need to add place detection. |
+| Current | PII redaction recall (targeted) : synthetic-chat-logs-pii-spans (n=360) : redact.py | 0.20 | Phones 1.0, but names 0.0 and emails only partially masked (username left visible) |
+| Current | ASR WER : EdAcc Kenyan-accent English (n=50) : openai/whisper-small | 0.241 | Normalized with Whisper's BasicTextNormalizer; unscored IGNORE segments excluded |
+| Current | ASR WER : EdAcc Kenyan (n=50) : openai/whisper-medium | 0.219 | Best of the models tested |
+| Current | ASR WER : EdAcc Kenyan (n=50) : openai/whisper-large-v3 | 0.228 | Larger model did not help on this accent set |
+| Current | ASR WER : EdAcc Kenyan (n=50) : AfriSpeech fine-tuned Whisper-medium | 0.942 | Degenerate, off-topic output; the fine-tune's outdated generation config had to be borrowed from whisper-medium |
 
 ### Successes, failures, and interpretation
 | Example / category | Expected behavior | Actual behavior | Success or failure? | Likely reason |
@@ -180,6 +185,7 @@ Important note: Due to the redaction stage's use of aliases and the potential fo
 |---|---|---|---|---|
 | Davis Kim | Summarizer improvements/fixes: Testing decoder-only models, memory management, chat template + system prompt. Preprocessing stage for purging unnecessary text from the chat exports. Redaction bug fixes. | Worked | See commit history and [PR #1](https://github.com/SCU-CSEN166/Dandelion1/pull/1) | Improve redaction scanning, integrate audio transcription module, adjust evaluation setups |
 | Ali Parpia | I built the 50-query FarmerChat Kenya dev set and the label converter (src/label_to_spans.py), then tested our redaction on it | Worked | Commit 865f516; data/farmerchat_kenya_labeled.jsonl; results/pii_eval_farmerchat.json | I will add Kenyan place names and the +254 phone pattern and test it again |
+| Christopher Le | Wrote src/transcribe.py (Whisper ASR + WER) and evaluated 4 models on Kenyan-accent English (EdAcc). Fixed the redact.py offset bug that corrupted multi-speaker lines. Wrote src/pii_eval.py and scored redaction on ai4privacy and synthetic chat-log PII spans. Reran SAMSum and TL;DR summarization at n=200. | Partly | edacc_kenyan_*.csv; pii_eval.json, pii_eval_chatlogs.json; samsum_flan-t5-large_n200.json, tldr_flan-t5-large_n200.json | Connect transcription to summarization and support real voice-note/video files |
 
 ---
 
@@ -187,25 +193,26 @@ Important note: Due to the redaction stage's use of aliases and the potential fo
 
 **Deliverable during Week 9 Lab:** Hidden-test results (as provided by the TA), analysis of at least three important failure cases, and a prioritized improvement plan.
 
-- **Submitted system version / commit:** [Commit hash]
-- **Hidden-test metrics and leaderboard result:** [Results, when available]
-- **Difference from development results:** [Compare; do not assume the hidden set is identical]
+- **Submitted system version / commit:** [Add the commit hash from main after PR #2 is merged]
+- **Hidden-test metrics and leaderboard result:** [Add the TA's results when available]. I ran my own check on the 10 hidden transcripts. Before making the changes, it caught none of the 46 private details, which included 21 names, 10 phone numbers, and 15 places. After the changes, it caught 20 of 21 names, all 10 phone numbers, and 11 of 15 places. The targeted recall was 0.968. However, since I made these changes after looking at the transcripts, the results might not be as good on new data.
+- **Difference from development results:** On our FarmerChat development dataset, the system originally missed all 64 places. After the changes, it caught 41 of 64 using a list of places from other rows. The hidden transcripts were different because they included voice notes where people introduced themselves or used titles like "Sister." Our original code was not designed to catch names written this way.
 
 | Failure case / category | What went wrong | Possible cause | Severity / user impact | Proposed fix |
 |---|---|---|---|---|
-| [Case 1] | [Observation] | [Hypothesis] | [Impact] | [Fix] |
-| [Case 2] | [Observation] | [Hypothesis] | [Impact] | [Fix] |
-| [Case 3] | [Observation] | [Hypothesis] | [Impact] | [Fix] |
+| Redaction on voice-note transcripts | The system failed to catch the names, phone numbers, and places. | Our code only checked for emails, US phone numbers, and names written after "Name:". | High: Private information could end up in reports. | Added patterns for Kenyan phone numbers, names in introductions, and places in PR #2. |
+| Summary content | The summary included a name, got some facts wrong, and left out some messages. It changed "referred" to "refused," used the wrong currency, and made up a percentage. | The system missed a name, the model was small, and the input was long. | High: Reports could contain incorrect or private information. | Removed the reasoning block. Next, we will try a larger model and improve the prompt. |
+| Small talk in reports | The report included things like transport problems and a lost charger as field blockers. | We don't have a step that removes messages that aren't relevant. | Medium: Reports include unnecessary information. | We will add a step to filter out unrelated messages before making the summary. |
 
 ### Changes attempted after stress-testing
 | Change | Worked? (Yes / Partly / No) | Evidence | Keep, revise, or revert? |
 |---|---|---|---|
-| [Change] | [Status] | [Result] | [Decision] |
+| Added patterns for Kenyan phone numbers, names, and places. | Partly | The hidden test score went from 0 to 0.968, although this is probably too high because we had already seen the data. On FarmerChat, the system went from catching 0 to 41 of 64 places. The ai4privacy targeted recall improved from 0.193 to 0.245. The rate of keeping normal words unchanged dropped slightly from 0.998 to 0.993 on the hidden set. | Keep the changes but improve them. We will add more places and a stop-word list, and fix cases where normal phrases like "I'm Tired" get hidden by mistake. |
+| Removed the `<think>` block from summaries. | Yes | The model's reasoning text no longer shows up in the final report. | Keep this change. |
 
 ### Individual contributions during that week
 | Member | Work completed | Result (worked / partly / failed) | Evidence | Next step |
 |---|---|---|---|---|
-| [Name] | [Specific work] | [Status] | [Link] | [Next step] |
+| Ali Parpia | I tested our system using the 10 hidden transcripts, marked the private information, and looked at what the system was missing. I then updated the code to better recognize Kenyan phone numbers, names, and places on the redaction-kenya-fixes branch. | Partly successful | Commits 4754f30, 194b272, 16111e0 and PR #2 | I will work on fixing the remaining 4 missed places and 1 missed name. I will also fix cases where normal words get hidden by mistake and check the TA's results when they are available. |
 
 ---
 
