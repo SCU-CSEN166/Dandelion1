@@ -217,14 +217,20 @@ def extract_line_info(
         qa_pipeline = load_qa_pipeline(model_name=model_name, device=device)
 
     # Query QA model for event type
-    event_res = qa_pipeline(question=event_question, context=cleaned_text)
+    try:
+        event_res = qa_pipeline({"question": event_question, "context": cleaned_text})
+    except TypeError:
+        event_res = qa_pipeline(question=event_question, context=cleaned_text)
     event_type = ""
     if event_res and event_res.get("score", 0.0) >= min_score:
         raw_event = event_res.get("answer", "")
         event_type = clean_event_label(raw_event) if clean_event else raw_event.strip()
 
     # Query QA model for participant count
-    part_res = qa_pipeline(question=participants_question, context=cleaned_text)
+    try:
+        part_res = qa_pipeline({"question": participants_question, "context": cleaned_text})
+    except TypeError:
+        part_res = qa_pipeline(question=participants_question, context=cleaned_text)
     participants = ""
     if part_res and part_res.get("score", 0.0) >= min_score:
         raw_part = part_res.get("answer", "")

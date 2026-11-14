@@ -23,9 +23,11 @@ from extract import (
 class DummyQAPipeline:
     """Mock Question-Answering pipeline for fast, offline testing."""
 
-    def __call__(self, inputs, batch_size=None):
+    def __call__(self, inputs=None, batch_size=None, question=None, context=None, **kwargs):
+        if inputs is None and question is not None:
+            inputs = {"question": question, "context": context or ""}
         single = isinstance(inputs, dict)
-        items = [inputs] if single else inputs
+        items = [inputs] if single else (inputs or [])
         results = []
 
         for item in items:
