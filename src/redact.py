@@ -10,7 +10,14 @@ Scans for and redacts:
 6. Places: facility names ("Rongai Health Centre", "Sarambei Primary School") and Kenyan place names from
    data/kenya_places.txt (built by build_place_list.py) -> Place0, Place1, ...
 
-Every redacted item is also recorded, so scan_batch can report pii_items and pii_count per line.
+7. Places and people found from sentence context ("the matatu from Solai", "her home in Kabarak",
+   "send it to Ruth"). This also covers names that speech recognition misspelled, which no list contains.
+8. Speech-recognition misspellings of known places ("Girissa" for Garissa, "Kampiamoto" for Kampi ya Moto),
+   matched approximately against the place list and the places already seen. Each such match is noted for review.
+
+Every redacted item is also recorded, so scan_batch can report pii_items, pii_count and pii_notes per line.
+scan_batch reads the batch twice: once to learn the names and places, once to redact, so a name introduced in a
+later message is also hidden in the earlier ones.
 """
 import os
 import re
@@ -44,6 +51,14 @@ EXCLUDED_HEADERS = {
     "MESSAGE", "TRANSCRIPT", "DIALOGUE", "QUERY", "CONTENT", "INPUT", "REFERENCE"
 }
 
+# Words that mark a form field label ("Contact Number:", "Date of Birth:"), never a sender name
+FORM_WORDS = {
+    "NAME", "ADDRESS", "CONTACT", "NUMBER", "EMAIL", "PHONE", "TELEPHONE", "MOBILE", "GENDER", "SEX", "AGE", "DATE",
+    "BIRTH", "DOB", "EMERGENCY", "PATIENT", "PARTICIPANT", "DOCUMENT", "DETAILS", "LOCATION", "COMPLAINT", "CITY",
+    "COUNTRY", "STATE", "ID", "LICENSE", "LICENCE", "SOCIAL", "DRIVER", "SUBJECT", "TOTAL", "SUMMARY", "STATUS",
+    "TYPE", "INFORMATION", "INFO", "NOTES", "COMMENTS", "DESCRIPTION", "REASON", "SIGNATURE", "PASSPORT", "ACCOUNT",
+}
+
 EMAIL_RE = re.compile(EMAIL_PATTERN, re.IGNORECASE)
 PHONE_RE = re.compile(PHONE_PATTERN)
 SENDER_RE = re.compile(SENDER_PATTERN, re.MULTILINE)
@@ -63,12 +78,38 @@ July August September October November December Kenya God Jesus Habari Asante Ka
 Miss Mama Mzee Dr Prof Rev Pastor Chief Corporal Sergeant Officer Nurse Teacher Madam Person Place Together
 """.split()}
 
-_TITLE_RE = re.compile(rf"\b{_TITLES}\.?\s+(?P<name>{_NAME}(?:\s+{_NAME}){{0,2}})")
-_INTRO_RE = re.compile(rf"(?i:\b(?:this is|it['’]s|it is|i am|i['’]m|my name is))\s+(?P<name>{_NAME}(?:\s+{_NAME})?)")
-_HERE_RE = re.compile(rf"\b(?P<name>{_NAME}(?:\s+{_NAME})?)\s+here\b")
+_FULLNAME = rf"{_NAME}(?:\s+[A-Z]\.)?(?:\s+{_NAME})?"  # "Grace", "Grace Wanjiru", "Faith A. King"
+_TITLE_RE = re.compile(rf"\b(?i:{_TITLES})\.?\s+(?P<name>{_NAME}(?:\s+[A-Z]\.)?(?:\s+{_NAME}){{0,2}})")
+_INTRO_RE = re.compile(rf"(?i:\b(?:this is|it['’]s|it is|i am|i['’]m|my name is))\s+(?P<name>{_FULLNAME})")
+_HERE_RE = re.compile(rf"\b(?P<name>{_FULLNAME})\s+here\b")
+
+# People from sentence context: "send your contribution to Ruth", "I was with Grace", "call Amina"
+_GIVE_TO_RE = re.compile(
+    rf"\b(?i:send|sent|give|gave|pay|paid|talk|talked|speak|spoke|contribution|contributions|money)\b[^.!?\n]{{0,40}}?"
+    rf"\bto\s+(?P<name>{_FULLNAME})\b")
+_WITH_RE = re.compile(rf"\b(?i:with|call|ask|tell|thank|remind|helping)\s+(?P<name>{_FULLNAME})\b")
+
+# Places from sentence context: "from Solai", "in Kabarak", "at the Kampia Moto Outreach", "referred to Nakuru"
+_PLACE_STEM = rf"{_NAME}(?:\s+(?:ya|wa|{_NAME})){{0,3}}"
+_PREP_PLACE_RE = re.compile(rf"\b(?i:in|from|at|near|around|outside)\s+(?:the\s+)?(?P<stem>{_PLACE_STEM})\b")
+_GO_TO_RE = re.compile(
+    rf"\b(?i:went|go|going|gone|came|come|coming|travel\w*|refer\w*|moved|return\w*|trip|visit)\s+to\s+(?:the\s+)?"
+    rf"(?P<stem>{_PLACE_STEM})\b")
+
+# Generic words that can end a place phrase; they stay visible ("Kampia Moto Outreach" -> "Place0 Outreach")
+_GENERIC_TAIL = {w.lower() for w in """
+Outreach Camp Clinic Meeting Training Session Dispensary Market Hospital School Centre Center Church Office Hall
+Group Level Road Town Village County Ward Area Stage Primary Secondary Health Women Youth Men Girls Boys
+""".split()}
+_STOP |= {w.lower() for w in """
+English Swahili Kiswahili Christmas Easter Whatsapp WhatsApp Facebook Google Zoom Tecno Safaricom Pesa Mpesa Africa
+Lord Total
+""".split()}
+# Capitalized words that can follow "in/at/from" without being a place name
+_NOT_PLACE = {w.lower() for w in "Level Class Form Home School Church Town Work Hospital Case Order Time".split()}
 _GROUP_RE = re.compile(rf"\b(?P<name>{_NAME})\s+(?i:women['’]s group|youth group|self[- ]help group|chama)\b")
 _FACILITY_RE = re.compile(
-    rf"\b(?P<stem>{_NAME}(?:\s+(?:ya|wa|{_NAME})){{0,4}})\s+"
+    rf"\b(?P<stem>{_NAME}(?:\s+(?:ya|wa|\d+|{_NAME})){{0,4}})\s+"
     r"(?i:primary school|secondary school|health cent(?:re|er)|dispensary|hospital|market)\b")
 
 _PLACES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "kenya_places.txt")
@@ -102,6 +143,53 @@ if _HS_AVAILABLE:
         )
     except Exception:
         db = None
+
+
+def _load_place_names():
+    if not os.path.isfile(_PLACES_FILE):
+        return []
+    with open(_PLACES_FILE, encoding="utf-8") as f:
+        return [line.strip() for line in f if line.strip()]
+
+
+def _norm(name):
+    return re.sub(r"[^a-z]", "", name.lower())
+
+
+_LISTED_PLACES = {_norm(p): p for p in _load_place_names() if len(_norm(p)) >= 5}
+
+
+def _edit_distance(a, b, limit):
+    """Levenshtein distance, or limit + 1 as soon as it is certain to be larger."""
+    if abs(len(a) - len(b)) > limit:
+        return limit + 1
+    prev = list(range(len(b) + 1))
+    for i, ca in enumerate(a, 1):
+        cur = [i]
+        for j, cb in enumerate(b, 1):
+            cur.append(min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (ca != cb)))
+        if min(cur) > limit:
+            return limit + 1
+        prev = cur
+    return prev[-1]
+
+
+def _fuzzy_place(token, namemap):
+    """A known place that this capitalized word is probably a misspelling of (speech-recognition error), or None."""
+    norm = _norm(token)
+    if len(norm) < 5:
+        return None
+    limit = 1 if len(norm) < 8 else 2
+    known = dict(_LISTED_PLACES)
+    known.update({_norm(p): p for p in namemap.get("places", {}) if len(_norm(p)) >= 5})
+    best = None
+    for candidate, original in known.items():
+        if candidate[0] != norm[0] or candidate == norm:
+            continue
+        d = _edit_distance(norm, candidate, limit)
+        if d <= limit and (best is None or d < best[0]):
+            best = (d, original)
+    return best[1] if best else None
 
 
 def _split_trim(text, lead=False, trail=False):
@@ -140,8 +228,11 @@ def _place_alias(namemap, name):
 def redact_line_with_items(text: str, namemap: dict) -> tuple[str, list[str]]:
     """Redact PII from one text string. Returns (redacted_text, list of the original items that were redacted)."""
     if not text:
+        namemap["_notes"] = []
         return "", []
     found: list[tuple[str, str]] = []  # (original item, key used to merge repeats of the same item)
+    notes: list[str] = []  # low-certainty decisions, for the human review queue
+    origin = namemap.setdefault("origin", {})  # place -> how it was found, when that was a guess
 
     def _mask(match):
         found.append((match.group(0), match.group(0)))
@@ -161,8 +252,13 @@ def redact_line_with_items(text: str, namemap: dict) -> tuple[str, list[str]]:
             return match.group(0)
         if raw_name.isdigit():
             return match.group(0)
-        if len(raw_name.split()) > 4:  # a sentence ending in a colon ("Just adding to her report:"), not a sender name
+        words = raw_name.split()
+        if len(words) > 4:  # a sentence ending in a colon ("Just adding to her report:"), not a sender name
             return match.group(0)
+        if any(w.upper().strip(".") in FORM_WORDS for w in words):  # a form field ("Contact Number:", "Date of Birth:")
+            return match.group(0)
+        if len(words) > 1 and not all(w[0].isupper() or w[0].isdigit() for w in words):
+            return match.group(0)  # a lowercase phrase ("details for treatment:"), not a name
         alias = _person_alias(namemap, raw_name)
         found.append((raw_name, alias))
         return f"{alias}: "
@@ -180,7 +276,7 @@ def redact_line_with_items(text: str, namemap: dict) -> tuple[str, list[str]]:
     def _name_sub(regex, line):
         def repl(m):
             trimmed = _split_trim(m.group("name"), trail=True)
-            if not trimmed:
+            if not trimmed or any(w.upper().strip(".") in FORM_WORDS for w in trimmed[1].split()):
                 return m.group(0)
             prefix, core, suffix = trimmed
             alias = _person_alias(namemap, core)
@@ -220,6 +316,8 @@ def redact_line_with_items(text: str, namemap: dict) -> tuple[str, list[str]]:
         text, n = re.subn(rf"(?<![A-Za-z]){re.escape(token)}(?![A-Za-z])", known[token], text)
         if n:
             found.append((token, known[token]))
+            if token in origin:
+                notes.append(origin[token])
 
     # 8. Kenyan place list (after step 7, so a known longer place name wins over a shorter listed one)
     if _PLACE_RE is not None:
@@ -228,6 +326,59 @@ def redact_line_with_items(text: str, namemap: dict) -> tuple[str, list[str]]:
             found.append((m.group(0), alias))
             return alias
         text = _PLACE_RE.sub(_place, text)
+
+    # 9. People and places from sentence context (also catches misspelled names that no list contains)
+    for regex in (_GIVE_TO_RE, _WITH_RE):
+        text = _name_sub(regex, text)
+
+    def _context_place(m):
+        stem = m.group("stem")
+        parts = re.split(r"(\s+)", stem)
+        words = parts[0::2]
+        j = len(words)
+        while j > 0 and words[j - 1].lower() in _GENERIC_TAIL:  # keep "Outreach", "Camp", ... visible
+            j -= 1
+        if j == 0:
+            return m.group(0)
+        core = "".join(parts[: 2 * (j - 1) + 1])
+        trimmed = _split_trim(core, lead=True, trail=True)
+        if not trimmed or trimmed[2] or any(w.lower() in _NOT_PLACE for w in trimmed[1].split()):
+            return m.group(0)
+        prefix, name, _ = trimmed
+        match = _fuzzy_place(name, namemap)
+        if match:  # a misspelling of a place we already know: reuse its alias
+            alias = _place_alias(namemap, match)
+            namemap.setdefault("places", {}).setdefault(name, alias)
+            origin[name] = f"possible misspelling: {name} ~ {match}"
+        else:
+            alias = _place_alias(namemap, name)
+            origin.setdefault(name, f"place guessed from context: {name}")
+        found.append((name, alias))
+        notes.append(origin[name])
+        start = m.start("stem") - m.start()
+        return m.group(0)[:start] + prefix + alias + stem[len(core):]
+
+    for regex in (_PREP_PLACE_RE, _GO_TO_RE):
+        text = regex.sub(_context_place, text)
+
+    # 10. Misspelled places: capitalized words inside a sentence that are close to a known place name
+    def _fuzzy(m):
+        token = m.group(0)
+        before = text[: m.start()].rstrip()
+        if not before or before[-1] in ".!?\n" or token.lower() in _STOP or token.lower() in _GENERIC_TAIL:
+            return token  # sentence-initial words are capitalized anyway, so they are skipped
+        match = _fuzzy_place(token, namemap)
+        if not match:
+            return token
+        alias = _place_alias(namemap, match)
+        namemap.setdefault("places", {}).setdefault(token, alias)
+        origin[token] = f"possible misspelling: {token} ~ {match}"
+        found.append((token, alias))
+        notes.append(origin[token])
+        return alias
+
+    text = re.sub(r"(?<![A-Za-z0-9])[A-Z][a-z]{4,}(?![A-Za-z0-9])", _fuzzy, text)
+    namemap["_notes"] = notes
 
     # One entry per distinct item: repeats of the same person or place count once
     items, seen_keys = [], set()
@@ -267,16 +418,23 @@ def scan_batch(batch: dict, namemap: dict | None = None) -> dict:
                 col = c
                 break
 
+    texts = list(batch.get(col, []))
+    for text in texts:  # first pass only learns the names and places
+        redact_line_with_items(text, namemap)
+
     redacted_texts: list[str] = []
     pii_items: list[str] = []
     pii_counts: list[int] = []
-    for text in batch.get(col, []):
+    pii_notes: list[str] = []
+    for text in texts:
         redacted, items = redact_line_with_items(text, namemap)
         redacted_texts.append(redacted)
         pii_items.append("; ".join(items))
         pii_counts.append(len(items))
+        pii_notes.append("; ".join(dict.fromkeys(namemap.get("_notes", []))))
 
-    res = {"text": redacted_texts, "redacted": redacted_texts, "pii_items": pii_items, "pii_count": pii_counts}
+    res = {"text": redacted_texts, "redacted": redacted_texts, "pii_items": pii_items, "pii_count": pii_counts,
+           "pii_notes": pii_notes}
     return res
 
 

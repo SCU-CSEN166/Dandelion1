@@ -52,6 +52,35 @@ def same_activity(a, b):
     return bool(a and b) and len(a & b) / len(a | b) >= 0.5
 
 
+_TAG = re.compile(r"\[(?:NAME|LOCATION|PHONE|EMAIL)\]")
+
+
+def _tokens(text):
+    """Lowercased words with punctuation stripped; every redaction tag becomes the single token <tag>."""
+    out = []
+    for tok in _TAG.sub(" <tag> ", str(text)).split():
+        tok = tok if tok == "<tag>" else re.sub(r"[^a-z0-9]", "", tok.lower())
+        if tok:
+            out.append(tok)
+    return out
+
+
+def aligned_tags(ours, expected):
+    """Align our anonymized text with the expected one word by word and compare where the tags fall.
+
+    Works even when the transcript differs from the key's (speech-recognition misspellings), where checking
+    "is the key's name still in our text" would wrongly pass a misspelled name that was left visible.
+    Returns (expected tags we also tagged, expected tags, our tags with no expected tag = likely over-redaction).
+    """
+    import difflib
+    a, b = _tokens(ours), _tokens(expected)
+    hit = 0
+    for op, i1, i2, j1, j2 in difflib.SequenceMatcher(None, a, b, autojunk=False).get_opcodes():
+        ours_tags, exp_tags = a[i1:i2].count("<tag>"), b[j1:j2].count("<tag>")
+        hit += min(ours_tags, exp_tags)
+    return hit, b.count("<tag>"), a.count("<tag>") - hit
+
+
 def num(s):
     s = str(s).strip()
     return str(int(float(s))) if s not in ("", "none", "nan") else ""
@@ -96,6 +125,12 @@ def main():
           f"(partial {counts['partial']}, missed {counts['missed']})")
     for m in misses:
         print("   ", m)
+    hit = exp = extra = 0
+    for i in ids:
+        h, e, x = aligned_tags(pred.loc[i, "expected_anonymized_text"], key.loc[i, "expected_anonymized_text"])
+        hit, exp, extra = hit + h, exp + e, extra + x
+    print(f"PII tags aligned with the expected text: {hit}/{exp} = {hit / exp:.3f} of expected tags present, "
+          f"{extra} extra tag(s) of ours (possible over-redaction)")
     show("anonymized text exact match", [pred.loc[i, "expected_anonymized_text"] == key.loc[i, "expected_anonymized_text"] for i in ids],
          [f"msg {i}" for i in ids])
 

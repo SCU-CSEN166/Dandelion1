@@ -33,6 +33,7 @@ def main():
     p.add_argument("-o", "--output", default="results/asr_out.csv")
     p.add_argument("-s", "--summarizer", help="Also redact + summarize the transcripts, e.g. google/flan-t5-large (datasets: also scored by eval.py)")
     p.add_argument("--sum_ref_col", default="abstract", help="Column holding the reference summary (SLUE-TED: abstract)")
+    p.add_argument("--hints", help="Spelling hints for Whisper: a text file, or a comma-separated list of local names and places (e.g. 'Rongai, Nakuru, Kampi ya Moto'). Whisper reads roughly the last 200 tokens of it")
     p.add_argument("--files", nargs="+", help="Transcribe local audio/video files instead of a dataset (mp4, m4a, mp3, wav...; needs ffmpeg or pip install imageio-ffmpeg). No WER.")
     args = p.parse_args()
     if args.files:
@@ -84,7 +85,12 @@ def main():
         return {"raw": np.frombuffer(r.stdout, np.float32), "sampling_rate": 16000}
 
     inputs = [load_file(f) for f in args.files] if args.files else [load_audio(r["audio"]) for r in rows]
-    out = asr(inputs, batch_size=8, generate_kwargs={"language": args.language, "task": "transcribe"})
+    gen_kwargs = {"language": args.language, "task": "transcribe"}
+    if args.hints:
+        # Whisper spells rare names the way its prompt does ("Girissa" -> "Garissa" when the prompt has "Garissa")
+        hint = open(args.hints, encoding="utf-8").read() if os.path.isfile(args.hints) else args.hints
+        gen_kwargs["prompt_ids"] = asr.tokenizer.get_prompt_ids(" ".join(hint.split()), return_tensors="pt").to(asr.model.device)
+    out = asr(inputs, batch_size=8, generate_kwargs=gen_kwargs)
     hyp = [o["text"].strip() for o in out]
 
     if args.files:
