@@ -81,6 +81,17 @@ def prepare_dataset(
     elif isinstance(raw, Dataset):
         raw = _ensure_text_col(raw)
 
+    # Keep the untouched text so outputs can show the original next to the redacted version
+    def _keep_original(ds):
+        if "text" not in ds.column_names or "original_text" in ds.column_names:
+            return ds
+        return ds.map(lambda row: {"original_text": row["text"]})
+
+    if isinstance(raw, DatasetDict):
+        raw = DatasetDict({k: _keep_original(v) for k, v in raw.items()})
+    elif isinstance(raw, Dataset):
+        raw = _keep_original(raw)
+
     # 1. Clean WhatsApp system banners, attachments, and placeholders first
     if clean_text:
         raw = preprocess_dataset(raw)
