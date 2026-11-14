@@ -1,5 +1,6 @@
 from functools import lru_cache
 import gc
+import re
 import torch
 from transformers import AutoConfig, AutoModelForCausalLM, AutoModelForSeq2SeqLM, AutoTokenizer
 from preprocess import clean_chat_text
@@ -24,29 +25,40 @@ def format_prompt(
     is_encoder_decoder: bool,
     system_prompt: str = DEFAULT_SYSTEM_PROMPT,
     custom_prefix: str | None = None,
+    extracted_info: list[str] | str | None = None,
 ) -> str:
     """Format input text with chat template if supported by model, otherwise fall back to structured text."""
     if custom_prefix is not None and custom_prefix != OLD_DEFAULT_PREFIX:
         return f"{custom_prefix}{text}"
 
+    # Prepare extracted facts context if provided by the extraction stage
+    context_str = ""
+    if extracted_info:
+        if isinstance(extracted_info, list):
+            context_str = "Extracted Field Details:\n" + "\n".join(extracted_info) + "\n\n"
+        elif str(extracted_info).strip():
+            context_str = f"Extracted Field Details:\n{str(extracted_info).strip()}\n\n"
+
+    transcript_content = f"{context_str}Here is the chat transcript:\n\n{text}"
+
     if not is_encoder_decoder and hasattr(tokenizer, "apply_chat_template") and getattr(tokenizer, "chat_template", None):
         messages = [
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": f"Here is the chat transcript:\n\n{text}"},
+            {"role": "user", "content": transcript_content},
         ]
         try:
             return tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
         except Exception:
             # Handle chat templates that disallow system role
             try:
-                user_content = f"{system_prompt}\n\nHere is the chat transcript:\n\n{text}"
+                user_content = f"{system_prompt}\n\n{transcript_content}"
                 return tokenizer.apply_chat_template(
                     [{"role": "user", "content": user_content}], tokenize=False, add_generation_prompt=True
                 )
             except Exception:
                 pass
 
-    return f"{system_prompt}\n\nChat Transcript:\n{text}\n\nField Outcomes Report:\n"
+    return f"{system_prompt}\n\n{context_str}Chat Transcript:\n{text}\n\nField Outcomes Report:\n"
 
 
 @lru_cache(maxsize=2)
@@ -181,6 +193,7 @@ def _generate_chunk(
             summary_ids = output[0]
 
     summary = tokenizer.decode(summary_ids, skip_special_tokens=True).strip()
+    summary = re.sub(r"^<think>.*?</think>\s*", "", summary, flags=re.DOTALL).strip()
 
     del input_ids, attention_mask, output
     if torch.cuda.is_available():
@@ -198,6 +211,7 @@ def summarize_text(
     max_new_tokens: int | None = None,
     system_prompt: str = DEFAULT_SYSTEM_PROMPT,
     clean_chat: bool = True,
+    extracted_info: list[str] | str | None = None,
     **kwargs
 ) -> str:
     """Summarize chat text into a structured field report."""
@@ -235,7 +249,7 @@ def summarize_text(
         return _generate_chunk(model, tokenizer, ids, min_length, max_new_tokens, device, kwargs)
 
     # Check if input fits within block_size
-    formatted_prompt = format_prompt(tokenizer, text, is_enc_dec, system_prompt, prefix)
+    formatted_prompt = format_prompt(tokenizer, text, is_enc_dec, system_prompt, prefix, extracted_info=extracted_info)
     prompt_len = len(tokenizer.encode(formatted_prompt, add_special_tokens=True))
 
     if not use_blocks or prompt_len <= block_size:
@@ -270,4 +284,4 @@ def summarize_text(
             break
         text = new_text
 
-    return _generate(format_prompt(tokenizer, text, is_enc_dec, system_prompt, prefix))
+    return _generate(format_prompt(tokenizer, text, is_enc_dec, system_prompt, prefix, extracted_info=extracted_info))
