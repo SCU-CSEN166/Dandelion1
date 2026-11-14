@@ -111,11 +111,20 @@ def scan_batch(batch: dict, namemap: dict | None = None) -> dict:
     if namemap is None:
         namemap = {"map": {}, "count": 0}
 
+    # Resolve text column if 'text' is missing
+    col = "text"
+    if col not in batch:
+        for c in ["transcript", "dialogue", "message", "query", "content", "source_text", "sentence", "post", "line"]:
+            if c in batch:
+                col = c
+                break
+
     redacted_texts: list[str] = []
-    for text in batch.get("text", []):
+    for text in batch.get(col, []):
         redacted_texts.append(redact_line(text, namemap))
 
-    return {"text": redacted_texts}
+    res = {"text": redacted_texts, "redacted": redacted_texts}
+    return res
 
 
 def process_dataset_pii(dataset: Dataset | DatasetDict, batch_size: int = 1000) -> Dataset | DatasetDict:

@@ -13,7 +13,7 @@ import os
 import re
 import sys
 import torch
-from transformers import pipeline, Pipeline
+from transformers import pipeline, Pipeline, AutoModelForQuestionAnswering, AutoTokenizer
 from datasets import Dataset, DatasetDict
 
 try:
@@ -53,11 +53,93 @@ CANDIDATE_TEXT_COLUMNS = [
 ]
 
 
+class QAWrapperPipeline:
+    """Question Answering pipeline wrapper compatible with transformers >= 5."""
+
+    def __init__(self, model_name: str = DEFAULT_MODEL, device: str | int | None = None):
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.model = AutoModelForQuestionAnswering.from_pretrained(model_name)
+        if device is None:
+            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        elif isinstance(device, int):
+            self.device = torch.device(f"cuda:{device}" if device >= 0 and torch.cuda.is_available() else "cpu")
+        elif isinstance(device, str):
+            self.device = torch.device(device)
+        else:
+            self.device = device
+        self.model.to(self.device)
+        self.model.eval()
+
+    def _predict_one(self, question: str, context: str) -> dict:
+        if not context or not str(context).strip():
+            return {"answer": "", "score": 0.0, "start": 0, "end": 0}
+
+        cleaned_context = str(context).strip()
+        inputs = self.tokenizer(
+            question,
+            cleaned_context,
+            return_tensors="pt",
+            truncation=True,
+            max_length=512,
+            return_offsets_mapping=True,
+        )
+        offsets = inputs.pop("offset_mapping")[0]
+        seq_ids = inputs.sequence_ids(0)
+        model_inputs = {k: v.to(self.device) for k, v in inputs.items()}
+
+        with torch.inference_mode():
+            outputs = self.model(**model_inputs)
+
+        start_logits = outputs.start_logits[0].cpu()
+        end_logits = outputs.end_logits[0].cpu()
+
+        start_probs = torch.softmax(start_logits, dim=-1)
+        end_probs = torch.softmax(end_logits, dim=-1)
+
+        ctx_indices = [i for i, s in enumerate(seq_ids) if s == 1]
+        if not ctx_indices:
+            return {"answer": "", "score": 0.0, "start": 0, "end": 0}
+
+        best_score = 0.0
+        best_s, best_e = 0, 0
+        for s in ctx_indices:
+            max_e = min(s + 30, ctx_indices[-1] + 1)
+            for e in range(s, max_e):
+                if seq_ids[e] != 1:
+                    break
+                prob = (start_probs[s] * end_probs[e]).item()
+                if prob > best_score:
+                    best_score = prob
+                    best_s, best_e = s, e
+
+        if best_score > 0 and best_s <= best_e:
+            start_char = int(offsets[best_s][0])
+            end_char = int(offsets[best_e][1])
+            answer = cleaned_context[start_char:end_char].strip()
+            return {"answer": answer, "score": float(best_score), "start": start_char, "end": end_char}
+
+        return {"answer": "", "score": 0.0, "start": 0, "end": 0}
+
+    def __call__(self, inputs=None, batch_size=None, question=None, context=None, **kwargs):
+        if inputs is None and question is not None:
+            inputs = {"question": question, "context": context or ""}
+        single = isinstance(inputs, dict)
+        items = [inputs] if single else (inputs or [])
+
+        results = []
+        for item in items:
+            q = item.get("question", "")
+            c = item.get("context", "")
+            results.append(self._predict_one(q, c))
+
+        return results[0] if single else results
+
+
 @lru_cache(maxsize=2)
 def load_qa_pipeline(
     model_name: str = DEFAULT_MODEL,
     device: str | int | None = None,
-) -> Pipeline:
+):
     """Load and cache a question-answering pipeline.
 
     Args:
@@ -65,16 +147,17 @@ def load_qa_pipeline(
         device: Device ID (0 for CUDA, -1 for CPU, or 'cuda'/'cpu').
 
     Returns:
-        A transformers Pipeline for question-answering.
+        A transformers Pipeline or QAWrapperPipeline for question-answering.
     """
-    if device is None:
-        device = 0 if torch.cuda.is_available() else -1
-
-    return pipeline(
-        "question-answering",
-        model=model_name,
-        device=device,
-    )
+    try:
+        dev = (0 if torch.cuda.is_available() else -1) if device is None else device
+        return pipeline(
+            "question-answering",
+            model=model_name,
+            device=dev,
+        )
+    except (KeyError, Exception):
+        return QAWrapperPipeline(model_name=model_name, device=device)
 
 
 def parse_participant_count(text: str | None) -> str:
@@ -188,7 +271,7 @@ def extract_line_info(
     model_name: str = DEFAULT_MODEL,
     event_question: str = DEFAULT_EVENT_QUESTION,
     participants_question: str = DEFAULT_PARTICIPANTS_QUESTION,
-    min_score: float = 0.05,
+    min_score: float = 0.005,
     normalize_participants: bool = True,
     clean_event: bool = True,
     device: str | int | None = None,
@@ -247,7 +330,7 @@ def extract_dataset_info(
     participants_col: str = "participants",
     event_question: str = DEFAULT_EVENT_QUESTION,
     participants_question: str = DEFAULT_PARTICIPANTS_QUESTION,
-    min_score: float = 0.05,
+    min_score: float = 0.005,
     normalize_participants: bool = True,
     clean_event_type: bool = True,
     use_relevance: bool = True,

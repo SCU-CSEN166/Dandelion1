@@ -34,6 +34,11 @@ def load_raw_dataset(dataset_name: str, split: str | None = None) -> Dataset | D
             if pd is None:
                 raise ImportError("pandas and openpyxl are required to load Excel files")
             df = pd.read_excel(dataset_name)
+            if "text" not in df.columns:
+                for col in ["transcript", "dialogue", "message", "query", "content", "source_text", "sentence", "post", "line"]:
+                    if col in df.columns:
+                        df["text"] = df[col]
+                        break
             return DatasetDict({"train": Dataset.from_pandas(df)})
         elif ext == ".parquet":
             return load_dataset("parquet", data_files=dataset_name)
@@ -62,6 +67,19 @@ def prepare_dataset(
 ) -> Dataset | DatasetDict:
     """Load a dataset, clean boilerplate, redact PII, and optionally classify relevance or extract event info."""
     raw = load_raw_dataset(dataset_name, split=split)
+
+    # Ensure dataset splits have a 'text' column if another candidate column exists
+    def _ensure_text_col(ds):
+        if "text" not in ds.column_names:
+            for col in ["transcript", "dialogue", "message", "query", "content", "source_text", "sentence", "post", "line"]:
+                if col in ds.column_names:
+                    return ds.map(lambda row: {"text": row[col]})
+        return ds
+
+    if isinstance(raw, DatasetDict):
+        raw = DatasetDict({k: _ensure_text_col(v) for k, v in raw.items()})
+    elif isinstance(raw, Dataset):
+        raw = _ensure_text_col(raw)
 
     # 1. Clean WhatsApp system banners, attachments, and placeholders first
     if clean_text:

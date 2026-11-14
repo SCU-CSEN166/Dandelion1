@@ -1,5 +1,6 @@
 from functools import lru_cache
 import gc
+import re
 import torch
 from transformers import AutoConfig, AutoModelForCausalLM, AutoModelForSeq2SeqLM, AutoTokenizer
 from preprocess import clean_chat_text
@@ -192,6 +193,7 @@ def _generate_chunk(
             summary_ids = output[0]
 
     summary = tokenizer.decode(summary_ids, skip_special_tokens=True).strip()
+    summary = re.sub(r"^<think>.*?</think>\s*", "", summary, flags=re.DOTALL).strip()
 
     del input_ids, attention_mask, output
     if torch.cuda.is_available():

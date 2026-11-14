@@ -24,6 +24,8 @@ def main():
     parser.add_argument("--classifier_model", type=str, default="facebook/bart-large-mnli", help="Model for zero-shot relevance classification")
     parser.add_argument("--extract_info", action="store_true", help="Extract event type and participant counts using QA model")
     parser.add_argument("--qa_model", type=str, default="deepset/roberta-base-squad2", help="Model for question answering extraction")
+    parser.add_argument("--row_summaries", action="store_true", help="Generate row-level summary column in tabular output")
+    parser.add_argument("--row_summarizer", type=str, default="facebook/bart-large-cnn", help="Model for per-row summaries (default: facebook/bart-large-cnn)")
 
     args = parser.parse_args()
 
@@ -47,6 +49,16 @@ def main():
         active_split = dataset[split_name]
     else:
         active_split = dataset
+
+    # Generate row-level summaries if requested
+    if args.row_summaries:
+        row_model = args.row_summarizer or args.summarizer or "facebook/bart-large-cnn"
+        print(f"Generating row-level summaries for tabular dataset using {row_model}...")
+        row_sums = [
+            summarize_text(t, row_model, min_length=15, max_new_tokens=64, prefix="Summarize: ")
+            for t in active_split["text"]
+        ]
+        active_split = active_split.add_column("summary", row_sums)
 
     # Export processed tabular data if requested
     if args.table_out:
