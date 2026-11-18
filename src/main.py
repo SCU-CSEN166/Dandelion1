@@ -56,10 +56,9 @@ def main():
 
     # Generate row-level summaries if requested
     if args.row_summaries:
-        row_model = args.row_summarizer or args.summarizer or "facebook/bart-large-cnn"
-        print(f"Generating row-level summaries for tabular dataset using {row_model}...")
+        print(f"Generating row-level summaries for tabular dataset using {args.row_summarizer}...")
         row_sums = [
-            summarize_text(t, row_model, min_length=15, max_new_tokens=64, prefix="Summarize: ")
+            summarize_text(t, args.row_summarizer, min_length=15, max_new_tokens=64, prefix="Summarize: ")
             for t in active_split["text"]
         ]
         active_split = active_split.add_column("summary", row_sums)

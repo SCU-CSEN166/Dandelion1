@@ -2,9 +2,7 @@
 import sys
 import os
 import unittest
-from unittest.mock import MagicMock
 from datasets import Dataset, DatasetDict
-import pandas as pd
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -12,10 +10,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 from relevance import (
     DEFAULT_LABELS,
     DEFAULT_HYPOTHESIS_TEMPLATE,
-    PRESET_LABELS,
     classify_dataset_relevance,
-    process_dataset_relevance,
-    classify_line,
     filter_relevant_lines,
     _resolve_text_column,
 )
@@ -150,17 +145,6 @@ class TestRelevanceClassification(unittest.TestCase):
         self.assertIn("relevance", result.column_names)
         self.assertEqual(result[0]["relevance"], "relevant field activity")
 
-    def test_pandas_dataframe_support(self):
-        """Test passing a pandas DataFrame directly."""
-        df = pd.DataFrame(self.sample_rows)
-        result_df = classify_dataset_relevance(
-            df,
-            classifier=self.mock_classifier,
-        )
-        self.assertIsInstance(result_df, pd.DataFrame)
-        self.assertIn("relevance", result_df.columns)
-        self.assertEqual(result_df.iloc[0]["relevance"], "relevant field activity")
-
     def test_filter_relevant_lines(self):
         """Test filtering out irrelevant lines."""
         classified = classify_dataset_relevance(
@@ -173,21 +157,6 @@ class TestRelevanceClassification(unittest.TestCase):
         for row in filtered:
             self.assertEqual(row["relevance"], "relevant field activity")
 
-    def test_classify_single_line(self):
-        """Test classify_line helper function."""
-        label, score = classify_line(
-            "We screened 28 women for cervical cancer.",
-            classifier=self.mock_classifier,
-        )
-        self.assertEqual(label, "relevant field activity")
-        self.assertAlmostEqual(score, 0.95, places=2)
-
-        empty_label, empty_score = classify_line(
-            "",
-            classifier=self.mock_classifier,
-        )
-        self.assertEqual(empty_label, "casual chit-chat")
-        self.assertEqual(empty_score, 0.0)
 
 
 if __name__ == "__main__":

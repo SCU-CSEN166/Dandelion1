@@ -3,7 +3,6 @@ transformers>=4.40
 datasets>=3.0,<4
 pyarrow<20
 numpy<2
-hyperscan
 rouge_score
 sentencepiece
 pandas

@@ -23,13 +23,6 @@ import os
 import re
 from datasets import Dataset, DatasetDict
 
-try:
-    import hyperscan
-    _HS_AVAILABLE = True
-except (ImportError, Exception):
-    hyperscan = None
-    _HS_AVAILABLE = False
-
 
 # Email regex pattern
 EMAIL_PATTERN = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b"
@@ -127,22 +120,6 @@ def _load_place_regex():
 
 
 _PLACE_RE = _load_place_regex()
-
-# Optional Hyperscan database compilation for environments where Hyperscan is installed
-db = None
-if _HS_AVAILABLE:
-    try:
-        db = hyperscan.Database()
-        db.compile(
-            expressions=[
-                EMAIL_PATTERN,
-                PHONE_PATTERN,
-                r"\b\S+:\s",
-            ],
-            flags=[hyperscan.HS_FLAG_SOM_LEFTMOST] * 3,
-        )
-    except Exception:
-        db = None
 
 
 def _load_place_names():
@@ -387,18 +364,6 @@ def redact_line_with_items(text: str, namemap: dict) -> tuple[str, list[str]]:
             seen_keys.add(key)
             items.append(original)
     return text, items
-
-
-def redact_line(text: str, namemap: dict) -> str:
-    """Redact PII from a single text string."""
-    return redact_line_with_items(text, namemap)[0]
-
-
-def redact_text(text: str, namemap: dict | None = None) -> str:
-    """Redact PII from a single text string with optional caller-provided namemap."""
-    if namemap is None:
-        namemap = {"map": {}, "count": 0}
-    return redact_line(text, namemap)
 
 
 def scan_batch(batch: dict, namemap: dict | None = None) -> dict:

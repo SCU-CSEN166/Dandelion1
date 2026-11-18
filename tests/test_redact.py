@@ -6,7 +6,11 @@ from datasets import Dataset
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
 
-from redact import redact_line, redact_text, scan_batch, process_dataset_pii
+from redact import redact_line_with_items, scan_batch, process_dataset_pii
+
+
+def redact_line(text, namemap):
+    return redact_line_with_items(text, namemap)[0]
 
 
 class TestRedact(unittest.TestCase):
@@ -57,12 +61,6 @@ class TestRedact(unittest.TestCase):
         self.assertIn("TITLE:", redacted)
         self.assertIn("POST:", redacted)
         self.assertNotIn("Person0", redacted)
-
-    def test_redact_text_helper(self):
-        text = "Mary: Hello from Mary"
-        redacted = redact_text(text)
-        self.assertTrue(redacted.startswith("Person0: "))
-        self.assertIn("Person0", redacted)
 
     def test_scan_batch(self):
         batch = {

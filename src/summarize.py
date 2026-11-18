@@ -16,9 +16,6 @@ DEFAULT_SYSTEM_PROMPT = (
     "Focus strictly on actionable field outcomes and facts; ignore casual banter."
 )
 
-OLD_DEFAULT_PREFIX = "Summarize all following text in your own words:\r\n"
-
-
 def format_prompt(
     tokenizer,
     text: str,
@@ -28,7 +25,7 @@ def format_prompt(
     extracted_info: list[str] | str | None = None,
 ) -> str:
     """Format input text with chat template if supported by model, otherwise fall back to structured text."""
-    if custom_prefix is not None and custom_prefix != OLD_DEFAULT_PREFIX:
+    if custom_prefix is not None:
         return f"{custom_prefix}{text}"
 
     # Prepare extracted facts context if provided by the extraction stage

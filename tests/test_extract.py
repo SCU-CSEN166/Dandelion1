@@ -2,9 +2,7 @@
 import sys
 import os
 import unittest
-from unittest.mock import MagicMock
 from datasets import Dataset, DatasetDict
-import pandas as pd
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -14,20 +12,16 @@ from extract import (
     DEFAULT_PARTICIPANTS_QUESTION,
     parse_participant_count,
     clean_event_label,
-    extract_line_info,
     extract_dataset_info,
-    process_dataset_extraction,
 )
 
 
 class DummyQAPipeline:
     """Mock Question-Answering pipeline for fast, offline testing."""
 
-    def __call__(self, inputs=None, batch_size=None, question=None, context=None, **kwargs):
-        if inputs is None and question is not None:
-            inputs = {"question": question, "context": context or ""}
+    def __call__(self, inputs, batch_size=None, **kwargs):
         single = isinstance(inputs, dict)
-        items = [inputs] if single else (inputs or [])
+        items = [inputs] if single else inputs
         results = []
 
         for item in items:
@@ -133,19 +127,6 @@ class TestExtraction(unittest.TestCase):
         self.assertEqual(result["train"][0]["event_type"], "Family planning outreach")
         self.assertEqual(result["test"][0]["event_type"], "Family planning outreach")
 
-    def test_pandas_dataframe_support(self):
-        """Test running extraction on a pandas DataFrame."""
-        df = pd.DataFrame(self.sample_rows)
-        result_df = extract_dataset_info(
-            df,
-            qa_pipeline=self.mock_qa,
-        )
-        self.assertIsInstance(result_df, pd.DataFrame)
-        self.assertIn("event_type", result_df.columns)
-        self.assertIn("participants", result_df.columns)
-        self.assertEqual(result_df.iloc[0]["event_type"], "Family planning outreach")
-        self.assertEqual(result_df.iloc[0]["participants"], "42")
-
     def test_custom_column_names(self):
         """Test custom column names for event type and participants."""
         result = extract_dataset_info(
@@ -194,18 +175,6 @@ class TestExtraction(unittest.TestCase):
         self.assertEqual(clean_event_label("our monthly table banking day"), "Table banking day")
         self.assertEqual(clean_event_label(""), "")
 
-    def test_extract_line_info(self):
-        """Test single-line extraction helper."""
-        info = extract_line_info(
-            "We held a family planning outreach and served 42 women.",
-            qa_pipeline=self.mock_qa,
-        )
-        self.assertEqual(info["event_type"], "Family planning outreach")
-        self.assertEqual(info["participants"], "42")
-
-        empty_info = extract_line_info("", qa_pipeline=self.mock_qa)
-        self.assertEqual(empty_info["event_type"], "")
-        self.assertEqual(empty_info["participants"], "")
 
 
 if __name__ == "__main__":

@@ -12,7 +12,7 @@ other labels (addresses, IDs, dates...) are reported separately.
 Over-redaction: share of ordinary (non-PII) words twaiut hat got destroyed.
 With -s: also summarize the redacted text and count PII values that appear in the final summary (= leaked to the report).
 
-Run on WAVE (needs hyperscan):
+Run on WAVE:
   python pii_eval.py -n 200
   python pii_eval.py -n 50 -s google/flan-t5-large
 """
