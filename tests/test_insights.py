@@ -16,7 +16,7 @@ from ta_table import build_ta_table
 
 def _tables(messages):
     batch = scan_batch({"text": messages}, {"map": {}, "count": 0})
-    rows = [{"message_id": i + 1, "text": t, "transcript": m, "pii_items": items, "pii_count": n, "pii_notes": notes}
+    rows = [{"message_id": i + 1, "text": t, "original_text": m, "pii_items": items, "pii_count": n, "pii_notes": notes}
             for i, (m, t, items, n, notes) in enumerate(
                 zip(messages, batch["text"], batch["pii_items"], batch["pii_count"], batch["pii_notes"]))]
     ta = build_ta_table(rows)
@@ -36,7 +36,8 @@ class TestSpeechErrorRedaction(unittest.TestCase):
     def test_misspelled_known_place(self):
         out = scan_batch({"text": ["We met the group near Girissa town.", "Then we drove back to Garissa."]})
         self.assertNotIn("Girissa", out["text"][0])
-        self.assertIn("possible misspelling: Girissa ~ Garissa", out["pii_notes"][0])
+        self.assertIn("possible misspelling of a known place: Place", out["pii_notes"][0])
+        self.assertNotIn("Girissa", out["pii_notes"][0])  # notes name the alias, not the original
         first = out["text"][0].split("near ")[1].split()[0]
         self.assertIn(first, out["text"][1])  # the misspelling and the real name share one alias
 
@@ -75,7 +76,8 @@ class TestReviewQueue(unittest.TestCase):
         self.assertIn("no attendance count", review.loc[0, "review_reasons"])
         self.assertLess(review.loc[0, "confidence"], 1.0)
         self.assertIn("possible missed event", review.loc[1, "review_reasons"])
-        self.assertIn("Wekesa", review.loc[1, "review_reasons"])
+        self.assertIn("place guessed from context: Place0", review.loc[1, "review_reasons"])
+        self.assertNotIn("Wekesa", review.loc[1, "review_reasons"])  # reasons name the alias, never the original
         self.assertTrue(review.loc[1, "needs_review"])
 
     def test_confidence_counts_each_doubt_once(self):

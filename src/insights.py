@@ -19,7 +19,7 @@ import re
 
 import pandas as pd
 
-from redact import _GENERIC_TAIL, _NOT_PLACE, _STOP
+from redact import GENERIC_PLACE_WORDS, NOT_PLACE_WORDS, STOP_WORDS
 from ta_table import find_participants, find_topic
 
 REVIEW_COLUMNS = ["message_id", "relevance", "activity_type", "confidence", "confidence_level", "needs_review",
@@ -113,7 +113,7 @@ def leftover_identifiers(anonymized: str) -> list[str]:
         before = anonymized[: m.start()].rstrip()
         if not before or before[-1] in ".!?:\n":
             continue  # sentence-initial capital
-        if word.lower() in _STOP or word.lower() in _GENERIC_TAIL or word.lower() in _NOT_PLACE:
+        if word.lower() in STOP_WORDS or word.lower() in GENERIC_PLACE_WORDS or word.lower() in NOT_PLACE_WORDS:
             continue
         if word not in out:
             out.append(word)
@@ -193,10 +193,3 @@ def build_followups(ta_table: pd.DataFrame) -> pd.DataFrame:
             out.append({"message_id": row["message_id"], "activity_type": row["activity_type"], "category": category,
                         "follow_up": sentence, "access": f"restricted ({topic})" if restricted else "general"})
     return pd.DataFrame(out, columns=FOLLOWUP_COLUMNS)
-
-
-def write_table(df: pd.DataFrame, path: str) -> None:
-    if path.lower().endswith((".xlsx", ".xls")):
-        df.to_excel(path, index=False)
-    else:
-        df.to_csv(path, index=False)

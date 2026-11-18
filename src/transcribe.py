@@ -97,14 +97,11 @@ def main():
         df = pd.DataFrame({"text": hyp, "file": args.files})
         if args.summarizer:
             # your own files have no reference summaries, so redact + summarize only, no scoring
-            import gc, inspect, torch
+            import gc, torch
             from redact import scan_batch
             from summarize import summarize_text
             del asr; gc.collect(); torch.cuda.empty_cache()  # free Whisper's VRAM for the summarizer
-            if len(inspect.signature(scan_batch).parameters) > 1:  # newer redact.py: names -> Person0, Person1, ...
-                redacted = scan_batch({"text": hyp}, {"map": {}, "count": 0})["text"]
-            else:
-                redacted = scan_batch({"text": hyp})["text"]
+            redacted = scan_batch({"text": hyp})["text"]
             df["redacted"] = redacted
             df["summary"] = [summarize_text(t, args.summarizer, 10, 1024) for t in redacted]  # 1024: long talks go in blocks
     else:

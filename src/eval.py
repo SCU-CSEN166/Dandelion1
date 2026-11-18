@@ -1,6 +1,5 @@
 import os
 import re
-import inspect
 import json
 import argparse
 import pandas as pd
@@ -105,11 +104,7 @@ def main():
     if args.num_samples:
         df = df.sample(min(args.num_samples, len(df)), random_state=0)
 
-    batch = {"text": list(df.text)}
-    if len(inspect.signature(scan_batch).parameters) > 1:  # newer redact.py: names -> Person0, Person1, ...
-        posts = scan_batch(batch, {"map": {}, "count": 0})["text"]
-    else:
-        posts = scan_batch(batch)["text"]
+    posts = scan_batch({"text": list(df.text)}, bare_senders=True)["text"]
     scorer = rouge_scorer.RougeScorer(ROUGE_KEYS, use_stemmer=True)
     nli = NLI(args.nli)
 

@@ -31,12 +31,7 @@ def clean_chat_text(text: str) -> str:
 def preprocess_dataset(dataset, text_col: str = "text", batch_size: int = 1000):
     """Strip metadata, boilerplate system banners, and placeholders from dataset text."""
     def _clean_batch(batch):
-        col = text_col if text_col in batch else ("transcript" if "transcript" in batch else next((c for c in batch if c in ["dialogue", "message", "query", "content", "source_text", "sentence", "post", "line"]), "text"))
-        cleaned_lines = [clean_chat_text(t) if t else "" for t in batch.get(col, [])]
-        res = {col: cleaned_lines}
-        if col != "text":
-            res["text"] = cleaned_lines
-        return res
+        return {text_col: [clean_chat_text(t) for t in batch[text_col]]}
 
     return dataset.map(
         _clean_batch,

@@ -1,31 +1,39 @@
 """Build the output table in the same format as the TA's hidden-test key.
 
-One row per message with the TA's columns:
-  message_id, relevance, activity_type, participants, duplicate_of, pii_count, pii_items,
-  expected_anonymized_text, transcript
+One row per message with the TA's columns (except pii_items, which would list the unredacted items):
+  message_id, relevance, activity_type, participants, duplicate_of, pii_count, expected_anonymized_text, transcript
+transcript holds the unredacted text: insights.py reads it, but write_table leaves it out of the file.
 
-- relevance: "Event" if the message reports a field activity (an attendance count, or a known activity topic plus
-  an action like "we held"), otherwise "Chit-chat". Rule-based, so it does not need a model.
+- relevance: "Event" or "Chit-chat" from the zero-shot classifier (relevance.py) when it ran. Without it, a rule
+  fallback: "Event" if the message has an attendance count, or a known activity topic plus an action like "we held".
+  (The rules were written after seeing the hidden test, so they are in-sample; the review queue still uses them as a
+  cross-check against the classifier.)
 - activity_type: a label from the topic list below; otherwise the QA model's event_type with names and places removed.
-- participants: the QA model's count when it has one, otherwise a number pattern ("forty-two women came").
+- participants: the QA model's count or a number pattern ("forty-two women came"); blank when the two disagree.
 - duplicate_of: message_id of an earlier event with the same activity type and participant count, else "none".
-- pii_count / pii_items / expected_anonymized_text: from redact.py, with Person/Place aliases and masks turned into
-  the TA's [NAME], [LOCATION], [PHONE] and [EMAIL] tags. (The column is named like the TA's so the two tables line up;
-  here it holds our predicted anonymized text.)
+- pii_count / expected_anonymized_text: from redact.py, with Person/Place aliases turned into the TA's [NAME] and
+  [LOCATION] tags (redact.py writes [PHONE] and [EMAIL] itself). (The column is named like the TA's so the two tables
+  line up; here it holds our predicted anonymized text.)
 """
 import re
 
 import pandas as pd
 
-TA_COLUMNS = ["message_id", "relevance", "activity_type", "participants", "duplicate_of", "pii_count", "pii_items",
+from redact import RAW_COLUMNS
+from relevance import is_chitchat
+
+TA_COLUMNS = ["message_id", "relevance", "activity_type", "participants", "duplicate_of", "pii_count",
               "expected_anonymized_text", "transcript"]
 
 _UNITS = {w: i for i, w in enumerate(
     "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen "
     "seventeen eighteen nineteen".split())}
 _TENS = {w: 10 * i for i, w in enumerate("_ _ twenty thirty forty fifty sixty seventy eighty ninety".split()) if w != "_"}
-_NUMWORD = "|".join(list(_UNITS) + list(_TENS) + ["hundred"])
-_NUM = rf"(?:\d[\d,]*|(?:{_NUMWORD})(?:[- ](?:{_NUMWORD}))*)"
+_NUMWORD = "|".join(list(_UNITS) + list(_TENS) + ["hundred", "thousand"])
+_NUMWORDS = rf"(?:{_NUMWORD})(?:[- ](?:{_NUMWORD}))*"
+_NUM = rf"(?:\d[\d,]*|{_NUMWORDS})"
+_DIGITS_RE = re.compile(r"\b\d[\d,]*\b")
+_NUMWORDS_RE = re.compile(rf"\b{_NUMWORDS}\b", re.I)
 _PEOPLE = (r"(?:women|men|girls|boys|ladies|members|people|farmers|participants|mothers|fathers|children|kids|youth|"
            r"students|pupils|villagers|residents|patients|clients|caregivers|elders|persons)")
 _PAT_A = re.compile(rf"\b(?P<n>{_NUM})\s+{_PEOPLE}(?:\s+\w+){{0,2}}?\s+"
@@ -56,10 +64,11 @@ _ACTION = re.compile(r"\b(?:we held|we did|we went|we conducted|we organi[sz]ed|
 
 
 def words_to_int(text: str) -> int:
+    """'42' / '1,250' / 'forty-two' / 'two thousand five hundred' -> int."""
     text = text.lower().replace(",", "")
     if text.replace(" ", "").isdigit():
         return int(text)
-    current = 0
+    total = current = 0
     for tok in re.split(r"[- ]+", text):
         if tok in _UNITS:
             current += _UNITS[tok]
@@ -67,7 +76,16 @@ def words_to_int(text: str) -> int:
             current += _TENS[tok]
         elif tok == "hundred":
             current = max(current, 1) * 100
-    return current
+        elif tok == "thousand":
+            total += max(current, 1) * 1000
+            current = 0
+    return total + current
+
+
+def first_number(text: str) -> int | None:
+    """The first number in the text, preferring digits over number words, or None."""
+    m = _DIGITS_RE.search(text or "") or _NUMWORDS_RE.search(text or "")
+    return words_to_int(m.group(0)) if m else None
 
 
 def find_participants(text: str) -> int | None:
@@ -93,38 +111,42 @@ def is_event(text: str) -> bool:
 
 def clean_qa_label(label: str) -> str:
     """Drop redaction aliases and tags from a QA event label ("Place0 outreach" -> "Outreach")."""
-    label = re.sub(r"\b(?:Person|Place)\d+\b|\[(?:NAME|LOCATION|PHONE|EMAIL)\]|\*{4,}", " ", str(label or ""))
+    label = re.sub(r"\b(?:Person|Place)\d+\b|\[(?:NAME|LOCATION|PHONE|EMAIL)\]", " ", str(label or ""))
     label = re.sub(r"\s+", " ", label).strip(" .,;:-")
     return label[:1].upper() + label[1:] if len(re.sub(r"[^A-Za-z]", "", label)) >= 3 else ""
 
 
-def to_ta_tags(text: str, pii_items: str = "") -> str:
-    """Turn Person/Place aliases and asterisk masks into the TA's [NAME] / [LOCATION] / [PHONE] / [EMAIL] tags."""
-    email_lengths = {len(i.strip()) for i in str(pii_items).split(";") if "@" in i}
+def to_ta_tags(text: str) -> str:
+    """Turn Person/Place aliases into the TA's [NAME] / [LOCATION] tags (redact.py already writes [PHONE] / [EMAIL])."""
     text = re.sub(r"\bPerson\d+\b", "[NAME]", str(text or ""))
-    text = re.sub(r"\bPlace\d+\b", "[LOCATION]", text)
-    return re.sub(r"\*{4,}", lambda m: "[EMAIL]" if len(m.group(0)) in email_lengths else "[PHONE]", text)
+    return re.sub(r"\bPlace\d+\b", "[LOCATION]", text)
 
 
-def _participants_from(row: dict, text: str):
+def _participants_from(row: dict, text: str) -> int | None:
+    """The QA model's count and the number rule's count; left blank (None) when both exist and disagree."""
     qa = str(row.get("participants") or "").strip()
-    if qa.isdigit():
-        return int(qa)
-    return find_participants(text)
+    qa = int(qa) if qa.isdigit() else None
+    rule = find_participants(text)
+    if qa is not None and rule is not None and qa != rule:
+        return None  # the review queue reports the disagreement
+    return qa if qa is not None else rule
 
 
 def build_ta_table(rows: list[dict], text_key: str = "text") -> pd.DataFrame:
-    """rows: dicts from the processed dataset (redacted 'text', 'pii_items', 'pii_count', optional QA columns)."""
+    """rows: dicts from the processed dataset (redacted 'text', 'original_text', 'pii_count', optional QA columns)."""
     out, earlier_events = [], []  # earlier_events: (message_id, activity, participants)
     for i, row in enumerate(rows):
         message_id = row.get("message_id")
         message_id = i + 1 if message_id in (None, "") else message_id
         redacted = str(row.get(text_key) or "")
-        transcript = str(row.get("transcript") or row.get("original_text") or "")
+        transcript = str(row.get("original_text") or "")
         source = transcript or redacted  # topic and number rules see the same words either way
 
+        classified = row.get("relevance")  # the zero-shot classifier's label (relevance.py), when it ran
+        event = not is_chitchat(classified) if classified else is_event(source)
+
         relevance, activity, participants, duplicate_of = "Chit-chat", "", None, "none"
-        if is_event(source):
+        if event:
             relevance = "Event"
             activity = find_topic(source) or clean_qa_label(row.get("event_type", "")) or "Other field activity"
             participants = _participants_from(row, source)
@@ -136,7 +158,6 @@ def build_ta_table(rows: list[dict], text_key: str = "text") -> pd.DataFrame:
                 else:
                     earlier_events.append((message_id, activity, participants))
 
-        items = str(row.get("pii_items") or "")
         out.append({
             "message_id": message_id,
             "relevance": relevance,
@@ -144,14 +165,15 @@ def build_ta_table(rows: list[dict], text_key: str = "text") -> pd.DataFrame:
             "participants": "" if participants is None else participants,
             "duplicate_of": duplicate_of,
             "pii_count": int(row.get("pii_count") or 0),
-            "pii_items": items,
-            "expected_anonymized_text": to_ta_tags(redacted, items),
+            "expected_anonymized_text": to_ta_tags(redacted),
             "transcript": transcript,
         })
     return pd.DataFrame(out, columns=TA_COLUMNS)
 
 
-def write_ta_table(df: pd.DataFrame, path: str) -> None:
+def write_table(df: pd.DataFrame, path: str) -> None:
+    """Write a table as .xlsx/.xls or, for any other extension, .csv, without the unredacted columns."""
+    df = df.drop(columns=[c for c in RAW_COLUMNS if c in df.columns])
     if path.lower().endswith((".xlsx", ".xls")):
         df.to_excel(path, index=False)
     else:

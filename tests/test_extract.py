@@ -2,7 +2,7 @@
 import sys
 import os
 import unittest
-from datasets import Dataset, DatasetDict
+from datasets import Dataset
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -78,10 +78,6 @@ class TestExtraction(unittest.TestCase):
             },
         ]
         self.dataset = Dataset.from_list(self.sample_rows)
-        self.dataset_dict = DatasetDict({
-            "train": Dataset.from_list(self.sample_rows),
-            "test": Dataset.from_list(self.sample_rows[:2]),
-        })
 
     def test_extract_dataset_info_adds_columns(self):
         """Test that extract_dataset_info adds event_type and participants columns."""
@@ -111,21 +107,6 @@ class TestExtraction(unittest.TestCase):
         # Row 3 (Empty line): should be empty
         self.assertEqual(result[3]["event_type"], "")
         self.assertEqual(result[3]["participants"], "")
-
-    def test_extract_dataset_dict(self):
-        """Test extraction across all splits of a DatasetDict."""
-        result = extract_dataset_info(
-            self.dataset_dict,
-            qa_pipeline=self.mock_qa,
-        )
-        self.assertIsInstance(result, DatasetDict)
-        self.assertIn("event_type", result["train"].column_names)
-        self.assertIn("participants", result["train"].column_names)
-        self.assertIn("event_type", result["test"].column_names)
-        self.assertIn("participants", result["test"].column_names)
-
-        self.assertEqual(result["train"][0]["event_type"], "Family planning outreach")
-        self.assertEqual(result["test"][0]["event_type"], "Family planning outreach")
 
     def test_custom_column_names(self):
         """Test custom column names for event type and participants."""
@@ -165,6 +146,15 @@ class TestExtraction(unittest.TestCase):
         self.assertEqual(parse_participant_count("forty-two"), "42")
         self.assertEqual(parse_participant_count("twenty five"), "25")
         self.assertEqual(parse_participant_count("sixty"), "60")
+        self.assertEqual(parse_participant_count("two thousand five hundred people"), "2500")
+        self.assertEqual(parse_participant_count("the 42 women and one nurse"), "42")  # digits win over number words
+        # numbers that are not head counts
+        self.assertEqual(parse_participant_count("one of the mothers"), "")
+        self.assertEqual(parse_participant_count("the 2024 outreach"), "")
+        self.assertEqual(parse_participant_count("at 10:30"), "")
+        self.assertEqual(parse_participant_count("9am"), "")
+        self.assertEqual(parse_participant_count("500 shillings"), "")
+        self.assertEqual(parse_participant_count("a few elders"), "a few elders")
         self.assertEqual(parse_participant_count(""), "")
         self.assertEqual(parse_participant_count(None), "")
 

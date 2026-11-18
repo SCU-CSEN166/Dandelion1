@@ -39,14 +39,14 @@ def main():
     if args.redact:
         from redact import scan_batch
         namemap = {"map": dict(), "count": 0}
-        dialogues = scan_batch({"text": dialogues}, namemap)["text"]
+        dialogues = scan_batch({"text": dialogues}, namemap, bare_senders=True)["text"]
 
     scorer = rouge_scorer.RougeScorer(["rouge1", "rouge2", "rougeL"], use_stemmer=True)
     totals = {"rouge1": 0.0, "rouge2": 0.0, "rougeL": 0.0}
     examples = []
 
     for idx, dialogue, reference in zip(indices, dialogues, references):
-        prediction = summarize.summarize_text(dialogue, args.summarizer, args.length, False)
+        prediction = summarize.summarize_text(dialogue, args.summarizer, args.length)
         scores = scorer.score(reference, prediction)
         for key in totals:
             totals[key] += scores[key].fmeasure

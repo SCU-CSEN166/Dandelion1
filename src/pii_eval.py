@@ -80,7 +80,7 @@ def plain_words(text, spans):
 def main(a):
     rows = load_rows(a)
     texts = [t for t, _ in rows]
-    redacted = scan_batch({"text": texts}, {"map": {}, "count": 0})["text"]
+    redacted = scan_batch({"text": texts}, {"map": {}, "count": 0}, bare_senders=True)["text"]
     summaries = None
     if a.summarizer:
         from summarize import summarize_text  # only import torch/transformers when needed

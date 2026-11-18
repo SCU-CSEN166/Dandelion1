@@ -3,7 +3,6 @@ import gc
 import re
 import torch
 from transformers import AutoConfig, AutoModelForCausalLM, AutoModelForSeq2SeqLM, AutoTokenizer
-from preprocess import clean_chat_text
 
 DEFAULT_SYSTEM_PROMPT = (
     "You are an operations analyst summarizing field communications for Dandelion Africa.\n"
@@ -16,6 +15,21 @@ DEFAULT_SYSTEM_PROMPT = (
     "Focus strictly on actionable field outcomes and facts; ignore casual banter."
 )
 
+# For encoder-decoder models that declare no summarization setup of their own (e.g. Flan-T5)
+ENC_DEC_INSTRUCTION = "Summarize the following conversation:\n"
+
+
+def encoder_decoder_prefix(config) -> str:
+    """What goes in front of the transcript for an encoder-decoder model.
+
+    These models (BART, T5, Pegasus...) are not chat models: a long system prompt is just more text to summarize.
+    A model that declares a summarization setup gets exactly its own prefix (T5: "summarize: ", BART-CNN: none);
+    any other gets a one-line instruction.
+    """
+    params = (getattr(config, "task_specific_params", None) or {}).get("summarization")
+    return params.get("prefix", "") if params is not None else ENC_DEC_INSTRUCTION
+
+
 def format_prompt(
     tokenizer,
     text: str,
@@ -23,10 +37,19 @@ def format_prompt(
     system_prompt: str = DEFAULT_SYSTEM_PROMPT,
     custom_prefix: str | None = None,
     extracted_info: list[str] | str | None = None,
+    encoder_decoder_prefix: str = ENC_DEC_INSTRUCTION,
 ) -> str:
-    """Format input text with chat template if supported by model, otherwise fall back to structured text."""
+    """Build the model input.
+
+    - custom_prefix: the caller's own prefix + text.
+    - Encoder-decoder models: encoder_decoder_prefix + text only (no system prompt, no extracted facts).
+    - Chat models: system prompt, extracted facts and transcript in the model's chat template.
+    - Other decoder-only models: the same content as plain text, ending in a cue to start the report.
+    """
     if custom_prefix is not None:
         return f"{custom_prefix}{text}"
+    if is_encoder_decoder:
+        return f"{encoder_decoder_prefix}{text}"
 
     # Prepare extracted facts context if provided by the extraction stage
     context_str = ""
@@ -38,7 +61,7 @@ def format_prompt(
 
     transcript_content = f"{context_str}Here is the chat transcript:\n\n{text}"
 
-    if not is_encoder_decoder and hasattr(tokenizer, "apply_chat_template") and getattr(tokenizer, "chat_template", None):
+    if getattr(tokenizer, "chat_template", None):
         messages = [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": transcript_content},
@@ -65,32 +88,18 @@ def load_model(model_name: str):
         tokenizer.pad_token_id = tokenizer.eos_token_id
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    model_kwargs = {"low_cpu_mem_usage": True}
-
+    model_kwargs = {}
     if torch.cuda.is_available():
-        model_kwargs["dtype"] = (
-            torch.bfloat16
-            if hasattr(torch.cuda, "is_bf16_supported") and torch.cuda.is_bf16_supported()
-            else "auto"
-        )
+        model_kwargs["dtype"] = torch.bfloat16 if torch.cuda.is_bf16_supported() else "auto"
         try:
-            import accelerate
+            import accelerate  # noqa: F401  (optional: spreads large models over the available GPUs)
             model_kwargs["device_map"] = "auto"
         except ImportError:
             pass
 
-    try:
-        config = AutoConfig.from_pretrained(model_name)
-        is_enc_dec = getattr(config, "is_encoder_decoder", False)
-    except Exception:
-        is_enc_dec = False
-
+    is_enc_dec = getattr(AutoConfig.from_pretrained(model_name), "is_encoder_decoder", False)
     loader = AutoModelForSeq2SeqLM if is_enc_dec else AutoModelForCausalLM
-    try:
-        model = loader.from_pretrained(model_name, **model_kwargs)
-    except Exception:
-        fallback = AutoModelForCausalLM if is_enc_dec else AutoModelForSeq2SeqLM
-        model = fallback.from_pretrained(model_name, **model_kwargs)
+    model = loader.from_pretrained(model_name, **model_kwargs)
 
     if model.config.pad_token_id is None and tokenizer.pad_token_id is not None:
         model.config.pad_token_id = tokenizer.pad_token_id
@@ -127,7 +136,10 @@ def _generate_chunk(
     device: torch.device,
     generation_kwargs: dict | None = None
 ) -> str:
-    """Generate summary text for a single input tensor with OOM fallback handling."""
+    """Generate summary text for a single input tensor (on out-of-memory, retry once with half the new tokens).
+
+    Returns "" when the model generates nothing.
+    """
     if input_ids.dim() == 1:
         input_ids = input_ids.unsqueeze(0)
 
@@ -139,10 +151,13 @@ def _generate_chunk(
         "attention_mask": attention_mask,
         "max_new_tokens": max_new_tokens,
         "do_sample": False,
-        "repetition_penalty": 1.15,
         "pad_token_id": tokenizer.pad_token_id,
         "eos_token_id": tokenizer.eos_token_id,
     }
+    if not is_enc_dec:
+        # Encoder-decoder summarizers ship their own decoding settings (BART-CNN: 4 beams, no repeated 3-grams);
+        # decoder-only models get a mild repetition penalty instead
+        kwargs["repetition_penalty"] = 1.15
     if generation_kwargs:
         kwargs.update(generation_kwargs)
 
@@ -159,36 +174,15 @@ def _generate_chunk(
     try:
         output = _run(kwargs)
     except torch.OutOfMemoryError:
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
-            gc.collect()
-        fallback = dict(kwargs, do_sample=False, max_new_tokens=max(32, max_new_tokens // 2))
-        fallback.pop("temperature", None)
-        fallback.pop("top_p", None)
-        fallback.pop("top_k", None)
+        gc.collect()
+        torch.cuda.empty_cache()
+        fallback = dict(kwargs, max_new_tokens=max(32, max_new_tokens // 2))
         if "min_new_tokens" in fallback:
             fallback["min_new_tokens"] = min(fallback["min_new_tokens"], fallback["max_new_tokens"])
-        try:
-            output = _run(fallback)
-        except torch.OutOfMemoryError:
-            if torch.cuda.is_available():
-                torch.cuda.empty_cache()
-                gc.collect()
-            input_ids = input_ids[:, :max(16, input_ids.shape[-1] // 2)]
-            fallback["attention_mask"] = torch.ones_like(input_ids, device=device)
-            fallback["max_new_tokens"] = max(16, fallback["max_new_tokens"] // 2)
-            if "min_new_tokens" in fallback:
-                fallback["min_new_tokens"] = min(fallback["min_new_tokens"], fallback["max_new_tokens"])
-            output = _run(fallback)
+        output = _run(fallback)
 
-    if is_enc_dec:
-        summary_ids = output[0]
-    else:
-        prompt_len = input_ids.shape[-1]
-        summary_ids = output[0][prompt_len:]
-        if len(summary_ids) == 0:
-            summary_ids = output[0]
-
+    # A decoder-only model's output starts with the prompt: keep only the new tokens (possibly none)
+    summary_ids = output[0] if is_enc_dec else output[0][input_ids.shape[-1]:]
     summary = tokenizer.decode(summary_ids, skip_special_tokens=True).strip()
     summary = re.sub(r"^<think>.*?</think>\s*", "", summary, flags=re.DOTALL).strip()
 
@@ -203,82 +197,70 @@ def summarize_text(
     text: str,
     model_name: str,
     min_length: int = 10,
-    split_overflowing: bool | int = False,
+    max_input_tokens: int | None = None,
     prefix: str | None = None,
     max_new_tokens: int | None = None,
     system_prompt: str = DEFAULT_SYSTEM_PROMPT,
-    clean_chat: bool = True,
     extracted_info: list[str] | str | None = None,
     **kwargs
 ) -> str:
-    """Summarize chat text into a structured field report."""
+    """Summarize chat text (already cleaned by preprocess.py) into a structured field report.
+
+    Input too long for the model is summarized in blocks, then the block summaries are summarized, until the
+    prompt fits. max_input_tokens optionally caps the prompt length below the model's own limit.
+    Returns "" if the model generates nothing.
+    """
+    if not text or not text.strip():
+        return "No relevant dialogue found to summarize."
     tokenizer, model = load_model(model_name)
     device = getattr(model, "device", torch.device("cuda" if torch.cuda.is_available() else "cpu"))
     is_enc_dec = getattr(model.config, "is_encoder_decoder", False)
-
-    if clean_chat:
-        text = clean_chat_text(text)
-        if not text:
-            return "No relevant dialogue found to summarize."
-
-    model_max_len = get_safe_max_length(model, tokenizer)
-    if isinstance(split_overflowing, int) and not isinstance(split_overflowing, bool):
-        use_blocks = split_overflowing > 0
-        block_size = min(split_overflowing, model_max_len) if split_overflowing > 0 else model_max_len
-    else:
-        use_blocks = bool(split_overflowing)
-        block_size = model_max_len
+    enc_dec_prefix = encoder_decoder_prefix(model.config)
 
     if max_new_tokens is None:
         max_new_tokens = max(128, min_length + 64)
 
+    block_size = get_safe_max_length(model, tokenizer)
+    if max_input_tokens:
+        block_size = min(block_size, max_input_tokens)
+    if not is_enc_dec:  # a decoder-only model's prompt and summary share one context window
+        block_size = max(256, block_size - max_new_tokens)
+
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
 
+    def _format(t: str, info=None) -> str:
+        return format_prompt(tokenizer, t, is_enc_dec, system_prompt, prefix, extracted_info=info,
+                             encoder_decoder_prefix=enc_dec_prefix)
+
+    def _n_tokens(s: str) -> int:
+        return len(tokenizer.encode(s, add_special_tokens=True))
+
     def _generate(prompt_str: str) -> str:
-        ids = tokenizer(
-            prompt_str,
-            return_tensors="pt",
-            truncation=True,
-            max_length=block_size,
-            add_special_tokens=True
-        )["input_ids"]
+        # truncation is only a safety net: the prompt has been made to fit below
+        ids = tokenizer(prompt_str, return_tensors="pt", truncation=True, max_length=block_size)["input_ids"]
         return _generate_chunk(model, tokenizer, ids, min_length, max_new_tokens, device, kwargs)
 
-    # Check if input fits within block_size
-    formatted_prompt = format_prompt(tokenizer, text, is_enc_dec, system_prompt, prefix, extracted_info=extracted_info)
-    prompt_len = len(tokenizer.encode(formatted_prompt, add_special_tokens=True))
-
-    if not use_blocks or prompt_len <= block_size:
-        return _generate(formatted_prompt)
-
-    # Hierarchical summarization for long inputs
-    base_len = len(tokenizer.encode(format_prompt(tokenizer, "", is_enc_dec, system_prompt, prefix), add_special_tokens=False))
-    max_chunk_tokens = max(64, block_size - base_len - 32)
-
+    # Long input: summarize it block by block, then summarize those summaries, until the whole prompt fits
+    block_tokens = max(64, block_size - _n_tokens(_format("")) - 32)
     for _ in range(10):
-        chunks = tokenizer(
-            text,
-            truncation=True,
-            max_length=max_chunk_tokens,
-            return_overflowing_tokens=True,
-            add_special_tokens=False
-        )["input_ids"]
-
-        if len(chunks) <= 1:
+        if _n_tokens(_format(text, extracted_info)) <= block_size:
             break
-
-        summaries = []
-        for chunk in chunks:
-            chunk_text = tokenizer.decode(chunk, skip_special_tokens=True)
-            chunk_summary = _generate(format_prompt(tokenizer, chunk_text, is_enc_dec, system_prompt, prefix))
-            if chunk_summary:
-                summaries.append(chunk_summary)
-
+        blocks = tokenizer(text, truncation=True, max_length=block_tokens, return_overflowing_tokens=True,
+                           add_special_tokens=False)["input_ids"]
+        if len(blocks) <= 1:
+            break
+        summaries = [s for s in (_generate(_format(tokenizer.decode(b, skip_special_tokens=True))) for b in blocks)
+                     if s]
         new_text = "\n\n".join(summaries)
-        if len(new_text) >= len(text) or len(summaries) <= 1:
-            text = new_text
-            break
+        if not summaries or len(new_text) >= len(text):
+            break  # the block summaries are no longer getting shorter
         text = new_text
 
-    return _generate(format_prompt(tokenizer, text, is_enc_dec, system_prompt, prefix, extracted_info=extracted_info))
+    # Last resort: shorten the transcript (never the instructions or the cue to start writing) so the prompt fits
+    if _n_tokens(_format(text, extracted_info)) > block_size:
+        budget = max(16, block_size - _n_tokens(_format("", extracted_info)) - 8)
+        text = tokenizer.decode(tokenizer.encode(text, add_special_tokens=False)[:budget], skip_special_tokens=True)
+        print(f"Warning: input still too long after block summarization; kept its first {budget} tokens")
+
+    return _generate(_format(text, extracted_info))

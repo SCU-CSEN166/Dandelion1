@@ -1,9 +1,10 @@
 """PII Redaction module for chat logs and transcripts.
 
 Scans for and redacts:
-1. Email addresses (e.g. user@domain.com) -> masked with asterisks
-2. Phone numbers (standard international, US, and Kenyan formats) -> masked with asterisks
-3. Sender names (e.g. 'John Doe: ', 'Grace Wanjiru: ') -> replaced with Person0, Person1, ...
+1. Email addresses (e.g. user@domain.com) -> [EMAIL]
+2. Phone numbers (standard international, US, and Kenyan formats) -> [PHONE]
+3. Sender names after a WhatsApp export timestamp ('[12/03/24, 10:15] Grace Wanjiru: ', '12/03/2024, 10:15 - John: ')
+   -> replaced with Person0, Person1, ... (bare 'Name: ' labels only with bare_senders=True, for dialogue datasets)
 4. Dialogue body mentions of known sender names -> replaced with their assigned Person alias
 5. Names found from context (titles like "Sister Mary Chebet", introductions like "this is Grace Wanjiru",
    "Rose Njeri here") -> Person aliases, and later bare mentions of those names (e.g. "Grace")
@@ -21,7 +22,10 @@ later message is also hidden in the earlier ones.
 """
 import os
 import re
-from datasets import Dataset, DatasetDict
+from datasets import Dataset
+
+# Columns that hold unredacted text: used inside the pipeline, never written to output files
+RAW_COLUMNS = ("original_text", "transcript", "pii_items")
 
 
 # Email regex pattern
@@ -34,8 +38,11 @@ KENYAN_PHONE_PATTERN = r"(?:\+?254|0)[\s-]?[17](?:[\s-]?\d){7,9}\b"
 STANDARD_PHONE_PATTERN = r"(?:\+?\d{1,3}[\s-]?)?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}\b"
 PHONE_PATTERN = f"(?:{KENYAN_PHONE_PATTERN}|{STANDARD_PHONE_PATTERN})"
 
-# Sender prefix in chat transcripts (e.g. "Alice: ", "[12:00] Bob: ", "Grace Wanjiru: ")
-SENDER_PATTERN = r"(?:^|(?<=\n)|(?<=\]\s))([A-Za-z0-9_.\s]+?):\s"
+# WhatsApp export timestamp in front of a sender: "[12/03/24, 10:15:22] " (iOS) or "12/03/2024, 10:15 - " (Android)
+_TIMESTAMP = (r"(?:\[[^\]\n]*\d{1,2}[:.]\d{2}[^\]\n]*\]\s*"
+              r"|\d{1,4}[./-]\d{1,2}[./-]\d{1,4},?\s+\d{1,2}:\d{2}(?::\d{2})?(?:\s?[APap]\.?[Mm]\.?)?\s+-\s+)")
+# Sender name before a colon (no line breaks inside, so a line without a colon is never merged into the next line)
+_SENDER_NAME = r"(?P<name>[A-Za-z0-9_. \t]+?):\s"
 
 # Non-name headers and labels that should never be redacted as person names
 EXCLUDED_HEADERS = {
@@ -54,7 +61,10 @@ FORM_WORDS = {
 
 EMAIL_RE = re.compile(EMAIL_PATTERN, re.IGNORECASE)
 PHONE_RE = re.compile(PHONE_PATTERN)
-SENDER_RE = re.compile(SENDER_PATTERN, re.MULTILINE)
+# Only a timestamped label counts as a sender: a bare "Update:" or "Agenda:" heading must not become a person.
+SENDER_RE = re.compile(rf"^(?P<ts>{_TIMESTAMP}){_SENDER_NAME}", re.MULTILINE)
+# Dialogue datasets without timestamps ("Amanda: hi"), used by the evaluation scripts with bare_senders=True
+BARE_SENDER_RE = re.compile(rf"^(?P<ts>(?:{_TIMESTAMP})?){_SENDER_NAME}", re.MULTILINE)
 
 # --- Names and places found from context (voice-note transcripts have no "Name:" sender labels) ---
 _NAME = r"[A-Z][a-z]+(?:['’][a-z]+)?"
@@ -62,7 +72,7 @@ _TITLES = (r"(?:Sister|Sr|Brother|Mrs|Mr|Ms|Miss|Mama|Mzee|Dr|Prof|Rev|Pastor|Ch
            r"Officer|Nurse|Teacher|Madam)")
 
 # Capitalized words that are not names (sentence starters, days, months, greetings, titles...)
-_STOP = {w.lower() for w in """
+STOP_WORDS = {w.lower() for w in """
 Hello Hi Hey Good Morning Evening Afternoon Night Okay Ok Thanks Thank Sorry Please Anyway Yes No Today Yesterday
 Tomorrow Tonight Team Everyone Someone Anyone Nobody Ladies Gentlemen Next Last This That These Those The A An We
 They He She It One Some Most Many All Each Our My Your His Her I Also Just Now Then So But And Or If When While
@@ -90,16 +100,16 @@ _GO_TO_RE = re.compile(
     rf"(?P<stem>{_PLACE_STEM})\b")
 
 # Generic words that can end a place phrase; they stay visible ("Kampia Moto Outreach" -> "Place0 Outreach")
-_GENERIC_TAIL = {w.lower() for w in """
+GENERIC_PLACE_WORDS = {w.lower() for w in """
 Outreach Camp Clinic Meeting Training Session Dispensary Market Hospital School Centre Center Church Office Hall
 Group Level Road Town Village County Ward Area Stage Primary Secondary Health Women Youth Men Girls Boys
 """.split()}
-_STOP |= {w.lower() for w in """
+STOP_WORDS |= {w.lower() for w in """
 English Swahili Kiswahili Christmas Easter Whatsapp WhatsApp Facebook Google Zoom Tecno Safaricom Pesa Mpesa Africa
 Lord Total
 """.split()}
 # Capitalized words that can follow "in/at/from" without being a place name
-_NOT_PLACE = {w.lower() for w in "Level Class Form Home School Church Town Work Hospital Case Order Time".split()}
+NOT_PLACE_WORDS = {w.lower() for w in "Level Class Form Home School Church Town Work Hospital Case Order Time".split()}
 _GROUP_RE = re.compile(rf"\b(?P<name>{_NAME})\s+(?i:women['’]s group|youth group|self[- ]help group|chama)\b")
 _FACILITY_RE = re.compile(
     rf"\b(?P<stem>{_NAME}(?:\s+(?:ya|wa|\d+|{_NAME})){{0,4}})\s+"
@@ -108,21 +118,8 @@ _FACILITY_RE = re.compile(
 _PLACES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "kenya_places.txt")
 
 
-def _load_place_regex():
-    """Kenyan place names, one per line (optional: skipped if the file is missing)."""
-    if not os.path.isfile(_PLACES_FILE):
-        return None
-    with open(_PLACES_FILE, encoding="utf-8") as f:
-        places = sorted({line.strip() for line in f if line.strip()}, key=len, reverse=True)
-    if not places:
-        return None
-    return re.compile(r"(?<![A-Za-z])(?:" + "|".join(re.escape(p) for p in places) + r")(?![A-Za-z])")
-
-
-_PLACE_RE = _load_place_regex()
-
-
 def _load_place_names():
+    """Kenyan place names, one per line (optional: empty if the file is missing)."""
     if not os.path.isfile(_PLACES_FILE):
         return []
     with open(_PLACES_FILE, encoding="utf-8") as f:
@@ -133,7 +130,11 @@ def _norm(name):
     return re.sub(r"[^a-z]", "", name.lower())
 
 
-_LISTED_PLACES = {_norm(p): p for p in _load_place_names() if len(_norm(p)) >= 5}
+_PLACE_NAMES = _load_place_names()
+_PLACE_RE = re.compile(
+    r"(?<![A-Za-z])(?:" + "|".join(re.escape(p) for p in sorted(set(_PLACE_NAMES), key=len, reverse=True))
+    + r")(?![A-Za-z])") if _PLACE_NAMES else None
+_LISTED_PLACES = {_norm(p): p for p in _PLACE_NAMES if len(_norm(p)) >= 5}
 
 
 def _edit_distance(a, b, limit):
@@ -157,10 +158,9 @@ def _fuzzy_place(token, namemap):
     if len(norm) < 5:
         return None
     limit = 1 if len(norm) < 8 else 2
-    known = dict(_LISTED_PLACES)
-    known.update({_norm(p): p for p in namemap.get("places", {}) if len(_norm(p)) >= 5})
+    seen = {_norm(p): p for p in namemap.get("places", {}) if len(_norm(p)) >= 5}
     best = None
-    for candidate, original in known.items():
+    for candidate, original in {**_LISTED_PLACES, **seen}.items():
         if candidate[0] != norm[0] or candidate == norm:
             continue
         d = _edit_distance(norm, candidate, limit)
@@ -174,11 +174,11 @@ def _split_trim(text, lead=False, trail=False):
     parts = re.split(r"(\s+)", text)  # words at even positions, separators at odd positions
     words = parts[0::2]
     i, j = 0, len(words)
-    while lead and i < j and words[i].lower() in _STOP:
+    while lead and i < j and words[i].lower() in STOP_WORDS:
         i += 1
-    while trail and j > i and words[j - 1].lower() in _STOP:
+    while trail and j > i and words[j - 1].lower() in STOP_WORDS:
         j -= 1
-    if i >= j or any(w.lower() in _STOP for w in words[i:j]):
+    if i >= j or any(w.lower() in STOP_WORDS for w in words[i:j]):
         return None
     return "".join(parts[: 2 * i]), "".join(parts[2 * i: 2 * (j - 1) + 1]), "".join(parts[2 * (j - 1) + 1:])
 
@@ -190,7 +190,7 @@ def _person_alias(namemap, name):
     alias = namemap["map"][name]
     tokens = namemap.setdefault("tokens", {})
     for token in name.split():
-        if len(token) >= 3 and token.lower() not in _STOP:
+        if len(token) >= 3 and token.lower() not in STOP_WORDS:
             tokens[token] = alias
     return alias
 
@@ -202,28 +202,31 @@ def _place_alias(namemap, name):
     return places[name]
 
 
-def redact_line_with_items(text: str, namemap: dict) -> tuple[str, list[str]]:
-    """Redact PII from one text string. Returns (redacted_text, list of the original items that were redacted)."""
+def redact_line(text: str, namemap: dict, bare_senders: bool = False) -> tuple[str, list[str], list[str]]:
+    """Redact PII from one text string.
+
+    bare_senders: also treat a "Name: " label without a WhatsApp timestamp as a sender (for dialogue datasets).
+    Returns (redacted_text, the original items that were redacted, notes on low-certainty decisions).
+    """
     if not text:
-        namemap["_notes"] = []
-        return "", []
+        return "", [], []
     found: list[tuple[str, str]] = []  # (original item, key used to merge repeats of the same item)
     notes: list[str] = []  # low-certainty decisions, for the human review queue
-    origin = namemap.setdefault("origin", {})  # place -> how it was found, when that was a guess
+    origin = namemap.setdefault("origin", {})  # place -> how it was found, when that was a guess (alias only, no PII)
 
-    def _mask(match):
-        found.append((match.group(0), match.group(0)))
-        return "*" * len(match.group(0))
+    def _tagger(tag):
+        def _tag(match):
+            found.append((match.group(0), match.group(0)))
+            return tag
+        return _tag
 
-    # 1. Mask email addresses with asterisks
-    text = EMAIL_RE.sub(_mask, text)
+    # 1-2. Email addresses and phone numbers
+    text = EMAIL_RE.sub(_tagger("[EMAIL]"), text)
+    text = PHONE_RE.sub(_tagger("[PHONE]"), text)
 
-    # 2. Mask phone numbers with asterisks
-    text = PHONE_RE.sub(_mask, text)
-
-    # 3. Anonymize sender names (e.g. 'Alice: ' -> 'Person0: ')
+    # 3. Anonymize sender names (e.g. '[12/03/24, 10:15] Alice: ' -> '[12/03/24, 10:15] Person0: ')
     def _replace_sender(match):
-        raw_name = match.group(1).strip()
+        raw_name = match.group("name").strip()
         # Do not redact known headers, pure digits, or already anonymized aliases
         if raw_name.upper() in EXCLUDED_HEADERS or re.match(r"^Person\d+$", raw_name):
             return match.group(0)
@@ -238,9 +241,9 @@ def redact_line_with_items(text: str, namemap: dict) -> tuple[str, list[str]]:
             return match.group(0)  # a lowercase phrase ("details for treatment:"), not a name
         alias = _person_alias(namemap, raw_name)
         found.append((raw_name, alias))
-        return f"{alias}: "
+        return f"{match.group('ts')}{alias}: "
 
-    text = SENDER_RE.sub(_replace_sender, text)
+    text = (BARE_SENDER_RE if bare_senders else SENDER_RE).sub(_replace_sender, text)
 
     # 4. Redact known names occurring in the body of messages
     for name, alias in sorted(namemap["map"].items(), key=lambda x: len(x[0]), reverse=True):
@@ -313,23 +316,23 @@ def redact_line_with_items(text: str, namemap: dict) -> tuple[str, list[str]]:
         parts = re.split(r"(\s+)", stem)
         words = parts[0::2]
         j = len(words)
-        while j > 0 and words[j - 1].lower() in _GENERIC_TAIL:  # keep "Outreach", "Camp", ... visible
+        while j > 0 and words[j - 1].lower() in GENERIC_PLACE_WORDS:  # keep "Outreach", "Camp", ... visible
             j -= 1
         if j == 0:
             return m.group(0)
         core = "".join(parts[: 2 * (j - 1) + 1])
         trimmed = _split_trim(core, lead=True, trail=True)
-        if not trimmed or trimmed[2] or any(w.lower() in _NOT_PLACE for w in trimmed[1].split()):
+        if not trimmed or trimmed[2] or any(w.lower() in NOT_PLACE_WORDS for w in trimmed[1].split()):
             return m.group(0)
         prefix, name, _ = trimmed
         match = _fuzzy_place(name, namemap)
         if match:  # a misspelling of a place we already know: reuse its alias
             alias = _place_alias(namemap, match)
             namemap.setdefault("places", {}).setdefault(name, alias)
-            origin[name] = f"possible misspelling: {name} ~ {match}"
+            origin[name] = f"possible misspelling of a known place: {alias}"
         else:
             alias = _place_alias(namemap, name)
-            origin.setdefault(name, f"place guessed from context: {name}")
+            origin.setdefault(name, f"place guessed from context: {alias}")
         found.append((name, alias))
         notes.append(origin[name])
         start = m.start("stem") - m.start()
@@ -342,20 +345,19 @@ def redact_line_with_items(text: str, namemap: dict) -> tuple[str, list[str]]:
     def _fuzzy(m):
         token = m.group(0)
         before = text[: m.start()].rstrip()
-        if not before or before[-1] in ".!?\n" or token.lower() in _STOP or token.lower() in _GENERIC_TAIL:
+        if not before or before[-1] in ".!?\n" or token.lower() in STOP_WORDS or token.lower() in GENERIC_PLACE_WORDS:
             return token  # sentence-initial words are capitalized anyway, so they are skipped
         match = _fuzzy_place(token, namemap)
         if not match:
             return token
         alias = _place_alias(namemap, match)
         namemap.setdefault("places", {}).setdefault(token, alias)
-        origin[token] = f"possible misspelling: {token} ~ {match}"
+        origin[token] = f"possible misspelling of a known place: {alias}"
         found.append((token, alias))
         notes.append(origin[token])
         return alias
 
     text = re.sub(r"(?<![A-Za-z0-9])[A-Z][a-z]{4,}(?![A-Za-z0-9])", _fuzzy, text)
-    namemap["_notes"] = notes
 
     # One entry per distinct item: repeats of the same person or place count once
     items, seen_keys = [], set()
@@ -363,53 +365,40 @@ def redact_line_with_items(text: str, namemap: dict) -> tuple[str, list[str]]:
         if key not in seen_keys:
             seen_keys.add(key)
             items.append(original)
-    return text, items
+    return text, items, list(dict.fromkeys(notes))
 
 
-def scan_batch(batch: dict, namemap: dict | None = None) -> dict:
-    """Redact PII across a batch of text lines.
+def scan_batch(batch: dict, namemap: dict | None = None, bare_senders: bool = False) -> dict:
+    """Redact PII across a batch of 'text' lines, sharing one namemap so aliases stay consistent.
 
-    Accepts an optional namemap to support both scan_batch(batch) and
-    scan_batch(batch, namemap) callers seamlessly.
+    bare_senders: also treat "Name: " labels without a WhatsApp timestamp as senders (see redact_line).
     """
     if namemap is None:
         namemap = {"map": {}, "count": 0}
 
-    # Resolve text column if 'text' is missing
-    col = "text"
-    if col not in batch:
-        for c in ["transcript", "dialogue", "message", "query", "content", "source_text", "sentence", "post", "line"]:
-            if c in batch:
-                col = c
-                break
-
-    texts = list(batch.get(col, []))
+    texts = list(batch["text"])
     for text in texts:  # first pass only learns the names and places
-        redact_line_with_items(text, namemap)
+        redact_line(text, namemap, bare_senders)
 
-    redacted_texts: list[str] = []
-    pii_items: list[str] = []
-    pii_counts: list[int] = []
-    pii_notes: list[str] = []
+    res = {"text": [], "pii_items": [], "pii_count": [], "pii_notes": []}
     for text in texts:
-        redacted, items = redact_line_with_items(text, namemap)
-        redacted_texts.append(redacted)
-        pii_items.append("; ".join(items))
-        pii_counts.append(len(items))
-        pii_notes.append("; ".join(dict.fromkeys(namemap.get("_notes", []))))
-
-    res = {"text": redacted_texts, "redacted": redacted_texts, "pii_items": pii_items, "pii_count": pii_counts,
-           "pii_notes": pii_notes}
+        redacted, items, notes = redact_line(text, namemap, bare_senders)
+        res["text"].append(redacted)
+        res["pii_items"].append("; ".join(items))
+        res["pii_count"].append(len(items))
+        res["pii_notes"].append("; ".join(notes))
     return res
 
 
-def process_dataset_pii(dataset: Dataset | DatasetDict, batch_size: int = 1000) -> Dataset | DatasetDict:
-    """Anonymize and redact PII across all lines in a dataset."""
-    namemap = {"map": {}, "count": 0}
-    processed_dataset = dataset.map(
-        lambda batch: scan_batch(batch, namemap),
+def process_dataset_pii(dataset: Dataset) -> Dataset:
+    """Anonymize and redact PII across all lines in a dataset.
+
+    The whole dataset is one batch, so scan_batch's first pass learns every name and place before any line is
+    redacted: a name introduced in the last message is also hidden in the first.
+    """
+    return dataset.map(
+        lambda batch: scan_batch(batch, {"map": {}, "count": 0}),
         batched=True,
-        batch_size=batch_size,
+        batch_size=None,
         load_from_cache_file=False,
     )
-    return processed_dataset
