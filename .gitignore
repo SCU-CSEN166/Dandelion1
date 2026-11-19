@@ -221,3 +221,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Intended folder for pipeline outputs (main.py -o outputs/...)
+outputs/

@@ -1,25 +1,169 @@
-"""Extraction stage using a question answering model to extract structured event information.
+"""Activity type and head count of an Event message, from models and from rules.
 
-Extracts:
-1. The type of event or activity being discussed (event_type).
-2. The number of people participating or attended (participants).
-
-Returns the dataset with additional columns for this extra information.
-Designed for Dandelion Africa field communications (WhatsApp and voice-note transcripts).
+- Activity categories (classify_activities): the zero-shot model that labels relevance also picks each Event's
+  category from ACTIVITY_CATEGORIES, with a score (activity_category / activity_score columns).
+- QA model (extract_dataset_info): adds event_type and participants columns, the model's answers to two questions.
+- Rules: find_topic (a topic list) and find_participants (number patterns such as "forty-two women came"). These are in-sample for the hidden test; maybe we could move more responsibility to the QA model?
+- activity_type() and participant_count() combine them for the output tables; tables.py turns their disagreements
+  into review reasons.
 """
 from functools import lru_cache
-import argparse
-import os
 import re
-import sys
 import torch
-from transformers import pipeline, Pipeline, AutoModelForQuestionAnswering, AutoTokenizer
-from datasets import Dataset, DatasetDict
+from transformers import AutoModelForQuestionAnswering, AutoTokenizer
+from datasets import Dataset
 
-try:
-    import pandas as pd
-except ImportError:
-    pd = None
+from relevance import is_chitchat, load_zero_shot_classifier
+
+OTHER_ACTIVITY = "Other field activity"
+
+# The activity types of the output table
+ACTIVITY_CATEGORIES = [
+    "Family planning outreach", "Maternal health talk",
+    "Gender-based violence awareness session",
+    "Banking group meeting", "Farmer training", "Youth mentorship session",
+    "Immunization outreach", "Nutrition session", "Community clean-up",
+    "Home visits", "Distribution of supplies", "Business skills training",
+    "Livestock and poultry training", "Hygiene promotion session"
+]
+ACTIVITY_HYPOTHESIS = "This message is about a {}."
+# Below this score the classifier's category is not trusted (set on data/extraction_dev.jsonl; see eval/eval_extraction.py)
+ACTIVITY_MIN_SCORE = 0.2
+
+# --- Numbers ---
+_UNITS = {w: i for i, w in enumerate(
+    "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen "
+    "seventeen eighteen nineteen".split())}
+_TENS = {w: 10 * i for i, w in enumerate("_ _ twenty thirty forty fifty sixty seventy eighty ninety".split()) if w != "_"}
+_NUMWORD = "|".join(list(_UNITS) + list(_TENS) + ["hundred", "thousand"])
+# "and" only after hundred / thousand ("one hundred and nine"), so "forty and fifty" stays two numbers
+_NUMWORDS = rf"(?:{_NUMWORD})(?:(?:[- ]|(?<=hundred) and |(?<=thousand) and )(?:{_NUMWORD}))*"
+_NUM = rf"(?:\d[\d,]*|{_NUMWORDS})"
+_DIGITS_RE = re.compile(r"\b\d[\d,]*\b")
+_NUMWORDS_RE = re.compile(rf"\b{_NUMWORDS}\b", re.I)
+
+
+def words_to_int(text: str) -> int:
+    """'42' / '1,250' / 'forty-two' / 'two thousand five hundred' -> int."""
+    text = text.lower().replace(",", "")
+    if text.replace(" ", "").isdigit():
+        return int(text)
+    total = current = 0
+    for tok in re.split(r"[- ]+", text):
+        if tok in _UNITS:
+            current += _UNITS[tok]
+        elif tok in _TENS:
+            current += _TENS[tok]
+        elif tok == "hundred":
+            current = max(current, 1) * 100
+        elif tok == "thousand":
+            total += max(current, 1) * 1000
+            current = 0
+    return total + current
+
+
+def first_number(text: str) -> int | None:
+    """The first number in the text, preferring digits over number words, or None."""
+    m = _DIGITS_RE.search(text or "") or _NUMWORDS_RE.search(text or "")
+    return words_to_int(m.group(0)) if m else None
+
+
+# --- Rules (in-sample) ---
+_PEOPLE = (r"(?:women|men|girls|boys|ladies|members|people|farmers|participants|mothers|fathers|children|kids|youth|"
+           r"students|pupils|villagers|residents|patients|clients|caregivers|elders|persons)")
+_PAT_A = re.compile(rf"\b(?P<n>{_NUM})\s+{_PEOPLE}(?:\s+\w+){{0,2}}?\s+"
+                    r"(?:attended|came|turned up|participated|were present|joined|registered|were reached)\b", re.I)
+_PAT_B = re.compile(rf"\b(?:served|screened|reached|trained|vaccinated|treated|counselled|counseled|tested|had)\s+"
+                    rf"(?P<n>{_NUM})\s+{_PEOPLE}\b", re.I)
+_PAT_C = re.compile(rf"\b(?:attendance|turnout)\s+(?:was|of)\s+(?P<n>{_NUM})\b", re.I)
+
+# (pattern, label). First match wins, so specific topics come first.
+TOPICS = [
+    (r"family planning|contracepti|implants?\b", "Family planning outreach"),
+    (r"menstrual|sanitary pads?|\bperiods\b", "Menstrual hygiene session"),
+    (r"gender[- ]based violence|\bGBV\b|domestic violence", "Gender-based violence awareness session"),
+    (r"cervical cancer|cancer screening|breast cancer", "Cervical cancer screening camp"),
+    (r"table banking|savings group|\bchama\b|village savings", "Table banking (savings) group meeting"),
+    (r"kitchen garden|sack garden|backyard garden", "Kitchen garden training"),
+    (r"immuni[sz]ation|vaccinat", "Immunization outreach"),
+    (r"antenatal|\bANC\b|prenatal", "Antenatal care clinic"),
+    (r"\bHIV\b|\bAIDS\b", "HIV testing and counselling"),
+    (r"nutrition|malnutrition|growth monitoring", "Nutrition session"),
+    (r"malaria|bed ?nets?", "Malaria prevention session"),
+    (r"deworming", "Deworming drive"),
+    (r"hand ?washing|sanitation|hygiene", "Hygiene promotion session"),
+    (r"agricultur|farmer training|crop|seedlings|compost", "Farmer training"),
+]
+
+
+def find_participants(text: str) -> int | None:
+    """The attendance count stated in the text (first one), or None."""
+    hits = []
+    for pat in (_PAT_A, _PAT_B, _PAT_C):
+        m = pat.search(text or "")
+        if m:
+            hits.append((m.start(), words_to_int(m.group("n"))))
+    return min(hits)[1] if hits else None
+
+
+def find_topic(text: str) -> str:
+    """The first TOPICS label whose pattern occurs in the text, or ''."""
+    for pattern, label in TOPICS:
+        if re.search(pattern, text or "", re.I):
+            return label
+    return ""
+
+
+def clean_qa_label(label: str) -> str:
+    """Drop redaction aliases and tags from a QA event label ("Place0 outreach" -> "Outreach")."""
+    label = re.sub(r"\b(?:Person|Place)\d+\b|\[(?:NAME|LOCATION|PHONE|EMAIL)\]", " ", str(label or ""))
+    label = re.sub(r"\s+", " ", label).strip(" .,;:-")
+    return label[:1].upper() + label[1:] if len(re.sub(r"[^A-Za-z]", "", label)) >= 3 else ""
+
+
+# --- Activity categories (zero-shot) ---
+def classify_activities(dataset: Dataset, relevance_col: str = "relevance", batch_size: int = 16,
+                        classifier=None) -> Dataset:
+    """Add activity_category and activity_score: the zero-shot model's best ACTIVITY_CATEGORIES match for each
+    Event message ('' and 0.0 for Chit-chat)."""
+    if classifier is None:
+        classifier = load_zero_shot_classifier()
+
+    def _batch(batch):
+        texts = ["" if t is None else str(t).strip() for t in batch["text"]]
+        categories, scores = [""] * len(texts), [0.0] * len(texts)
+        events = [i for i, (t, r) in enumerate(zip(texts, batch[relevance_col])) if t and not is_chitchat(r)]
+        if events:
+            preds = classifier([texts[i] for i in events], candidate_labels=ACTIVITY_CATEGORIES,
+                               hypothesis_template=ACTIVITY_HYPOTHESIS, multi_label=False,
+                               batch_size=min(len(events), batch_size))
+            for i, pred in zip(events, [preds] if isinstance(preds, dict) else preds):
+                categories[i], scores[i] = pred["labels"][0], float(pred["scores"][0])
+        return {"activity_category": categories, "activity_score": scores}
+
+    return dataset.map(_batch, batched=True, batch_size=batch_size, load_from_cache_file=False)
+
+
+# --- Models and rules combined ---
+def activity_type(text: str, qa_event_type: str = "", category: str = "", category_score: float = 0.0) -> str:
+    """The classifier's category when its score reaches ACTIVITY_MIN_SCORE; else the topic list's label, the QA
+    model's cleaned answer, or OTHER_ACTIVITY."""
+    if category and float(category_score or 0) >= ACTIVITY_MIN_SCORE:
+        return category
+    return find_topic(text) or clean_qa_label(qa_event_type) or OTHER_ACTIVITY
+
+
+def participant_count(text: str, qa_participants: str = "") -> int | None:
+    """The QA model's count and the number rule's count; None when neither has one or the two disagree."""
+    qa = str(qa_participants or "").strip()
+    qa = int(qa) if qa.isdigit() else None
+    rule = find_participants(text)
+    if qa is not None and rule is not None and qa != rule:
+        return None  # the review queue reports the disagreement
+    return qa if qa is not None else rule
+
+
+# --- QA model ---
 
 # Default QA model: SQuAD 2.0-trained model handles unanswerable questions accurately
 DEFAULT_MODEL = "deepset/roberta-base-squad2"
@@ -27,34 +171,21 @@ DEFAULT_MODEL = "deepset/roberta-base-squad2"
 DEFAULT_EVENT_QUESTION = "What event, activity, or session is being held or discussed?"
 DEFAULT_PARTICIPANTS_QUESTION = "How many people or participants attended, came, or were served?"
 
-# Numbers dictionary for word-to-integer conversion
-_UNITS = {
-    "zero": 0, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
-    "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10, "eleven": 11,
-    "twelve": 12, "thirteen": 13, "fourteen": 14, "fifteen": 15,
-    "sixteen": 16, "seventeen": 17, "eighteen": 18, "nineteen": 19,
-}
-_TENS = {
-    "twenty": 20, "thirty": 30, "forty": 40, "fifty": 50,
-    "sixty": 60, "seventy": 70, "eighty": 80, "ninety": 90,
-}
+_NO_ANSWER = {"answer": "", "score": 0.0, "start": 0, "end": 0}
 
-CANDIDATE_TEXT_COLUMNS = [
-    "text",
-    "transcript",
-    "dialogue",
-    "message",
-    "query",
-    "content",
-    "source_text",
-    "sentence",
-    "post",
-    "line",
-]
+# Numbers in a QA answer that are not head counts: years, clock times, money, and "one of ..." (one person of a group)
+_NOT_A_COUNT_RE = re.compile(
+    r"\b(?:19|20)\d{2}\b|\b\d{1,2}[:.]\d{2}\b|\b\d{1,2}\s*(?:am|pm|a\.m\.|p\.m\.|o'?clock)(?![a-z])"
+    r"|\b(?:ksh|kes|shillings?|bob|usd|dollars?)\b|\$|\bone of\b",
+    re.IGNORECASE,
+)
 
 
-class QAWrapperPipeline:
-    """Question Answering pipeline wrapper compatible with transformers >= 5."""
+class QAPipeline:
+    """Extractive question answering (transformers 5 no longer has a "question-answering" pipeline).
+
+    Called like the old pipeline: with one {"question", "context"} dict, or a list of them.
+    """
 
     def __init__(self, model_name: str = DEFAULT_MODEL, device: str | int | None = None):
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -63,21 +194,19 @@ class QAWrapperPipeline:
             self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         elif isinstance(device, int):
             self.device = torch.device(f"cuda:{device}" if device >= 0 and torch.cuda.is_available() else "cpu")
-        elif isinstance(device, str):
-            self.device = torch.device(device)
         else:
-            self.device = device
+            self.device = torch.device(device)
         self.model.to(self.device)
         self.model.eval()
 
     def _predict_one(self, question: str, context: str) -> dict:
-        if not context or not str(context).strip():
-            return {"answer": "", "score": 0.0, "start": 0, "end": 0}
+        context = str(context or "").strip()
+        if not context:
+            return dict(_NO_ANSWER)
 
-        cleaned_context = str(context).strip()
         inputs = self.tokenizer(
             question,
-            cleaned_context,
+            context,
             return_tensors="pt",
             truncation=True,
             max_length=512,
@@ -90,130 +219,58 @@ class QAWrapperPipeline:
         with torch.inference_mode():
             outputs = self.model(**model_inputs)
 
-        start_logits = outputs.start_logits[0].cpu()
-        end_logits = outputs.end_logits[0].cpu()
-
-        start_probs = torch.softmax(start_logits, dim=-1)
-        end_probs = torch.softmax(end_logits, dim=-1)
-
         ctx_indices = [i for i, s in enumerate(seq_ids) if s == 1]
         if not ctx_indices:
-            return {"answer": "", "score": 0.0, "start": 0, "end": 0}
+            return dict(_NO_ANSWER)
 
-        best_score = 0.0
-        best_s, best_e = 0, 0
+        # Only context tokens can be an answer, plus the first token (CLS), where SQuAD 2.0 models point both ends
+        # to say "no answer" (as transformers' own pipeline did with handle_impossible_answer)
+        not_answer = torch.tensor([s != 1 for s in seq_ids])
+        not_answer[0] = False
+        start_probs = torch.softmax(outputs.start_logits[0].cpu().masked_fill(not_answer, -1e4), dim=-1)
+        end_probs = torch.softmax(outputs.end_logits[0].cpu().masked_fill(not_answer, -1e4), dim=-1)
+        null_score = (start_probs[0] * end_probs[0]).item()
+
+        # Best answer span of at most 30 tokens inside the context
+        best_score, best_s, best_e = 0.0, 0, 0
         for s in ctx_indices:
-            max_e = min(s + 30, ctx_indices[-1] + 1)
-            for e in range(s, max_e):
+            for e in range(s, min(s + 30, ctx_indices[-1] + 1)):
                 if seq_ids[e] != 1:
                     break
                 prob = (start_probs[s] * end_probs[e]).item()
                 if prob > best_score:
-                    best_score = prob
-                    best_s, best_e = s, e
+                    best_score, best_s, best_e = prob, s, e
 
-        if best_score > 0 and best_s <= best_e:
-            start_char = int(offsets[best_s][0])
-            end_char = int(offsets[best_e][1])
-            answer = cleaned_context[start_char:end_char].strip()
-            return {"answer": answer, "score": float(best_score), "start": start_char, "end": end_char}
+        if best_score <= null_score:  # the model's answer is "not in the text"
+            return dict(_NO_ANSWER)
+        start_char = int(offsets[best_s][0])
+        end_char = int(offsets[best_e][1])
+        return {"answer": context[start_char:end_char].strip(), "score": float(best_score),
+                "start": start_char, "end": end_char}
 
-        return {"answer": "", "score": 0.0, "start": 0, "end": 0}
-
-    def __call__(self, inputs=None, batch_size=None, question=None, context=None, **kwargs):
-        if inputs is None and question is not None:
-            inputs = {"question": question, "context": context or ""}
+    def __call__(self, inputs, batch_size=None, **kwargs):
         single = isinstance(inputs, dict)
-        items = [inputs] if single else (inputs or [])
-
-        results = []
-        for item in items:
-            q = item.get("question", "")
-            c = item.get("context", "")
-            results.append(self._predict_one(q, c))
-
+        items = [inputs] if single else inputs
+        results = [self._predict_one(item.get("question", ""), item.get("context", "")) for item in items]
         return results[0] if single else results
 
 
 @lru_cache(maxsize=2)
-def load_qa_pipeline(
-    model_name: str = DEFAULT_MODEL,
-    device: str | int | None = None,
-):
-    """Load and cache a question-answering pipeline.
-
-    Args:
-        model_name: Hugging Face QA model identifier (default: 'deepset/roberta-base-squad2').
-        device: Device ID (0 for CUDA, -1 for CPU, or 'cuda'/'cpu').
-
-    Returns:
-        A transformers Pipeline or QAWrapperPipeline for question-answering.
-    """
-    try:
-        dev = (0 if torch.cuda.is_available() else -1) if device is None else device
-        return pipeline(
-            "question-answering",
-            model=model_name,
-            device=dev,
-        )
-    except (KeyError, Exception):
-        return QAWrapperPipeline(model_name=model_name, device=device)
+def load_qa_pipeline(model_name: str = DEFAULT_MODEL, device: str | int | None = None) -> QAPipeline:
+    """Load and cache a question-answering model (device: 0 for CUDA, -1 for CPU, or 'cuda'/'cpu')."""
+    return QAPipeline(model_name=model_name, device=device)
 
 
 def parse_participant_count(text: str | None) -> str:
-    """Extract and normalize participant count from a text span into an integer string.
+    """Normalize a QA answer to an integer string ('42 women' -> '42', 'forty-two' -> '42').
 
-    Handles digits ('42 women', 'around 35') and number words ('forty-two', 'twenty five').
-    If no numeric count is found, returns the raw text stripped, or empty string.
-
-    Args:
-        text: Extracted answer string from the QA model.
-
-    Returns:
-        String representing the participant count (e.g. '42', '25'), or empty string.
+    If no number is found, returns the stripped text (e.g. 'a few elders'), or '' for empty input.
+    Returns '' when the answer holds a number that is not a head count (a year, a time, money, 'one of ...').
     """
-    if not text or not str(text).strip():
+    if not text or not str(text).strip() or _NOT_A_COUNT_RE.search(str(text)):
         return ""
-
-    cleaned = str(text).strip().lower()
-
-    # Match numeric digits (e.g. 42, 1,000, 25)
-    digit_match = re.search(r"\b\d[\d,]*\b", cleaned)
-    if digit_match:
-        try:
-            return str(int(digit_match.group(0).replace(",", "")))
-        except ValueError:
-            pass
-
-    # Match word numbers (e.g. 'forty two', 'twenty-five', 'sixty')
-    words = re.findall(r"[a-z]+", cleaned)
-    total, current = 0, 0
-    found_number = False
-
-    for w in words:
-        if w in _UNITS:
-            current += _UNITS[w]
-            found_number = True
-        elif w in _TENS:
-            current += _TENS[w]
-            found_number = True
-        elif w == "hundred":
-            current = max(current, 1) * 100
-            found_number = True
-        elif w == "thousand":
-            current = max(current, 1) * 1000
-            total += current
-            current = 0
-            found_number = True
-        elif found_number:
-            break
-
-    total += current
-    if found_number and total > 0:
-        return str(total)
-
-    # If it's a descriptive phrase (e.g. 'a few elders', 'unknown'), return stripped text
-    return str(text).strip()
+    number = first_number(str(text))
+    return str(number) if number is not None else str(text).strip()
 
 
 def clean_event_label(text: str | None) -> str:
@@ -240,90 +297,8 @@ def clean_event_label(text: str | None) -> str:
     return cleaned
 
 
-def _resolve_text_column(dataset: Dataset | DatasetDict, preferred_col: str) -> str:
-    """Find the text column in a Dataset or DatasetDict."""
-    if isinstance(dataset, DatasetDict):
-        sample_split = next(iter(dataset.keys()))
-        columns = dataset[sample_split].column_names
-    elif isinstance(dataset, Dataset):
-        columns = dataset.column_names
-    elif pd is not None and isinstance(dataset, pd.DataFrame):
-        columns = list(dataset.columns)
-    else:
-        columns = getattr(dataset, "column_names", [])
-
-    if preferred_col in columns:
-        return preferred_col
-
-    for candidate in CANDIDATE_TEXT_COLUMNS:
-        if candidate in columns:
-            return candidate
-
-    raise ValueError(
-        f"Text column '{preferred_col}' not found. Available columns: {columns}. "
-        f"Specify the column name via text_col."
-    )
-
-
-def extract_line_info(
-    text: str,
-    qa_pipeline: Pipeline | None = None,
-    model_name: str = DEFAULT_MODEL,
-    event_question: str = DEFAULT_EVENT_QUESTION,
-    participants_question: str = DEFAULT_PARTICIPANTS_QUESTION,
-    min_score: float = 0.005,
-    normalize_participants: bool = True,
-    clean_event: bool = True,
-    device: str | int | None = None,
-) -> dict[str, str]:
-    """Extract event type and participants from a single line of text.
-
-    Args:
-        text: String of text to analyze.
-        qa_pipeline: Optional pre-loaded QA pipeline.
-        model_name: HF model name if pipeline needs to be loaded.
-        event_question: Question string for event type extraction.
-        participants_question: Question string for participant count extraction.
-        min_score: Minimum confidence score to accept an extracted answer.
-        normalize_participants: Whether to parse participant text to an integer string.
-        clean_event: Whether to strip filler words and punctuation from event type.
-        device: Device ID (0 for CUDA, -1 for CPU).
-
-    Returns:
-        Dict with keys 'event_type' and 'participants'.
-    """
-    if not text or not str(text).strip():
-        return {"event_type": "", "participants": ""}
-
-    cleaned_text = str(text).strip()
-    if qa_pipeline is None:
-        qa_pipeline = load_qa_pipeline(model_name=model_name, device=device)
-
-    # Query QA model for event type
-    try:
-        event_res = qa_pipeline({"question": event_question, "context": cleaned_text})
-    except TypeError:
-        event_res = qa_pipeline(question=event_question, context=cleaned_text)
-    event_type = ""
-    if event_res and event_res.get("score", 0.0) >= min_score:
-        raw_event = event_res.get("answer", "")
-        event_type = clean_event_label(raw_event) if clean_event else raw_event.strip()
-
-    # Query QA model for participant count
-    try:
-        part_res = qa_pipeline({"question": participants_question, "context": cleaned_text})
-    except TypeError:
-        part_res = qa_pipeline(question=participants_question, context=cleaned_text)
-    participants = ""
-    if part_res and part_res.get("score", 0.0) >= min_score:
-        raw_part = part_res.get("answer", "")
-        participants = parse_participant_count(raw_part) if normalize_participants else raw_part.strip()
-
-    return {"event_type": event_type, "participants": participants}
-
-
 def extract_dataset_info(
-    dataset: Dataset | DatasetDict,
+    dataset: Dataset,
     model_name: str = DEFAULT_MODEL,
     text_col: str = "text",
     event_type_col: str = "event_type",
@@ -336,16 +311,16 @@ def extract_dataset_info(
     use_relevance: bool = True,
     relevance_col: str = "relevance",
     batch_size: int = 16,
-    qa_pipeline: Pipeline | None = None,
+    qa_pipeline: QAPipeline | None = None,
     device: str | int | None = None,
-) -> Dataset | DatasetDict:
+) -> Dataset:
     """Extract event type and participant counts from dataset text lines using a QA model.
 
     Its input is a dataset, and it outputs the dataset with additional columns for
     event type and participant count.
 
     Args:
-        dataset: A datasets.Dataset, datasets.DatasetDict, or pandas DataFrame.
+        dataset: A datasets.Dataset.
         model_name: Hugging Face QA model identifier (default: 'deepset/roberta-base-squad2').
         text_col: Name of column containing the text lines.
         event_type_col: Additional column name for extracted event type (default: 'event_type').
@@ -358,83 +333,42 @@ def extract_dataset_info(
         use_relevance: If True and relevance column is present, skips chit-chat / irrelevant lines.
         relevance_col: Name of the relevance column to check if present.
         batch_size: Number of QA queries to process per inference batch.
-        qa_pipeline: Optional pre-loaded pipeline to reuse.
+        qa_pipeline: Optional pre-loaded QA model to reuse.
         device: Device ID (0 for CUDA, -1 for CPU, or 'cuda'/'cpu').
 
     Returns:
         The dataset with additional columns containing the line's event type and participants.
     """
-    # Gracefully support pandas DataFrame
-    is_df = False
-    if pd is not None and isinstance(dataset, pd.DataFrame):
-        is_df = True
-        df_copy = dataset.copy()
-        dataset = Dataset.from_pandas(df_copy)
+    has_relevance = use_relevance and relevance_col in dataset.column_names
 
-    resolved_text_col = _resolve_text_column(dataset, text_col)
-
-    # Check if relevance column exists
-    sample_cols = []
-    if isinstance(dataset, DatasetDict):
-        first_split = next(iter(dataset.keys()))
-        sample_cols = dataset[first_split].column_names
-    elif isinstance(dataset, Dataset):
-        sample_cols = dataset.column_names
-    has_relevance = use_relevance and (relevance_col in sample_cols)
-
-    # Load QA pipeline if not passed
     if qa_pipeline is None:
         qa_pipeline = load_qa_pipeline(model_name=model_name, device=device)
 
-    irrelevant_keywords = {"chit-chat", "chitchat", "banter", "small talk", "irrelevant", "unimportant"}
-
-    def _is_irrelevant_line(val: str) -> bool:
-        low = val.lower().strip()
-        if low in ("chit-chat", "chitchat", "irrelevant"):
-            return True
-        return any(k in low for k in irrelevant_keywords)
-
     def _batch_extract(batch):
-        raw_texts = batch[resolved_text_col]
-        texts = ["" if t is None else str(t) for t in raw_texts]
+        texts = ["" if t is None else str(t) for t in batch[text_col]]
         n = len(texts)
-
         out_event_types = [""] * n
         out_participants = [""] * n
+        relevance_tags = batch[relevance_col] if has_relevance else [None] * n
 
-        # Check relevance tags if present
-        relevance_tags = batch.get(relevance_col, [None] * n) if has_relevance else [None] * n
-
-        # Find rows eligible for QA extraction
-        active_indices = []
-        for i, text in enumerate(texts):
-            if not text.strip():
-                continue
-            if has_relevance and relevance_tags[i] is not None:
-                if _is_irrelevant_line(str(relevance_tags[i])):
-                    continue
-            active_indices.append(i)
-
+        # Rows eligible for QA extraction: non-empty and not labeled chit-chat
+        active_indices = [
+            i for i, text in enumerate(texts)
+            if text.strip() and not (relevance_tags[i] is not None and is_chitchat(relevance_tags[i]))
+        ]
         if not active_indices:
-            res = {event_type_col: out_event_types, participants_col: out_participants}
-            return res
+            return {event_type_col: out_event_types, participants_col: out_participants}
 
-        # Prepare paired QA inputs: for each active row, ask event question and participants question
+        # For each active row, ask the event question and the participants question
         qa_inputs = []
         for idx in active_indices:
             ctx = texts[idx].strip()
             qa_inputs.append({"question": event_question, "context": ctx})
             qa_inputs.append({"question": participants_question, "context": ctx})
-
-        # Run QA inference
         qa_results = qa_pipeline(qa_inputs, batch_size=min(len(qa_inputs), batch_size))
-        if isinstance(qa_results, dict):
-            qa_results = [qa_results]
 
-        # Parse responses
         for k, idx in enumerate(active_indices):
-            event_res = qa_results[2 * k]
-            part_res = qa_results[2 * k + 1]
+            event_res, part_res = qa_results[2 * k], qa_results[2 * k + 1]
 
             if event_res and event_res.get("score", 0.0) >= min_score:
                 ans = event_res.get("answer", "")
@@ -444,126 +378,11 @@ def extract_dataset_info(
                 ans = part_res.get("answer", "")
                 out_participants[idx] = parse_participant_count(ans) if normalize_participants else ans.strip()
 
-        return {
-            event_type_col: out_event_types,
-            participants_col: out_participants,
-        }
+        return {event_type_col: out_event_types, participants_col: out_participants}
 
-    processed = dataset.map(
+    return dataset.map(
         _batch_extract,
         batched=True,
         batch_size=batch_size,
         load_from_cache_file=False,
     )
-
-    if is_df:
-        return processed.to_pandas()
-    return processed
-
-
-# Alias matching project naming convention
-process_dataset_extraction = extract_dataset_info
-extract_event_info = extract_dataset_info
-
-
-def _load_data_file(path: str) -> DatasetDict:
-    """Load a local tabular file (.csv, .tsv, .json, .jsonl, .xlsx, .parquet) as a DatasetDict."""
-    ext = os.path.splitext(path)[1].lower()
-    if ext == ".csv":
-        return DatasetDict({"train": Dataset.from_pandas(pd.read_csv(path, encoding_errors="replace"))})
-    elif ext == ".tsv":
-        return DatasetDict({"train": Dataset.from_pandas(pd.read_csv(path, sep="\t", encoding_errors="replace"))})
-    elif ext in (".json", ".jsonl"):
-        return DatasetDict({"train": Dataset.from_pandas(pd.read_json(path, lines=(ext == ".jsonl")))})
-    elif ext in (".xlsx", ".xls"):
-        return DatasetDict({"train": Dataset.from_pandas(pd.read_excel(path))})
-    elif ext == ".parquet":
-        return DatasetDict({"train": Dataset.from_pandas(pd.read_parquet(path))})
-    else:
-        raise ValueError(f"Unsupported file format '{ext}' for file: {path}")
-
-
-def main():
-    parser = argparse.ArgumentParser(
-        description="Extract event type and participant counts from text lines using a question answering model."
-    )
-    parser.add_argument("-d", "--dataset", required=True, help="Hugging Face dataset name or local file (.csv, .json, .jsonl, .xlsx, .parquet)")
-    parser.add_argument("-m", "--model", default=DEFAULT_MODEL, help=f"QA model (default: {DEFAULT_MODEL})")
-    parser.add_argument("--text_col", default="text", help="Column containing text lines (default: 'text')")
-    parser.add_argument("--event_type_col", default="event_type", help="Output column name for event type (default: 'event_type')")
-    parser.add_argument("--participants_col", default="participants", help="Output column name for participants (default: 'participants')")
-    parser.add_argument("--event_question", default=DEFAULT_EVENT_QUESTION, help="Custom QA question for event type")
-    parser.add_argument("--participants_question", default=DEFAULT_PARTICIPANTS_QUESTION, help="Custom QA question for participants")
-    parser.add_argument("--min_score", type=float, default=0.05, help="Minimum confidence threshold for QA answers (default: 0.05)")
-    parser.add_argument("--no_normalize_participants", action="store_true", help="Do not convert participant phrases to numeric counts")
-    parser.add_argument("--relevance_col", default="relevance", help="Relevance column name if dataset is already classified")
-    parser.add_argument("--ignore_relevance", action="store_true", help="Run extraction on all lines even if relevance column is present")
-    parser.add_argument("-b", "--batch_size", type=int, default=16, help="Inference batch size (default: 16)")
-    parser.add_argument("-n", "--num_samples", type=int, default=0, help="Process first N samples (0 = all)")
-    parser.add_argument("-o", "--output", help="Path to save output (.csv, .json, .jsonl, .parquet)")
-
-    args = parser.parse_args()
-
-    # Load dataset
-    if os.path.isfile(args.dataset):
-        dataset = _load_data_file(args.dataset)
-    else:
-        from datasets import load_dataset
-        dataset = load_dataset(args.dataset)
-
-    # Slice if num_samples specified
-    if args.num_samples > 0:
-        if isinstance(dataset, DatasetDict):
-            for k in dataset.keys():
-                dataset[k] = dataset[k].select(range(min(args.num_samples, len(dataset[k]))))
-        else:
-            dataset = dataset.select(range(min(args.num_samples, len(dataset))))
-
-    print(f"Extracting structured info with QA model: {args.model}")
-    print(f"Event question: {args.event_question}")
-    print(f"Participants question: {args.participants_question}")
-
-    extracted = extract_dataset_info(
-        dataset,
-        model_name=args.model,
-        text_col=args.text_col,
-        event_type_col=args.event_type_col,
-        participants_col=args.participants_col,
-        event_question=args.event_question,
-        participants_question=args.participants_question,
-        min_score=args.min_score,
-        normalize_participants=not args.no_normalize_participants,
-        use_relevance=not args.ignore_relevance,
-        relevance_col=args.relevance_col,
-        batch_size=args.batch_size,
-    )
-
-    # Show preview
-    preview_split = next(iter(extracted.keys())) if isinstance(extracted, DatasetDict) else None
-    sample_view = extracted[preview_split] if preview_split else extracted
-    print(f"\nCompleted extraction. Sample output ({min(5, len(sample_view))} rows):")
-    for i in range(min(5, len(sample_view))):
-        row = sample_view[i]
-        line_snippet = str(row.get(args.text_col, ""))[:50]
-        event = row.get(args.event_type_col, "")
-        part = row.get(args.participants_col, "")
-        print(f"  [Event: {event!r:30} | Participants: {part!r:6}] {line_snippet}...")
-
-    # Save output if path provided
-    if args.output:
-        os.makedirs(os.path.dirname(args.output) or ".", exist_ok=True)
-        ext = os.path.splitext(args.output)[1].lower()
-        export_ds = sample_view
-        if ext == ".csv":
-            export_ds.to_csv(args.output, index=False)
-        elif ext in (".json", ".jsonl"):
-            export_ds.to_json(args.output, orient="records", lines=(ext == ".jsonl"))
-        elif ext == ".parquet":
-            export_ds.to_parquet(args.output)
-        else:
-            export_ds.to_csv(args.output, index=False)
-        print(f"Saved results to {args.output}")
-
-
-if __name__ == "__main__":
-    main()

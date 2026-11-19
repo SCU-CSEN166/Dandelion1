@@ -1,6 +1,11 @@
+"""Score summaries against reference summaries: ROUGE (recall, precision, F1) and NLI fact recall.
+
+Works on any Hugging Face dataset or local file with a text column and a reference-summary column, e.g. SAMSum:
+  python eval/eval_summary.py -s google/flan-t5-large -d knkarthick/samsum -n 50
+"""
 import os
+import sys
 import re
-import inspect
 import json
 import argparse
 import pandas as pd
@@ -8,6 +13,7 @@ import torch
 from datasets import load_dataset
 from rouge_score import rouge_scorer
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src"))  # pipeline modules
 from redact import scan_batch
 from summarize import summarize_text
 
@@ -105,11 +111,7 @@ def main():
     if args.num_samples:
         df = df.sample(min(args.num_samples, len(df)), random_state=0)
 
-    batch = {"text": list(df.text)}
-    if len(inspect.signature(scan_batch).parameters) > 1:  # newer redact.py: names -> Person0, Person1, ...
-        posts = scan_batch(batch, {"map": {}, "count": 0})["text"]
-    else:
-        posts = scan_batch(batch)["text"]
+    posts = scan_batch({"text": list(df.text)}, bare_senders=True)["text"]
     scorer = rouge_scorer.RougeScorer(ROUGE_KEYS, use_stemmer=True)
     nli = NLI(args.nli)
 
@@ -123,7 +125,8 @@ def main():
             "post": post,
             "reference": ref,
             "prediction": pred,
-            "rouge": {k: {"recall": rouge[k].recall, "precision": rouge[k].precision} for k in ROUGE_KEYS},
+            "rouge": {k: {"recall": rouge[k].recall, "precision": rouge[k].precision, "f1": rouge[k].fmeasure}
+                      for k in ROUGE_KEYS},
             "facts": [{"fact": f, "found": h} for f, h in zip(facts, hits)],
             "nli_recall": mean(hits),
         })
@@ -135,7 +138,7 @@ def main():
         "nli_model": args.nli,
         "dataset": args.dataset if os.path.isfile(args.dataset) else f"{args.dataset}:{args.split}",
         "n": len(examples),
-        "rouge": {k: {m: mean([e["rouge"][k][m] for e in examples]) for m in ("recall", "precision")}
+        "rouge": {k: {m: mean([e["rouge"][k][m] for e in examples]) for m in ("recall", "precision", "f1")}
                   for k in ROUGE_KEYS},
         "nli_outcome_recall": mean(all_hits),           # facts found / total facts
         "nli_outcome_recall_per_post": mean([e["nli_recall"] for e in examples]),
@@ -148,4 +151,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main();
+    main()

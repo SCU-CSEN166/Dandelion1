@@ -2,9 +2,7 @@
 import sys
 import os
 import unittest
-from unittest.mock import MagicMock
-from datasets import Dataset, DatasetDict
-import pandas as pd
+from datasets import Dataset
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -14,20 +12,38 @@ from extract import (
     DEFAULT_PARTICIPANTS_QUESTION,
     parse_participant_count,
     clean_event_label,
-    extract_line_info,
     extract_dataset_info,
-    process_dataset_extraction,
+    find_participants,
+    first_number,
+    activity_type,
+    classify_activities,
+    ACTIVITY_CATEGORIES,
+    ACTIVITY_MIN_SCORE,
+    OTHER_ACTIVITY,
 )
+
+
+class DummyCategoryPipeline:
+    """Mock zero-shot pipeline: picks 'Tree planting' for messages about trees, else the first category."""
+
+    def __init__(self):
+        self.calls = 0
+
+    def __call__(self, inputs, candidate_labels=None, hypothesis_template=None, multi_label=False, batch_size=None):
+        self.calls += 1
+        out = []
+        for text in [inputs] if isinstance(inputs, str) else inputs:
+            top = "Tree planting" if "tree" in text.lower() else candidate_labels[0]
+            out.append({"labels": [top] + [c for c in candidate_labels if c != top], "scores": [0.8] + [0.01] * 22})
+        return out[0] if isinstance(inputs, str) else out
 
 
 class DummyQAPipeline:
     """Mock Question-Answering pipeline for fast, offline testing."""
 
-    def __call__(self, inputs=None, batch_size=None, question=None, context=None, **kwargs):
-        if inputs is None and question is not None:
-            inputs = {"question": question, "context": context or ""}
+    def __call__(self, inputs, batch_size=None, **kwargs):
         single = isinstance(inputs, dict)
-        items = [inputs] if single else (inputs or [])
+        items = [inputs] if single else inputs
         results = []
 
         for item in items:
@@ -84,10 +100,6 @@ class TestExtraction(unittest.TestCase):
             },
         ]
         self.dataset = Dataset.from_list(self.sample_rows)
-        self.dataset_dict = DatasetDict({
-            "train": Dataset.from_list(self.sample_rows),
-            "test": Dataset.from_list(self.sample_rows[:2]),
-        })
 
     def test_extract_dataset_info_adds_columns(self):
         """Test that extract_dataset_info adds event_type and participants columns."""
@@ -117,34 +129,6 @@ class TestExtraction(unittest.TestCase):
         # Row 3 (Empty line): should be empty
         self.assertEqual(result[3]["event_type"], "")
         self.assertEqual(result[3]["participants"], "")
-
-    def test_extract_dataset_dict(self):
-        """Test extraction across all splits of a DatasetDict."""
-        result = extract_dataset_info(
-            self.dataset_dict,
-            qa_pipeline=self.mock_qa,
-        )
-        self.assertIsInstance(result, DatasetDict)
-        self.assertIn("event_type", result["train"].column_names)
-        self.assertIn("participants", result["train"].column_names)
-        self.assertIn("event_type", result["test"].column_names)
-        self.assertIn("participants", result["test"].column_names)
-
-        self.assertEqual(result["train"][0]["event_type"], "Family planning outreach")
-        self.assertEqual(result["test"][0]["event_type"], "Family planning outreach")
-
-    def test_pandas_dataframe_support(self):
-        """Test running extraction on a pandas DataFrame."""
-        df = pd.DataFrame(self.sample_rows)
-        result_df = extract_dataset_info(
-            df,
-            qa_pipeline=self.mock_qa,
-        )
-        self.assertIsInstance(result_df, pd.DataFrame)
-        self.assertIn("event_type", result_df.columns)
-        self.assertIn("participants", result_df.columns)
-        self.assertEqual(result_df.iloc[0]["event_type"], "Family planning outreach")
-        self.assertEqual(result_df.iloc[0]["participants"], "42")
 
     def test_custom_column_names(self):
         """Test custom column names for event type and participants."""
@@ -176,6 +160,36 @@ class TestExtraction(unittest.TestCase):
         res_forced = extract_dataset_info(special_ds, qa_pipeline=self.mock_qa, use_relevance=False)
         self.assertEqual(res_forced[0]["event_type"], "Cervical cancer screening camp")
 
+    def test_hundred_and(self):
+        """'one hundred and nine' is 109; 'and' joins numbers only after hundred / thousand."""
+        self.assertEqual(first_number("one hundred and nine people came"), 109)
+        self.assertEqual(find_participants("One hundred and thirty-four people came today"), 134)
+        self.assertEqual(find_participants("between forty and fifty people came"), 50)
+
+    def test_classify_activities(self):
+        ds = Dataset.from_list([
+            {"text": "We planted trees by the school today.", "relevance": "Event"},
+            {"text": "Good morning all!", "relevance": "Chit-chat"},
+        ])
+        result = classify_activities(ds, classifier=DummyCategoryPipeline())
+        self.assertEqual(result["activity_category"], ["Tree planting", ""])  # Chit-chat gets no category
+        self.assertEqual(result["activity_score"], [0.8, 0.0])
+
+    def test_activity_type_combination(self):
+        text = "We held the immunization day."
+        # a confident category wins; below ACTIVITY_MIN_SCORE the topic rule, then QA, then "Other"
+        self.assertEqual(activity_type(text, "", "Immunization outreach", ACTIVITY_MIN_SCORE), "Immunization outreach")
+        self.assertEqual(activity_type(text, "", "Tree planting", ACTIVITY_MIN_SCORE - 0.01), "Immunization outreach")
+        self.assertEqual(activity_type("We met.", "borehole meeting", "Tree planting", 0.05), "Borehole meeting")
+        self.assertEqual(activity_type("We met.", "", "", 0.0), OTHER_ACTIVITY)
+        self.assertIn("Immunization outreach", ACTIVITY_CATEGORIES)
+
+    def test_participant_patterns(self):
+        self.assertEqual(find_participants("In total, thirty-two mothers came today."), 32)
+        self.assertEqual(find_participants("We screened 15 women at the camp."), 15)
+        self.assertEqual(find_participants("Attendance was forty at the meeting."), 40)
+        self.assertIsNone(find_participants("We waited two hours for the bus."))
+
     def test_parse_participant_count(self):
         """Test parsing various participant formats to normalized integers."""
         self.assertEqual(parse_participant_count("42 women"), "42")
@@ -184,6 +198,15 @@ class TestExtraction(unittest.TestCase):
         self.assertEqual(parse_participant_count("forty-two"), "42")
         self.assertEqual(parse_participant_count("twenty five"), "25")
         self.assertEqual(parse_participant_count("sixty"), "60")
+        self.assertEqual(parse_participant_count("two thousand five hundred people"), "2500")
+        self.assertEqual(parse_participant_count("the 42 women and one nurse"), "42")  # digits win over number words
+        # numbers that are not head counts
+        self.assertEqual(parse_participant_count("one of the mothers"), "")
+        self.assertEqual(parse_participant_count("the 2024 outreach"), "")
+        self.assertEqual(parse_participant_count("at 10:30"), "")
+        self.assertEqual(parse_participant_count("9am"), "")
+        self.assertEqual(parse_participant_count("500 shillings"), "")
+        self.assertEqual(parse_participant_count("a few elders"), "a few elders")
         self.assertEqual(parse_participant_count(""), "")
         self.assertEqual(parse_participant_count(None), "")
 
@@ -194,18 +217,6 @@ class TestExtraction(unittest.TestCase):
         self.assertEqual(clean_event_label("our monthly table banking day"), "Table banking day")
         self.assertEqual(clean_event_label(""), "")
 
-    def test_extract_line_info(self):
-        """Test single-line extraction helper."""
-        info = extract_line_info(
-            "We held a family planning outreach and served 42 women.",
-            qa_pipeline=self.mock_qa,
-        )
-        self.assertEqual(info["event_type"], "Family planning outreach")
-        self.assertEqual(info["participants"], "42")
-
-        empty_info = extract_line_info("", qa_pipeline=self.mock_qa)
-        self.assertEqual(empty_info["event_type"], "")
-        self.assertEqual(empty_info["participants"], "")
 
 
 if __name__ == "__main__":

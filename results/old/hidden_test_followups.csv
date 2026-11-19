@@ -1,0 +1,18 @@
+message_id,activity_type,category,follow_up,access
+1,Family planning outreach,Referral,Six women were referred to [LOCATION] for implants because we ran out of stock.,general
+1,Family planning outreach,Person to follow up,"One mama asked to be called for follow-up, her number is [PHONE].",restricted (Reproductive health)
+1,Family planning outreach,Report to send,I will send the register tomorrow.,general
+2,Family planning outreach,Referral,"Just to confirm the numbers, we served forty-two women on family planning, and six were referred for implants.",general
+2,Family planning outreach,Next visit or meeting,"The women asked if we can come back next month, so maybe we can plan that.",general
+4,Table banking (savings) group meeting,Next visit or meeting,Our next meeting is on the fifteenth.,general
+5,Menstrual hygiene session,Next visit or meeting,"The head teacher, Mrs. [NAME], has asked us to come back and also talk to the mothers.",general
+5,Menstrual hygiene session,Person to follow up,Her phone number is [PHONE] if someone wants to follow up.,general
+6,Gender-based violence awareness session,Person to follow up,"Three women asked for private follow-up, and we connected them with the counsellor.",general
+7,Cervical cancer screening camp,Referral,"Most results were normal, but three women had positive results, so we referred them to [LOCATION] for further treatment.",general
+7,Cervical cancer screening camp,Person to follow up,"One of them is Mrs. [NAME], and she has agreed to go on Monday.",restricted (Health screening results)
+7,Cervical cancer screening camp,Person to follow up,"Please, whoever is going to [LOCATION] that day, help her with transport.",restricted (Health screening results)
+7,Cervical cancer screening camp,Report to send,I will upload the full report later.,general
+9,Kitchen garden training,Next visit or meeting,Next month we will visit their homes to see how the gardens are doing.,general
+9,Kitchen garden training,Person to follow up,"If you want to join the follow-up visits, call me on [PHONE].",general
+10,Cervical cancer screening camp,Referral,"Just adding to her report: we had twenty-eight women screened for cervical cancer, and three were referred to [LOCATION].",general
+10,Cervical cancer screening camp,Next visit or meeting,Next time we should bring more chairs and water because the queue was long.,general

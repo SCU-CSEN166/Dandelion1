@@ -1,10 +1,10 @@
-torch>=2.0
-transformers>=4.40
-datasets>=3.0,<4
-pyarrow<20
-numpy<2
-hyperscan
-rouge_score
-sentencepiece
-pandas
+# Tested with torch 2.15, transformers 5.22, datasets 5.1, pandas 3.1 on Python 3.15
+torch>=2.5
+transformers>=5.0
+datasets>=5.0
+pandas>=2.0
+numpy
 openpyxl
+sentencepiece
+# Only for the evaluation scripts (eval.py, eval_summaries.py)
+rouge_score
