@@ -11,8 +11,8 @@ import pandas as pd
 from datasets import Dataset, DatasetDict, load_dataset
 from preprocess import preprocess_dataset
 from redact import process_dataset_pii
-from relevance import classify_dataset_relevance
-from extract import extract_dataset_info
+from relevance import classify_dataset_relevance, load_zero_shot_classifier
+from extract import classify_activities, extract_dataset_info
 
 # Columns that hold the message text in common datasets, used when there is no 'text' column
 TEXT_COLUMNS = ["transcript", "dialogue", "message", "query", "content", "source_text", "sentence", "post", "line"]
@@ -83,11 +83,14 @@ def prepare_dataset(
     # 2. Redact PII (phone numbers, emails, names and places)
     processed = process_dataset_pii(raw)
 
-    # 3. Classify relevance (rows are never dropped here: main.py filters only the summarizer's input)
+    # 3. Classify relevance and, for Events, the activity category, with the same zero-shot model
+    #    (rows are never dropped here: main.py filters only the summarizer's input)
     if classify_relevance:
-        processed = classify_dataset_relevance(processed, model_name=classifier_model, score_col="relevance_score")
+        classifier = load_zero_shot_classifier(classifier_model)
+        processed = classify_dataset_relevance(processed, score_col="relevance_score", classifier=classifier)
+        processed = classify_activities(processed, classifier=classifier)
 
-    # 4. Extract structured event type and participant counts
+    # 4. Ask the QA model for each message's event type and head count
     if extract_info:
         processed = extract_dataset_info(processed, model_name=qa_model)
 

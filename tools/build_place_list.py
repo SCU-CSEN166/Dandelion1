@@ -5,7 +5,7 @@ Sources (nothing is hand-picked from any test set):
     labeled dev set (data/farmerchat_kenya_sample.jsonl), so that dev set stays a fair test
   - the 47 Kenyan counties (a public list)
 
-Run:  python src/build_place_list.py
+Run:  python tools/build_place_list.py
 """
 import json
 import os

@@ -4,9 +4,9 @@ Zero-shot: an NLI model scores how strongly a message entails EVENT_HYPOTHESIS. 
 message is an Event. Asking one yes/no question avoids having to describe "everything else": with two labels
 ("activity report" vs "casual conversation"), a farmer's question fits neither and was always called an Event.
 
-EVENT_THRESHOLD was set on the FarmerChat sample (data/farmerchat_kenya_sample.jsonl: 50 farmers' questions, none
-of them an activity report), not on the hidden test: their highest score is 0.93, so 0.95 labels none of them an
-Event. That sample has no Events, so the threshold's effect on missed Events still needs a dev set with both kinds.
+EVENT_THRESHOLD is the threshold with the best Event F1 on the relevance dev set (data/relevance_dev.jsonl, 59 Event
+and 59 Chit-chat messages; see eval/eval_relevance.py), not on the hidden test. The model's scores bunch up near 1.0, and
+plans, reminders and questions about an activity still score high, so the threshold is close to 1.
 """
 from functools import lru_cache
 import torch
@@ -18,7 +18,7 @@ DEFAULT_MODEL = "facebook/bart-large-mnli"
 EVENT, CHITCHAT = "Event", "Chit-chat"
 EVENT_DESCRIPTION = "a report on a community activity that took place"
 HYPOTHESIS_TEMPLATE = "This message is {}."
-EVENT_THRESHOLD = 0.95
+EVENT_THRESHOLD = 0.995
 
 # A relevance label containing any of these marks the line as chit-chat
 CHITCHAT_KEYWORDS = ("chit-chat", "chitchat", "banter", "small talk", "irrelevant", "unimportant")

@@ -1,19 +1,33 @@
-"""Compare a TA-format table (from main.py --ta_table_out) with the TA's expected outputs.
+"""Score main.py's messages.csv against the TA's hidden-test key (data/hidden_test_outputs.xlsx).
 
-Run:  python src/eval_ta_table.py -p results/hidden_test_ta_table.csv -k results/hidden_test_outputs.xlsx
+Run:  python eval/eval_hidden_test.py -p outputs/hidden_test/messages.csv
 
+The key uses the TA's tags ([NAME], [LOCATION], [PHONE], [EMAIL]); our Person0 / Place0 aliases are turned into
+them here (to_ta_tags), so the pipeline itself never writes a TA-specific format.
 Scores: relevance, activity type (word overlap of 0.5 or more), participants, duplicate_of, PII recall (each item in
 the key's pii_items must be gone from our anonymized text), pii_count, and exact match of the anonymized text.
 """
 import argparse
+import os
 import re
 
 import pandas as pd
 
+KEY = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "hidden_test_outputs.xlsx")
+
+
+def to_ta_tags(text: str) -> str:
+    """Turn Person/Place aliases into the TA's [NAME] / [LOCATION] tags (redact.py already writes [PHONE] / [EMAIL])."""
+    text = re.sub(r"\bPerson\d+\b", "[NAME]", str(text or ""))
+    return re.sub(r"\bPlace\d+\b", "[LOCATION]", text)
+
 
 def read(path):
+    """The key, or our messages.csv with its text turned into the key's expected_anonymized_text."""
     df = pd.read_excel(path, dtype=str) if path.lower().endswith((".xlsx", ".xls")) else pd.read_csv(path, dtype=str)
     df = df.fillna("")
+    if "expected_anonymized_text" not in df.columns:
+        df["expected_anonymized_text"] = [to_ta_tags(t) for t in df["text"]]
     df["message_id"] = df["message_id"].astype(float).astype(int)
     return df.set_index("message_id")
 
@@ -166,9 +180,9 @@ def metrics_markdown(m, title):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Score a TA-format table against the TA key")
-    parser.add_argument("-p", "--pred", required=True)
-    parser.add_argument("-k", "--key", required=True)
+    parser = argparse.ArgumentParser(description="Score main.py's messages.csv against the TA's hidden-test key")
+    parser.add_argument("-p", "--pred", required=True, help="messages.csv from main.py")
+    parser.add_argument("-k", "--key", default=KEY)
     parser.add_argument("--metrics_out", help="Also write all metrics (accuracy, precision, recall, F1, PII recall) as Markdown, or JSON if the name ends in .json")
     parser.add_argument("--title", default="Metrics", help="Heading for --metrics_out")
     args = parser.parse_args()

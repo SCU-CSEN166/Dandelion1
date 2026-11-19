@@ -3,18 +3,18 @@
 Question from the TA: were the metrics computed on our own Whisper transcriptions or on the provided transcripts?
 This file has both. The Whisper rows use the transcription of the 10 audio files in `data/hidden_test_whisper_transcripts.csv`
 (Whisper output from commit 61bb7df); the provided-transcript row is the table from PR #5. All three are scored against the
-TA's expected-output table (`results/hidden_test_outputs.xlsx`) with `src/eval_ta_table.py`.
+TA's expected-output table (`data/hidden_test_outputs.xlsx`) with `src/eval_ta_table.py`.
 
 | Table | Input text | Code |
 |---|---|---|
-| `results/hidden_test_whisper_ta_table_main.csv` | our Whisper transcripts | `main` (PR #5), before PR #6 |
-| `results/hidden_test_whisper_ta_table.csv` | our Whisper transcripts | PR #6 (speech-error handling) |
-| `results/hidden_test_ta_table.csv` | the provided transcripts | PR #6 |
+| `results/old/hidden_test_whisper_ta_table_main.csv` | our Whisper transcripts | `main` (PR #5), before PR #6 |
+| `results/old/hidden_test_whisper_ta_table.csv` | our Whisper transcripts | PR #6 (speech-error handling) |
+| `results/old/hidden_test_ta_table.csv` | the provided transcripts | PR #6 |
 
 Reproduce:
 ```
-python src/main.py -d data/hidden_test_whisper_transcripts.csv --extract_info --ta_table_out results/hidden_test_whisper_ta_table.csv
-python src/eval_ta_table.py -p results/hidden_test_whisper_ta_table.csv -k results/hidden_test_outputs.xlsx --metrics_out results/hidden_test_whisper_metrics.md
+python src/main.py -d data/hidden_test_whisper_transcripts.csv --extract_info --ta_table_out results/old/hidden_test_whisper_ta_table.csv
+python src/eval_ta_table.py -p results/old/hidden_test_whisper_ta_table.csv -k data/hidden_test_outputs.xlsx --metrics_out results/old/hidden_test_whisper_metrics.md
 ```
 
 Notes: PII tags are scored by aligning our anonymized text with the expected text word by word, because on Whisper text a

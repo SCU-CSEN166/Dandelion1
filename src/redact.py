@@ -9,7 +9,7 @@ Scans for and redacts:
 5. Names found from context (titles like "Sister Mary Chebet", introductions like "this is Grace Wanjiru",
    "Rose Njeri here") -> Person aliases, and later bare mentions of those names (e.g. "Grace")
 6. Places: facility names ("Rongai Health Centre", "Sarambei Primary School") and Kenyan place names from
-   data/kenya_places.txt (built by build_place_list.py) -> Place0, Place1, ...
+   data/kenya_places.txt (built by tools/build_place_list.py) -> Place0, Place1, ...
 
 7. Places and people found from sentence context ("the matatu from Solai", "her home in Kabarak",
    "send it to Ruth"). This also covers names that speech recognition misspelled, which no list contains.
@@ -23,9 +23,6 @@ later message is also hidden in the earlier ones.
 import os
 import re
 from datasets import Dataset
-
-# Columns that hold unredacted text: used inside the pipeline, never written to output files
-RAW_COLUMNS = ("original_text", "transcript", "pii_items")
 
 
 # Email regex pattern

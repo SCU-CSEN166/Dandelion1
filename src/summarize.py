@@ -35,19 +35,15 @@ def format_prompt(
     text: str,
     is_encoder_decoder: bool,
     system_prompt: str = DEFAULT_SYSTEM_PROMPT,
-    custom_prefix: str | None = None,
     extracted_info: list[str] | str | None = None,
     encoder_decoder_prefix: str = ENC_DEC_INSTRUCTION,
 ) -> str:
     """Build the model input.
 
-    - custom_prefix: the caller's own prefix + text.
     - Encoder-decoder models: encoder_decoder_prefix + text only (no system prompt, no extracted facts).
     - Chat models: system prompt, extracted facts and transcript in the model's chat template.
     - Other decoder-only models: the same content as plain text, ending in a cue to start the report.
     """
-    if custom_prefix is not None:
-        return f"{custom_prefix}{text}"
     if is_encoder_decoder:
         return f"{encoder_decoder_prefix}{text}"
 
@@ -198,7 +194,6 @@ def summarize_text(
     model_name: str,
     min_length: int = 10,
     max_input_tokens: int | None = None,
-    prefix: str | None = None,
     max_new_tokens: int | None = None,
     system_prompt: str = DEFAULT_SYSTEM_PROMPT,
     extracted_info: list[str] | str | None = None,
@@ -230,7 +225,7 @@ def summarize_text(
         torch.cuda.empty_cache()
 
     def _format(t: str, info=None) -> str:
-        return format_prompt(tokenizer, t, is_enc_dec, system_prompt, prefix, extracted_info=info,
+        return format_prompt(tokenizer, t, is_enc_dec, system_prompt, extracted_info=info,
                              encoder_decoder_prefix=enc_dec_prefix)
 
     def _n_tokens(s: str) -> int:

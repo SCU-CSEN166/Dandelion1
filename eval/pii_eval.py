@@ -13,18 +13,20 @@ Over-redaction: share of ordinary (non-PII) words twaiut hat got destroyed.
 With -s: also summarize the redacted text and count PII values that appear in the final summary (= leaked to the report).
 
 Run on WAVE:
-  python pii_eval.py -n 200
-  python pii_eval.py -n 50 -s google/flan-t5-large
+  python eval/pii_eval.py -n 200
+  python eval/pii_eval.py -n 50 -s google/flan-t5-large
 """
 import argparse
 import json
 import os
+import sys
 import re
 from collections import Counter, defaultdict
 
 import pandas as pd
 from datasets import load_dataset
 
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src"))  # pipeline modules
 from redact import scan_batch
 
 # ai4privacy label -> what redact.py targets; anything else counts as "other"

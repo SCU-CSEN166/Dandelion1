@@ -12,7 +12,7 @@ from relevance import EVENT_DESCRIPTION, EVENT_THRESHOLD, classify_dataset_relev
 class DummyPipeline:
     """Mock zero-shot pipeline: a high Event score for messages with activity words, a low one otherwise."""
 
-    def __init__(self, event_score=0.99, other_score=0.05):
+    def __init__(self, event_score=0.999, other_score=0.05):
         self.event_score, self.other_score = event_score, other_score
         self.calls = []
 
@@ -55,7 +55,7 @@ class TestRelevanceClassification(unittest.TestCase):
 
     def test_score_col(self):
         result = classify_dataset_relevance(self.dataset, classifier=self.mock_classifier, score_col="relevance_score")
-        self.assertAlmostEqual(result[0]["relevance_score"], 0.99, places=2)
+        self.assertAlmostEqual(result[0]["relevance_score"], 0.999, places=3)
         self.assertAlmostEqual(result[1]["relevance_score"], 0.05, places=2)
         self.assertEqual(result[4]["relevance_score"], 0.0)  # blank lines are not sent to the model
 

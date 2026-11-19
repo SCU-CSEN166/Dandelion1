@@ -60,12 +60,6 @@ class TestSummarize(unittest.TestCase):
         self.assertEqual(encoder_decoder_prefix(t5), "summarize: ")
         self.assertEqual(encoder_decoder_prefix(flan), ENC_DEC_INSTRUCTION)
 
-    def test_format_prompt_custom_prefix(self):
-        tok = DummyTokenizerWithoutTemplate()
-        text = "Outreach took place."
-        prompt = format_prompt(tok, text, is_encoder_decoder=True, custom_prefix="summarize: ")
-        self.assertEqual(prompt, "summarize: Outreach took place.")
-
     def test_format_prompt_plain_decoder(self):
         tok = DummyTokenizerWithoutTemplate()
         text = "Person0: Hello team\nPerson1: Outreach was successful."

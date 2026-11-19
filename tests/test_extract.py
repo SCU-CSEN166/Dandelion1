@@ -13,7 +13,29 @@ from extract import (
     parse_participant_count,
     clean_event_label,
     extract_dataset_info,
+    find_participants,
+    first_number,
+    activity_type,
+    classify_activities,
+    ACTIVITY_CATEGORIES,
+    ACTIVITY_MIN_SCORE,
+    OTHER_ACTIVITY,
 )
+
+
+class DummyCategoryPipeline:
+    """Mock zero-shot pipeline: picks 'Tree planting' for messages about trees, else the first category."""
+
+    def __init__(self):
+        self.calls = 0
+
+    def __call__(self, inputs, candidate_labels=None, hypothesis_template=None, multi_label=False, batch_size=None):
+        self.calls += 1
+        out = []
+        for text in [inputs] if isinstance(inputs, str) else inputs:
+            top = "Tree planting" if "tree" in text.lower() else candidate_labels[0]
+            out.append({"labels": [top] + [c for c in candidate_labels if c != top], "scores": [0.8] + [0.01] * 22})
+        return out[0] if isinstance(inputs, str) else out
 
 
 class DummyQAPipeline:
@@ -137,6 +159,36 @@ class TestExtraction(unittest.TestCase):
         # With use_relevance=False, it extracts despite the tag
         res_forced = extract_dataset_info(special_ds, qa_pipeline=self.mock_qa, use_relevance=False)
         self.assertEqual(res_forced[0]["event_type"], "Cervical cancer screening camp")
+
+    def test_hundred_and(self):
+        """'one hundred and nine' is 109; 'and' joins numbers only after hundred / thousand."""
+        self.assertEqual(first_number("one hundred and nine people came"), 109)
+        self.assertEqual(find_participants("One hundred and thirty-four people came today"), 134)
+        self.assertEqual(find_participants("between forty and fifty people came"), 50)
+
+    def test_classify_activities(self):
+        ds = Dataset.from_list([
+            {"text": "We planted trees by the school today.", "relevance": "Event"},
+            {"text": "Good morning all!", "relevance": "Chit-chat"},
+        ])
+        result = classify_activities(ds, classifier=DummyCategoryPipeline())
+        self.assertEqual(result["activity_category"], ["Tree planting", ""])  # Chit-chat gets no category
+        self.assertEqual(result["activity_score"], [0.8, 0.0])
+
+    def test_activity_type_combination(self):
+        text = "We held the immunization day."
+        # a confident category wins; below ACTIVITY_MIN_SCORE the topic rule, then QA, then "Other"
+        self.assertEqual(activity_type(text, "", "Immunization outreach", ACTIVITY_MIN_SCORE), "Immunization outreach")
+        self.assertEqual(activity_type(text, "", "Tree planting", ACTIVITY_MIN_SCORE - 0.01), "Immunization outreach")
+        self.assertEqual(activity_type("We met.", "borehole meeting", "Tree planting", 0.05), "Borehole meeting")
+        self.assertEqual(activity_type("We met.", "", "", 0.0), OTHER_ACTIVITY)
+        self.assertIn("Immunization outreach", ACTIVITY_CATEGORIES)
+
+    def test_participant_patterns(self):
+        self.assertEqual(find_participants("In total, thirty-two mothers came today."), 32)
+        self.assertEqual(find_participants("We screened 15 women at the camp."), 15)
+        self.assertEqual(find_participants("Attendance was forty at the meeting."), 40)
+        self.assertIsNone(find_participants("We waited two hours for the bus."))
 
     def test_parse_participant_count(self):
         """Test parsing various participant formats to normalized integers."""

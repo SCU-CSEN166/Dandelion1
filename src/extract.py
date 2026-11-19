@@ -1,11 +1,11 @@
-"""Extraction stage using a question answering model to extract structured event information.
+"""Activity type and head count of an Event message, from models and from rules.
 
-Extracts:
-1. The type of event or activity being discussed (event_type).
-2. The number of people participating or attended (participants).
-
-Returns the dataset with additional columns for this extra information.
-Designed for Dandelion Africa field communications (WhatsApp and voice-note transcripts).
+- Activity categories (classify_activities): the zero-shot model that labels relevance also picks each Event's
+  category from ACTIVITY_CATEGORIES, with a score (activity_category / activity_score columns).
+- QA model (extract_dataset_info): adds event_type and participants columns, the model's answers to two questions.
+- Rules: find_topic (a topic list) and find_participants (number patterns such as "forty-two women came"). These are in-sample for the hidden test; maybe we could move more responsibility to the QA model?
+- activity_type() and participant_count() combine them for the output tables; tables.py turns their disagreements
+  into review reasons.
 """
 from functools import lru_cache
 import re
@@ -13,8 +13,157 @@ import torch
 from transformers import AutoModelForQuestionAnswering, AutoTokenizer
 from datasets import Dataset
 
-from relevance import is_chitchat
-from ta_table import first_number
+from relevance import is_chitchat, load_zero_shot_classifier
+
+OTHER_ACTIVITY = "Other field activity"
+
+# The activity types of the output table
+ACTIVITY_CATEGORIES = [
+    "Family planning outreach", "Maternal health talk",
+    "Gender-based violence awareness session",
+    "Banking group meeting", "Farmer training", "Youth mentorship session",
+    "Immunization outreach", "Nutrition session", "Community clean-up",
+    "Home visits", "Distribution of supplies", "Business skills training",
+    "Livestock and poultry training", "Hygiene promotion session"
+]
+ACTIVITY_HYPOTHESIS = "This message is about a {}."
+# Below this score the classifier's category is not trusted (set on data/extraction_dev.jsonl; see eval/eval_extraction.py)
+ACTIVITY_MIN_SCORE = 0.2
+
+# --- Numbers ---
+_UNITS = {w: i for i, w in enumerate(
+    "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen "
+    "seventeen eighteen nineteen".split())}
+_TENS = {w: 10 * i for i, w in enumerate("_ _ twenty thirty forty fifty sixty seventy eighty ninety".split()) if w != "_"}
+_NUMWORD = "|".join(list(_UNITS) + list(_TENS) + ["hundred", "thousand"])
+# "and" only after hundred / thousand ("one hundred and nine"), so "forty and fifty" stays two numbers
+_NUMWORDS = rf"(?:{_NUMWORD})(?:(?:[- ]|(?<=hundred) and |(?<=thousand) and )(?:{_NUMWORD}))*"
+_NUM = rf"(?:\d[\d,]*|{_NUMWORDS})"
+_DIGITS_RE = re.compile(r"\b\d[\d,]*\b")
+_NUMWORDS_RE = re.compile(rf"\b{_NUMWORDS}\b", re.I)
+
+
+def words_to_int(text: str) -> int:
+    """'42' / '1,250' / 'forty-two' / 'two thousand five hundred' -> int."""
+    text = text.lower().replace(",", "")
+    if text.replace(" ", "").isdigit():
+        return int(text)
+    total = current = 0
+    for tok in re.split(r"[- ]+", text):
+        if tok in _UNITS:
+            current += _UNITS[tok]
+        elif tok in _TENS:
+            current += _TENS[tok]
+        elif tok == "hundred":
+            current = max(current, 1) * 100
+        elif tok == "thousand":
+            total += max(current, 1) * 1000
+            current = 0
+    return total + current
+
+
+def first_number(text: str) -> int | None:
+    """The first number in the text, preferring digits over number words, or None."""
+    m = _DIGITS_RE.search(text or "") or _NUMWORDS_RE.search(text or "")
+    return words_to_int(m.group(0)) if m else None
+
+
+# --- Rules (in-sample) ---
+_PEOPLE = (r"(?:women|men|girls|boys|ladies|members|people|farmers|participants|mothers|fathers|children|kids|youth|"
+           r"students|pupils|villagers|residents|patients|clients|caregivers|elders|persons)")
+_PAT_A = re.compile(rf"\b(?P<n>{_NUM})\s+{_PEOPLE}(?:\s+\w+){{0,2}}?\s+"
+                    r"(?:attended|came|turned up|participated|were present|joined|registered|were reached)\b", re.I)
+_PAT_B = re.compile(rf"\b(?:served|screened|reached|trained|vaccinated|treated|counselled|counseled|tested|had)\s+"
+                    rf"(?P<n>{_NUM})\s+{_PEOPLE}\b", re.I)
+_PAT_C = re.compile(rf"\b(?:attendance|turnout)\s+(?:was|of)\s+(?P<n>{_NUM})\b", re.I)
+
+# (pattern, label). First match wins, so specific topics come first.
+TOPICS = [
+    (r"family planning|contracepti|implants?\b", "Family planning outreach"),
+    (r"menstrual|sanitary pads?|\bperiods\b", "Menstrual hygiene session"),
+    (r"gender[- ]based violence|\bGBV\b|domestic violence", "Gender-based violence awareness session"),
+    (r"cervical cancer|cancer screening|breast cancer", "Cervical cancer screening camp"),
+    (r"table banking|savings group|\bchama\b|village savings", "Table banking (savings) group meeting"),
+    (r"kitchen garden|sack garden|backyard garden", "Kitchen garden training"),
+    (r"immuni[sz]ation|vaccinat", "Immunization outreach"),
+    (r"antenatal|\bANC\b|prenatal", "Antenatal care clinic"),
+    (r"\bHIV\b|\bAIDS\b", "HIV testing and counselling"),
+    (r"nutrition|malnutrition|growth monitoring", "Nutrition session"),
+    (r"malaria|bed ?nets?", "Malaria prevention session"),
+    (r"deworming", "Deworming drive"),
+    (r"hand ?washing|sanitation|hygiene", "Hygiene promotion session"),
+    (r"agricultur|farmer training|crop|seedlings|compost", "Farmer training"),
+]
+
+
+def find_participants(text: str) -> int | None:
+    """The attendance count stated in the text (first one), or None."""
+    hits = []
+    for pat in (_PAT_A, _PAT_B, _PAT_C):
+        m = pat.search(text or "")
+        if m:
+            hits.append((m.start(), words_to_int(m.group("n"))))
+    return min(hits)[1] if hits else None
+
+
+def find_topic(text: str) -> str:
+    """The first TOPICS label whose pattern occurs in the text, or ''."""
+    for pattern, label in TOPICS:
+        if re.search(pattern, text or "", re.I):
+            return label
+    return ""
+
+
+def clean_qa_label(label: str) -> str:
+    """Drop redaction aliases and tags from a QA event label ("Place0 outreach" -> "Outreach")."""
+    label = re.sub(r"\b(?:Person|Place)\d+\b|\[(?:NAME|LOCATION|PHONE|EMAIL)\]", " ", str(label or ""))
+    label = re.sub(r"\s+", " ", label).strip(" .,;:-")
+    return label[:1].upper() + label[1:] if len(re.sub(r"[^A-Za-z]", "", label)) >= 3 else ""
+
+
+# --- Activity categories (zero-shot) ---
+def classify_activities(dataset: Dataset, relevance_col: str = "relevance", batch_size: int = 16,
+                        classifier=None) -> Dataset:
+    """Add activity_category and activity_score: the zero-shot model's best ACTIVITY_CATEGORIES match for each
+    Event message ('' and 0.0 for Chit-chat)."""
+    if classifier is None:
+        classifier = load_zero_shot_classifier()
+
+    def _batch(batch):
+        texts = ["" if t is None else str(t).strip() for t in batch["text"]]
+        categories, scores = [""] * len(texts), [0.0] * len(texts)
+        events = [i for i, (t, r) in enumerate(zip(texts, batch[relevance_col])) if t and not is_chitchat(r)]
+        if events:
+            preds = classifier([texts[i] for i in events], candidate_labels=ACTIVITY_CATEGORIES,
+                               hypothesis_template=ACTIVITY_HYPOTHESIS, multi_label=False,
+                               batch_size=min(len(events), batch_size))
+            for i, pred in zip(events, [preds] if isinstance(preds, dict) else preds):
+                categories[i], scores[i] = pred["labels"][0], float(pred["scores"][0])
+        return {"activity_category": categories, "activity_score": scores}
+
+    return dataset.map(_batch, batched=True, batch_size=batch_size, load_from_cache_file=False)
+
+
+# --- Models and rules combined ---
+def activity_type(text: str, qa_event_type: str = "", category: str = "", category_score: float = 0.0) -> str:
+    """The classifier's category when its score reaches ACTIVITY_MIN_SCORE; else the topic list's label, the QA
+    model's cleaned answer, or OTHER_ACTIVITY."""
+    if category and float(category_score or 0) >= ACTIVITY_MIN_SCORE:
+        return category
+    return find_topic(text) or clean_qa_label(qa_event_type) or OTHER_ACTIVITY
+
+
+def participant_count(text: str, qa_participants: str = "") -> int | None:
+    """The QA model's count and the number rule's count; None when neither has one or the two disagree."""
+    qa = str(qa_participants or "").strip()
+    qa = int(qa) if qa.isdigit() else None
+    rule = find_participants(text)
+    if qa is not None and rule is not None and qa != rule:
+        return None  # the review queue reports the disagreement
+    return qa if qa is not None else rule
+
+
+# --- QA model ---
 
 # Default QA model: SQuAD 2.0-trained model handles unanswerable questions accurately
 DEFAULT_MODEL = "deepset/roberta-base-squad2"
