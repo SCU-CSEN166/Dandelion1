@@ -27,10 +27,10 @@
 # 1. Voice notes -> transcripts (skip for text exports)
 python src/transcribe.py data/voice_notes/ -o data/voice_notes.csv --hints "Rongai, Nakuru"
 # 2. Messages -> outputs/<name>/messages.csv, follow_ups.csv, and with -s, report.md
-python src/main.py -d data/hidden_test_transcripts.xlsx -o outputs/hidden_test --extract_info -s meta-llama/Llama-3.1-8B-Instruct
+python src/main.py -d data/hidden_test_transcripts.xlsx -o outputs/hidden_test --extract_info -s Qwen/Qwen3-0.6B
 ```
 `messages.csv` has one row per message: anonymized text (`Person0` / `Place0` aliases, `[PHONE]` / `[EMAIL]` tags),
-Event or Chit-chat, activity type, head count, duplicates, sensitive topic, and a confidence with the reasons to
+Event or Chit-chat (relevant or not), activity type, head count, duplicates, sensitive topic, and a confidence with the reasons to
 review the row. `follow_ups.csv` lists the sentences that ask someone to act.
 
 **Evaluate**
