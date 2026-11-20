@@ -275,24 +275,24 @@ Important note: Due to the redaction stage's use of aliases and the potential fo
 **Deliverable during Week 10 Lab:** Document peer-testing feedback, Responsible AI concerns, changes made in response, and the final runnable system. Submit the final project report as instructed.
 
 ### Peer testing
-- **Team evaluated:** [Team ID]
-- **One thing that worked well:** [Evidence]
-- **One meaningful failure:** [Reproduction steps or example]
-- **One actionable recommendation:** [Specific fix]
+- **Team evaluated:** Dandelion2
+- **One thing that worked well:** A lot of the redaction was pretty good, with a lot of PII caught, including many locations and names.
+- **One meaningful failure:** The evaluation script, run as given in the How to Run section of the README, encounters an error during execution.
+- **One actionable recommendation:** Add more categories for event type, as a lot of messages were classified as "Other".
 - **Feedback received from another team:** [Summary]
 
 ### Responsible AI assessment
-- **Potential harms or affected users:** [Who could be affected and how?]
-- **Privacy and data handling:** [How sensitive information is protected]
-- **Reliability and unsupported claims:** [How outputs are verified or uncertainty is communicated]
-- **Fairness, accessibility, and usability:** [Relevant concerns and tests]
-- **Human oversight:** [Where a human should review or correct outputs]
-- **Remaining limitations:** [What should not be trusted or deployed yet]
+- **Potential harms or affected users:** As Dandelion Africa handles sensitive topics and works with a lot of people, there's a lot of sensitive, real-life experience and information being processed by this program. The affected users are anyone who have worked with or received help from Dandelion Africa and had their activities recorded. The primary potential harm is the loss of privacy, should any PII or other sensitive text make it through redaction and get output in a report.
+- **Privacy and data handling:** As AI models are never 100% accurate, there is always potential for missed redactions and real personal info being processed. The inputs and outputs of the program are just regular files, so the storage and security of these files is up to the organization.
+- **Reliability and unsupported claims:** In addition to the output summaries and extraction information, our program also reports confidence levels and generates a separate file for any messages that encountered problems and may need human review. This helps address the inherent uncertainty of AI.
+- **Fairness, accessibility, and usability:** Better AI models need better hardware. Users have to choose between quality and cost. Additionally, properly setting up a Python environment and running the right commands with the right arguments is a technical challenge that everyday users are not familiar with.
+- **Human oversight:** A human should review the generated reports for any leaked PII, read and address the follow-up reports, and validate that the correct events and actions are reported.
+- **Remaining limitations:** There is still room for missed redactions (names specifically), incorrectly categorized events, and entries incorrectly being marked relevant or irrelevant. This is a matter of fine-tuning models and the pipeline, and will not realistically reach a perfect 100% on evaluations.
 
 ### Final improvements and outcomes
 | Feedback / issue | Change made | Worked? (Yes / Partly / No) | Evidence | Remaining limitation |
 |---|---|---|---|---|
-| [Issue] | [Change] | [Status] | [Link or metric] | [Limitation] |
+| Codebase was too large as a result of working separately for various types of outputs | Codebase was streamlined and reduced by almost half, with dead code removed, duplicate code unified, and patchwork features were more clearly fit together | Worked | Codebase reduced by 1000 lines in merge from asr-review-followups | Current project is still feature-heavy and contains a lot of code, primarily for the rule-based extraction and redaction |
 
 ### Individual contributions during that week
 | Member | Final implementation / evaluation / documentation contribution | Result (worked / partly / failed) | Evidence | Reflection / remaining work |
