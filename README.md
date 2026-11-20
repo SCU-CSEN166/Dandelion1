@@ -266,6 +266,7 @@ Important note: Due to the redaction stage's use of aliases and the potential fo
 |---|---|---|---|---|
 | Ali Parpia | Evaluated our hidden-test table against the TA's expected outputs, fixed the gaps (name and place redaction, chit-chat detection, duplicates, TA-format columns), and added an evaluation script | Worked | PR #5 (commit b60cbfa, merged as 2ed6484); results/hidden_test_ta_table.csv; src/eval_ta_table.py | Larger Kenyan place list, test on Whisper transcripts |
 | Christopher Le | Made transcribe.py accept the hidden test's voice messages: local audio/video files (mp4, m4a, ...) or a whole folder, decoded with a bundled ffmpeg (imageio-ffmpeg) because the WAVE HPC has none. Connected transcription to redaction and summarization in one command, and ran all 10 hidden-test mp4s through it on WAVE with whisper-small. Turned transcribe.py into a module fixed to whisper-medium. Whisper-medium is now the default ASR model. | Partly: (1) and (2) worked | Commits eb12963, 085e8c3, 3e221d3; results/old/hidden_test_table.csv | Reconnect audio to main.py with the team's chosen approach |
+| Davis Kim | Add relevance classifier stage to filter unimportant messages before later stages, add extraction stage to obtain relevant data from messages, bug fixes | Partly; extraction and relevance are currently in-sample and can produce incorrect outputs | Commits 9f461e7, f06749b, 5ddc520, 623242f, 3242a83 | Move away from in-sample setup and clean up code |
 
 ---
 
@@ -296,7 +297,7 @@ Important note: Due to the redaction stage's use of aliases and the potential fo
 ### Individual contributions during that week
 | Member | Final implementation / evaluation / documentation contribution | Result (worked / partly / failed) | Evidence | Reflection / remaining work |
 |---|---|---|---|---|
-| Davis Kim | Streamlined pipeline, reduced codebase, updated QA and pattern matching rules to have more explicit roles, unified output formats | Worked | Commits throughout week 9 | Now that the codebase is more cleaned up, the project is in an alright state. More fine-tuning for label thresholds and available labels for the classifier may be the next steps. |
+| Davis Kim | Streamlined pipeline, reduced codebase, updated QA and pattern matching rules to have more explicit roles, unified output formats | Worked | Commits 539fbe3, fa01d6d, 48e3bc7, 7fc8a30 | Now that the codebase is more cleaned up, the project is in an alright state. More fine-tuning for label thresholds and available labels for the classifier may be the next steps. |
 
 
 
