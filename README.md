@@ -299,6 +299,7 @@ Important note: Due to the redaction stage's use of aliases and the potential fo
 |---|---|---|---|---|
 | Davis Kim | Streamlined pipeline, reduced codebase, updated QA and pattern matching rules to have more explicit roles, unified output formats | Worked | Commits 539fbe3, fa01d6d, 48e3bc7, 7fc8a30 | Now that the codebase is more cleaned up, the project is in an alright state. More fine-tuning for label thresholds and available labels for the classifier may be the next steps. |
 | Ali Parpia | Added the three extra-credit features (speech-error redaction, review queue with confidence, follow-up list and sensitive-topic protection), measured the pipeline on our own Whisper transcripts, answered the TA's question about which transcripts the table used, and peer-tested Dandelion2 (duplicate detection ignores time) | Worked | PR #5, PR #6, results/old/hidden_test_whisper_metrics.md | Make duplicate detection time-aware; test on messages neither team has seen |
+| Christopher Le | Replaced the old ROUGE/NLI summary evaluation with eval/eval_summary.py, which scores report.md for faithfulness, completeness and conciseness using Qwen2.5-7B-Instruct as the judge. Reran the hidden test and scored three summarizer setups on WAVE. Qwen2.5-7B with --filter_relevant was best. | Worked | Commit 35df29d; | The best model requires 32 GB of RAM which can be intense for certain users and the Qwen2.5-7b summaries as well as judges itself so that could require a human check. The next thing to do is to try more models to see which setup performs the best. |
 
 
 
