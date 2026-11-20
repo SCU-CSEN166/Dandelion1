@@ -279,7 +279,7 @@ Important note: Due to the redaction stage's use of aliases and the potential fo
 - **One thing that worked well:** A lot of the redaction was pretty good, with a lot of PII caught, including many locations and names.
 - **One meaningful failure:** The evaluation script, run as given in the How to Run section of the README, encounters an error during execution.
 - **One actionable recommendation:** Add more categories for event type, as a lot of messages were classified as "Other".
-- **Feedback received from another team:** [Summary]
+- **Feedback received from another team:** Awaiting peer review
 
 ### Responsible AI assessment
 - **Potential harms or affected users:** As Dandelion Africa handles sensitive topics and works with a lot of people, there's a lot of sensitive, real-life experience and information being processed by this program. The affected users are anyone who have worked with or received help from Dandelion Africa and had their activities recorded. The primary potential harm is the loss of privacy, should any PII or other sensitive text make it through redaction and get output in a report.
