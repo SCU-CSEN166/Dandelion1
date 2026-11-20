@@ -6,8 +6,8 @@ Built from the processed dataset rows (load_dataset.prepare_dataset): redacted '
 
 Message table
 - relevance / relevance_score: the classifier's label and Event score.
-- activity_type: the classifier's activity category, else the topic rule, the QA model's answer, or "Other field
-  activity" (extract.activity_type). participants: the QA model's and the number rule's count, blank when they
+- activity_type: the topic rule's label, else the classifier's activity category, the QA model's answer, or "Other
+  field activity" (extract.activity_type). participants: the QA model's and the number rule's count, blank when they
   disagree (extract.participant_count). Events only.
 - duplicate_of: message_id of an earlier Event with the same activity type and count, else "none".
 - sensitive_topic (gender-based violence, HIV, screening results, reproductive and mental health): the message
@@ -28,7 +28,7 @@ import re
 
 import pandas as pd
 
-from extract import OTHER_ACTIVITY, activity_type, find_participants, find_topic, participant_count
+from extract import ACTIVITY_MIN_SCORE, OTHER_ACTIVITY, activity_type, find_participants, find_topic, participant_count
 from redact import GENERIC_PLACE_WORDS, NOT_PLACE_WORDS, STOP_WORDS
 from relevance import is_chitchat
 
@@ -134,18 +134,26 @@ def leftover_identifiers(anonymized: str) -> list[str]:
     return out
 
 
+def same_label(a: str, b: str) -> bool:
+    """Two activity names that share at least half their words ("Banking group meeting" and "Table banking
+    (savings) group meeting"), so different wording of one activity is not a disagreement."""
+    wa, wb = (set(re.findall(r"[a-z]+", x.lower())) - {"and", "of", "the", "a"} for x in (a, b))
+    return bool(wa and wb) and len(wa & wb) / len(wa | wb) >= 0.5
+
+
 def review_reasons(row: dict, source: str, qa_participants: str = "", pii_notes: str = "",
-                   qa_ran: bool = False) -> list[str]:
-    """row: a message-table row; source: the original text (the rules read it); qa_ran: the QA model was asked."""
+                   qa_ran: bool = False, category: str = "", category_score: float = 0.0) -> list[str]:
+    """row: a message-table row; source: the original text (the rules read it); qa_ran: the QA model was asked;
+    category / category_score: the zero-shot classifier's activity pick."""
     reasons = []
     if row["relevance"] == "Event":
         if str(row["participants"]).strip() == "":
             reasons.append("no attendance count found")
         if row["activity_type"] == OTHER_ACTIVITY:
             reasons.append("activity type not recognised")
-        topic = find_topic(source)
-        if topic and row["activity_type"] != topic:
-            reasons.append(f"activity types disagree (table {row['activity_type']}, topic rule {topic})")
+        if (category and float(category_score or 0) >= ACTIVITY_MIN_SCORE
+                and not same_label(row["activity_type"], category)):
+            reasons.append(f"activity types disagree (table {row['activity_type']}, classifier {category})")
         rule = find_participants(source)
         qa = int(qa_participants) if str(qa_participants).strip().isdigit() else None
         if qa is not None and rule is not None and qa != rule:
@@ -200,7 +208,8 @@ def build_message_table(rows: list[dict]) -> pd.DataFrame:
 
         topic = sensitive_topic(source)
         reasons = review_reasons(msg, source, row.get("participants", ""), row.get("pii_notes", ""),
-                                 qa_ran="event_type" in row)
+                                 qa_ran="event_type" in row, category=row.get("activity_category", ""),
+                                 category_score=row.get("activity_score", 0.0))
         confidence = confidence_from(reasons)
         level = "High" if confidence >= 0.8 else "Medium" if confidence >= 0.5 else "Low"
         if topic:

@@ -1,4 +1,6 @@
 # Tested with torch 2.15, transformers 5.22, datasets 5.1, pandas 3.1 on Python 3.15
+# The pipeline without -s also runs on CPU with torch 2.12, transformers 5.12, datasets 5.0 on Python 3.14
+# Pipeline (src/main.py)
 torch>=2.5
 transformers>=5.0
 datasets>=5.0
@@ -6,5 +8,10 @@ pandas>=2.0
 numpy
 openpyxl
 sentencepiece
-# Only for the evaluation scripts (eval.py, eval_summaries.py)
-rouge_score
+# Optional: spreads large summarizer models over several GPUs
+accelerate
+# Voice notes (src/transcribe.py): bundled ffmpeg, for machines without one (e.g. WAVE)
+imageio-ffmpeg
+# Speech-recognition evaluation (eval/eval_asr.py)
+jiwer
+soundfile

@@ -146,11 +146,18 @@ def classify_activities(dataset: Dataset, relevance_col: str = "relevance", batc
 
 # --- Models and rules combined ---
 def activity_type(text: str, qa_event_type: str = "", category: str = "", category_score: float = 0.0) -> str:
-    """The classifier's category when its score reaches ACTIVITY_MIN_SCORE; else the topic list's label, the QA
-    model's cleaned answer, or OTHER_ACTIVITY."""
+    """The topic list's label when one matches; else the classifier's category when its score reaches
+    ACTIVITY_MIN_SCORE, the QA model's cleaned answer, or OTHER_ACTIVITY.
+
+    The topic list goes first because a keyword match ("cervical cancer") is specific, while the classifier must pick
+    from ACTIVITY_CATEGORIES even when the right activity is not in it (it called a cervical cancer screening camp
+    "Distribution of supplies")."""
+    topic = find_topic(text)
+    if topic:
+        return topic
     if category and float(category_score or 0) >= ACTIVITY_MIN_SCORE:
         return category
-    return find_topic(text) or clean_qa_label(qa_event_type) or OTHER_ACTIVITY
+    return clean_qa_label(qa_event_type) or OTHER_ACTIVITY
 
 
 def participant_count(text: str, qa_participants: str = "") -> int | None:

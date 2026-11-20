@@ -9,7 +9,7 @@ Per PII item, after redaction:
   missed  = it is still fully there
 Recall = caught / total. "targeted" recall covers only what redact.py tries to catch (emails, phones, names);
 other labels (addresses, IDs, dates...) are reported separately.
-Over-redaction: share of ordinary (non-PII) words twaiut hat got destroyed.
+Over-redaction: share of ordinary (non-PII) words that got destroyed.
 With -s: also summarize the redacted text and count PII values that appear in the final summary (= leaked to the report).
 
 Run on WAVE:
@@ -43,7 +43,7 @@ p.add_argument("-n", "--num_samples", type=int, default=200)
 p.add_argument("-s", "--summarizer", help="Also summarize redacted text and check PII leaking into the summary")
 p.add_argument("-l", "--length", type=int, default=10)
 p.add_argument("-il", "--input_length", type=int, default=1024)
-p.add_argument("-o", "--output", default="results/pii_eval.json")
+p.add_argument("-o", "--output", default="outputs/pii_eval.json")
 
 
 def load_rows(a):

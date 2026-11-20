@@ -1,0 +1,126 @@
+{
+  "faithfulness": 0.7,
+  "completeness": 0.833,
+  "conciseness": 0.3,
+  "judge": "Qwen/Qwen2.5-7B-Instruct",
+  "report": "outputs/hidden_test_filtered_7b/report.md",
+  "sentences": [
+    {
+      "sentence": "Field Communications Summary - Dandelion Africa",
+      "supported": true
+    },
+    {
+      "sentence": "Conducted a family planning outreach event at Place0 dispensary, serving 42 participants.",
+      "supported": true
+    },
+    {
+      "sentence": "Held a menstrual hygiene session for 60 girls in classes six to eight at Place5.",
+      "supported": true
+    },
+    {
+      "sentence": "Organized a community dialogue on gender-based violence involving 35 women and some village elders at the chief’s camp in Place3.",
+      "supported": true
+    },
+    {
+      "sentence": "Conducted a cervical cancer screening camp at Place1, screening 28 women and referring 3 for further treatment.",
+      "supported": true
+    },
+    {
+      "sentence": "Led a kitchen garden training for 18 women farmers at Place0.",
+      "supported": true
+    },
+    {
+      "sentence": "Ran out of contraceptive implant stock during the family planning outreach at Place0, resulting in six referrals to another facility.",
+      "supported": true
+    },
+    {
+      "sentence": "Long queues at both the cervical cancer screening camps due to high demand, leading to discomfort among participants.",
+      "supported": false
+    },
+    {
+      "sentence": "Rainfall affected attendance and comfort levels during the family planning outreach at Place0.",
+      "supported": false
+    },
+    {
+      "sentence": "Confirmed strong interest in future events as indicated by requests for return visits.",
+      "supported": false
+    },
+    {
+      "sentence": "Established connections between victims of gender-based violence and counselors through the community dialogue.",
+      "supported": true
+    },
+    {
+      "sentence": "Distributed reusable sanitary pads to all attending girls during the menstrual hygiene session.",
+      "supported": true
+    },
+    {
+      "sentence": "Sent detailed reports of screenings to relevant parties post-event.",
+      "supported": false
+    },
+    {
+      "sentence": "Planned follow-up visits to check progress on kitchen gardens initiated during the training sessions.",
+      "supported": true
+    },
+    {
+      "sentence": "Schedule a return visit for the family planning outreach at Place0 to address the referral backlog.",
+      "supported": false
+    },
+    {
+      "sentence": "Coordinate additional resources such as chairs and water for upcoming screening camps to manage longer queues effectively.",
+      "supported": true
+    },
+    {
+      "sentence": "Confirm dates for subsequent meetings with the women’s groups in Place4 and Place5.",
+      "supported": false
+    },
+    {
+      "sentence": "Contact the head teachers and mothers discussed regarding menstrual hygiene education.",
+      "supported": true
+    },
+    {
+      "sentence": "Arrange follow-up consultations for the three women identified with abnormal cervical cancer screening results.",
+      "supported": true
+    },
+    {
+      "sentence": "Plan regular visits to monitor the development of kitchen gardens established during the training sessions.",
+      "supported": true
+    }
+  ],
+  "key_facts": [
+    {
+      "fact": "Family planning outreach with 42 participants",
+      "sentences": [
+        2
+      ]
+    },
+    {
+      "fact": "Women's group table banking (savings) meeting with 25 participants",
+      "sentences": []
+    },
+    {
+      "fact": "Menstrual hygiene session and sanitary pad distribution with 60 participants",
+      "sentences": [
+        3,
+        12
+      ]
+    },
+    {
+      "fact": "Gender-based violence awareness dialogue with 35 participants",
+      "sentences": [
+        4
+      ]
+    },
+    {
+      "fact": "Cervical cancer screening camp with 28 participants",
+      "sentences": [
+        5
+      ]
+    },
+    {
+      "fact": "Kitchen garden training with 18 participants",
+      "sentences": [
+        6
+      ]
+    }
+  ]
+}

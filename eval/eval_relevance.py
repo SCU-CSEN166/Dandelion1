@@ -67,7 +67,8 @@ def metrics(pred_event: list[bool], gold: list[str]) -> dict:
     fn = sum(g and not p for p, g in zip(pred_event, gold_event))
     precision = tp / (tp + fp) if tp + fp else None
     recall = tp / (tp + fn) if tp + fn else None
-    f1 = 2 * precision * recall / (precision + recall) if precision and recall else None
+    f1 = (2 * precision * recall / (precision + recall) if precision and recall
+          else 0.0 if precision is not None and recall is not None else None)
     accuracy = sum(p == g for p, g in zip(pred_event, gold_event)) / len(gold)
     return {"accuracy": accuracy, "precision": precision, "recall": recall, "f1": f1, "false_events": fp,
             "missed_events": fn}

@@ -16,7 +16,7 @@ reviewed by writing key_info and leaving pii_labels as []. Rows with both empty 
 
 Every occurrence of a label's text in the query is turned into a span with character offsets.
 Output has the columns `text` and `spans`, so run the PII evaluation on it with:
-  python eval/pii_eval.py -d data/farmerchat_kenya_labeled.jsonl --text_col text --spans_col spans -n 50 -o results/pii_eval_farmerchat.json
+  python eval/pii_eval.py -d data/farmerchat_kenya_labeled.jsonl --text_col text --spans_col spans -n 50 -o outputs/pii_eval_farmerchat.json
 """
 import argparse
 import json

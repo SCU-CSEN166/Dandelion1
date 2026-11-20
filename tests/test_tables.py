@@ -111,17 +111,23 @@ class TestMessageTable(unittest.TestCase):
         self.assertIn("Person0", table.loc[0, "text"])  # one alias style everywhere: Person0 / Place0
 
     def test_classifier_category_and_disagreement(self):
-        """The classifier's category fills activity_type; a topic rule that says otherwise is a review reason."""
+        """The topic rule fills activity_type; a confident classifier that says otherwise is a review reason, and
+        different wording of the same activity is not."""
         text = "We held the immunization day and 40 children came."
+        banking = "Our table banking group met and 20 members came."
         rows = [{"message_id": 1, "text": text, "original_text": text, "relevance": "Event",
                  "activity_category": "Nutrition session", "activity_score": 0.9},
                 {"message_id": 2, "text": text, "original_text": text, "relevance": "Event",
-                 "activity_category": "Immunization outreach", "activity_score": 0.9}]
+                 "activity_category": "Immunization outreach", "activity_score": 0.9},
+                {"message_id": 3, "text": banking, "original_text": banking, "relevance": "Event",
+                 "activity_category": "Banking group meeting", "activity_score": 0.9}]
         table = build_message_table(rows)
-        self.assertEqual(list(table["activity_type"]), ["Nutrition session", "Immunization outreach"])
-        self.assertIn("activity types disagree (table Nutrition session, topic rule Immunization outreach)",
+        self.assertEqual(list(table["activity_type"]),
+                         ["Immunization outreach", "Immunization outreach", "Table banking (savings) group meeting"])
+        self.assertIn("activity types disagree (table Immunization outreach, classifier Nutrition session)",
                       table.loc[0, "review_reasons"])
         self.assertNotIn("activity types disagree", table.loc[1, "review_reasons"])
+        self.assertNotIn("activity types disagree", table.loc[2, "review_reasons"])
 
     def test_count_from_one_method_only(self):
         text = "We held the immunization day and 40 children came."

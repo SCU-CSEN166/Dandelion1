@@ -177,9 +177,9 @@ class TestExtraction(unittest.TestCase):
 
     def test_activity_type_combination(self):
         text = "We held the immunization day."
-        # a confident category wins; below ACTIVITY_MIN_SCORE the topic rule, then QA, then "Other"
-        self.assertEqual(activity_type(text, "", "Immunization outreach", ACTIVITY_MIN_SCORE), "Immunization outreach")
-        self.assertEqual(activity_type(text, "", "Tree planting", ACTIVITY_MIN_SCORE - 0.01), "Immunization outreach")
+        # a topic match wins, even over a confident category; else a confident category, then QA, then "Other"
+        self.assertEqual(activity_type(text, "", "Tree planting", 0.9), "Immunization outreach")
+        self.assertEqual(activity_type("We met.", "", "Tree planting", ACTIVITY_MIN_SCORE), "Tree planting")
         self.assertEqual(activity_type("We met.", "borehole meeting", "Tree planting", 0.05), "Borehole meeting")
         self.assertEqual(activity_type("We met.", "", "", 0.0), OTHER_ACTIVITY)
         self.assertIn("Immunization outreach", ACTIVITY_CATEGORIES)

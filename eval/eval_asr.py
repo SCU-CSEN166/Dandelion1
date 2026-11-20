@@ -5,7 +5,7 @@ dataset's other columns; for a dataset with reference summaries (e.g. SLUE-TED "
 transcripts with eval_summary.py on that CSV.
 
 Run:  python eval/eval_asr.py -m openai/whisper-medium -d edinburghcstr/edacc --config default --split test \
-          --ref_col text --accent Kenyan --language english -n 50 -o results/edacc_kenyan_whisper-medium.csv
+          --ref_col text --accent Kenyan --language english -n 50 -o outputs/edacc_kenyan_whisper-medium.csv
 """
 import argparse
 import io
@@ -38,7 +38,7 @@ def main():
     p.add_argument("--accent", help="Keep only rows whose 'accent' column contains this, e.g. 'Kenyan' (EdAcc)")
     p.add_argument("--hints", help="Spelling hints for Whisper (see src/transcribe.py)")
     p.add_argument("-n", "--num_samples", type=int, default=50, help="0 = all")
-    p.add_argument("-o", "--output", default="results/asr_out.csv")
+    p.add_argument("-o", "--output", default="outputs/asr_out.csv")
     args = p.parse_args()
 
     # streaming: only downloads the clips we use, instead of every split (sw_ke train alone is ~3 GB)

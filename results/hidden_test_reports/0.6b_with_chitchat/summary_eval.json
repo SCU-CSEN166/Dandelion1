@@ -1,0 +1,74 @@
+{
+  "faithfulness": 0.375,
+  "completeness": 0.5,
+  "conciseness": 0.5,
+  "judge": "Qwen/Qwen2.5-7B-Instruct",
+  "report": "outputs/hidden_test/report.md",
+  "sentences": [
+    {
+      "sentence": "Conducted family planning outreach with 42 women, offering services and referring 6 women for implants.",
+      "supported": true
+    },
+    {
+      "sentence": "Held a menstrual hygiene session with 60 attendees, distributing reusable sanitary pads.",
+      "supported": true
+    },
+    {
+      "sentence": "Organized a kitchen garden training for 18 women, teaching farming techniques and seedling distribution.",
+      "supported": true
+    },
+    {
+      "sentence": "A broken matatu caused delays during the menstrual hygiene session.",
+      "supported": false
+    },
+    {
+      "sentence": "Successfully addressed reproductive health concerns with referrals and attendance confirmation.",
+      "supported": false
+    },
+    {
+      "sentence": "Planned future meetings and resolved logistical issues (e.g., delayed return due to rain).",
+      "supported": false
+    },
+    {
+      "sentence": "Scheduled next-month returns for the menstrual hygiene session.",
+      "supported": false
+    },
+    {
+      "sentence": "Requested additional chairs and water for future gatherings.",
+      "supported": false
+    }
+  ],
+  "key_facts": [
+    {
+      "fact": "Family planning outreach with 42 participants",
+      "sentences": [
+        1
+      ]
+    },
+    {
+      "fact": "Women's group table banking (savings) meeting with 25 participants",
+      "sentences": []
+    },
+    {
+      "fact": "Menstrual hygiene session and sanitary pad distribution with 60 participants",
+      "sentences": [
+        2,
+        5
+      ]
+    },
+    {
+      "fact": "Gender-based violence awareness dialogue with 35 participants",
+      "sentences": []
+    },
+    {
+      "fact": "Cervical cancer screening camp with 28 participants",
+      "sentences": []
+    },
+    {
+      "fact": "Kitchen garden training with 18 participants",
+      "sentences": [
+        3
+      ]
+    }
+  ]
+}

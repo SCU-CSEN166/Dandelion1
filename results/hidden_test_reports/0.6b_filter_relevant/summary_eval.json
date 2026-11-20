@@ -1,0 +1,81 @@
+{
+  "faithfulness": 0.5,
+  "completeness": 0.5,
+  "conciseness": 0.3,
+  "judge": "Qwen/Qwen2.5-7B-Instruct",
+  "report": "outputs/hidden_test_filtered_small/report.md",
+  "sentences": [
+    {
+      "sentence": "Conducted family planning outreach with 42 women, confirmed through Sister Person0’s service.",
+      "supported": true
+    },
+    {
+      "sentence": "Provided 60 attendees with menstrual hygiene sessions, distributed reusable sanitary pads.",
+      "supported": false
+    },
+    {
+      "sentence": "Held kitchen garden training for 18 women, offering seedlings and compost-making techniques.",
+      "supported": true
+    },
+    {
+      "sentence": "Stock shortages led to 6 women referred to Place1 for implants.",
+      "supported": true
+    },
+    {
+      "sentence": "Queue length caused delays during the menstrual hygiene session.",
+      "supported": false
+    },
+    {
+      "sentence": "Confirmed attendance and resolved referrals via Sister Person0.",
+      "supported": false
+    },
+    {
+      "sentence": "Connected women to counseling for gender-based violence and ensured follow-up meetings.",
+      "supported": false
+    },
+    {
+      "sentence": "Shared health screenings results and scheduled follow-ups for referrals.",
+      "supported": false
+    },
+    {
+      "sentence": "Send registration files to Place1 for the implant referrals.",
+      "supported": true
+    },
+    {
+      "sentence": "Schedule additional follow-ups for the kitchen garden training and health screenings.",
+      "supported": true
+    }
+  ],
+  "key_facts": [
+    {
+      "fact": "Family planning outreach with 42 participants",
+      "sentences": [
+        1
+      ]
+    },
+    {
+      "fact": "Women's group table banking (savings) meeting with 25 participants",
+      "sentences": []
+    },
+    {
+      "fact": "Menstrual hygiene session and sanitary pad distribution with 60 participants",
+      "sentences": [
+        2
+      ]
+    },
+    {
+      "fact": "Gender-based violence awareness dialogue with 35 participants",
+      "sentences": []
+    },
+    {
+      "fact": "Cervical cancer screening camp with 28 participants",
+      "sentences": []
+    },
+    {
+      "fact": "Kitchen garden training with 18 participants",
+      "sentences": [
+        3
+      ]
+    }
+  ]
+}
