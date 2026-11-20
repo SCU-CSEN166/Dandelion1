@@ -298,7 +298,38 @@ Important note: Due to the redaction stage's use of aliases and the potential fo
 | Member | Final implementation / evaluation / documentation contribution | Result (worked / partly / failed) | Evidence | Reflection / remaining work |
 |---|---|---|---|---|
 | Davis Kim | Streamlined pipeline, reduced codebase, updated QA and pattern matching rules to have more explicit roles, unified output formats | Worked | Commits 539fbe3, fa01d6d, 48e3bc7, 7fc8a30 | Now that the codebase is more cleaned up, the project is in an alright state. More fine-tuning for label thresholds and available labels for the classifier may be the next steps. |
+| Ali Parpia | Added the three extra-credit features (speech-error redaction, review queue with confidence, follow-up list and sensitive-topic protection), measured the pipeline on our own Whisper transcripts, answered the TA's question about which transcripts the table used, and peer-tested Dandelion2 (duplicate detection ignores time) | Worked | PR #5, PR #6, results/old/hidden_test_whisper_metrics.md | Make duplicate detection time-aware; test on messages neither team has seen |
 
+
+
+### Extra credit: going beyond the baseline
+
+The baseline pipeline turns each message into a row of an output table. Three additions go beyond it, aimed at the three extra-credit criteria (originality, social impact and clear presentation of results).
+
+**1. Redaction that survives speech-recognition mistakes (originality)**
+Whisper often misspells Kenyan names and places ("Soli" for Solai, "Girissa" for Garissa, "Kampiamoto" for Kampi ya Moto). A list-based redaction misses these, so private names and places stay readable. `src/redact.py` now:
+- finds places and people from the sentence around them ("the matatu from Soli", "send it to Ruth", "I was with Grace"), so a misspelled name that no list contains is still hidden;
+- matches a misspelled word against our Kenyan place list (`data/kenya_places.txt`, built by `tools/build_place_list.py`) and gives it the same alias as the real place;
+- reads each batch twice, so a name introduced in a later message is also hidden in earlier ones;
+- records each guess in `pii_notes`, which feeds the review column below.
+
+`src/transcribe.py --hints "Rongai, Nakuru"` also gives Whisper a list of local names. We tried it on one synthetic clip, where it turned "Girissa" into "Garissa". We have not tried it on the real audio.
+
+Result on our own Whisper transcripts of the 10 hidden-test audio files, scored against the TA's table (`eval/eval_hidden_test.py`): expected PII tags found went from 37/46 (recall 0.804, precision 0.974) to 44/46 (recall 0.957, precision 0.978). On our FarmerChat dev set (`data/farmerchat_kenya_labeled.jsonl`), places caught went from 40/64 to 54/64 with no ordinary words hidden. The tables are in `results/hidden_test_fixed/` and `results/old/hidden_test_whisper_metrics.md`.
+
+**2. A review queue with confidence scores (originality, Responsible AI)**
+Every row of `messages.csv` has `confidence`, `confidence_level`, `needs_review` and `review_reasons`. Each doubt lowers the confidence: two methods disagreeing on the activity or head count, no head count, a possible duplicate, a place that was guessed or looks misspelled, or a capitalized word still visible after redaction. A person then only has to check the uncertain rows. On the TA's clean transcripts 9 of 10 rows are High confidence and 5 are sent to review (the sensitive ones, a duplicate and a disagreement). On our Whisper transcripts only 2 are High, 7 Medium and 1 Low, and 8 are flagged, with reasons such as a misspelled place or a name left visible. So the queue gets stricter as the input gets noisier, which is what we want.
+
+**3. A follow-up list and protection for sensitive topics (social impact)**
+`follow_ups.csv` lists the sentences that ask someone to act: referrals, people to call back, next visits, reports still to send, and supplies that ran out. This turns a chat into the list a supervisor acts on.
+
+Messages about gender-based violence, HIV, screening results and reproductive or mental health get a `sensitive_topic`. They always go to review, and the sentences about one identifiable person (for example a woman with a positive result, and her phone number) are withheld from the report. The summarizer only sees this protected text, and follow-ups about one person in a sensitive message are marked "restricted" for the case owner. In the hidden test, 5 of 10 messages are sensitive (2 reproductive health, 2 screening results, 1 gender-based violence). Names are already hidden, but the health details tied to one person could still identify them, which is why this matters.
+
+**Limits we want to be clear about**
+- The keyword lists for sensitive topics and follow-ups, and the redaction rules, were written alongside the hidden test, so the hidden-test scores are in-sample. FarmerChat is the fairer check for places.
+- The confidence penalties are hand-set, not calibrated on data.
+- Our duplicate rule compares only activity type and head count, so two reports of a recurring event (for example a monthly savings meeting) would be flagged as duplicates. We found this in peer testing; audio files carry no date, so the fix needs timestamps from chat exports.
+- The Whisper hint option has not been tested on the real audio.
 
 
 ### Final submission checklist
