@@ -28,6 +28,8 @@
 python src/transcribe.py data/voice_notes/ -o data/voice_notes.csv --hints "Rongai, Nakuru"
 # 2. Messages -> outputs/<name>/messages.csv, follow_ups.csv, and with -s, report.md
 python src/main.py -d data/hidden_test_transcripts.xlsx -o outputs/hidden_test --extract_info --filter_relevant -s Qwen/Qwen2.5-7B-Instruct
+# OR load from a Huggingface dataset instead of a local file
+python src/main.py -d ChristianCaballero/WhatsApp-style-Conversations-Ar-En-Zh-Ko-Logs-Pack -o outputs/hidden_test --extract_info --filter_relevant -s Qwen/Qwen2.5-7B-Instruct
 ```
 The tables run on a CPU in a few minutes without `-s`. The report needs a GPU; the 7B summarizer also needs about
 32 GB of RAM (on WAVE, request it when starting the session). With `-s Qwen/Qwen3-0.6B` it fits a small GPU, but the
@@ -294,7 +296,7 @@ Important note: Due to the redaction stage's use of aliases and the potential fo
 ### Individual contributions during that week
 | Member | Final implementation / evaluation / documentation contribution | Result (worked / partly / failed) | Evidence | Reflection / remaining work |
 |---|---|---|---|---|
-| [Name] | [Specific work] | [Status] | [Link] | [Reflection] |
+| Davis Kim | Streamlined pipeline, reduced codebase, updated QA and pattern matching rules to have more explicit roles, unified output formats | Worked | Commits throughout week 9 | Now that the codebase is more cleaned up, the project is in an alright state. More fine-tuning for label thresholds and available labels for the classifier may be the next steps. |
 
 
 
